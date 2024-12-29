@@ -82,9 +82,9 @@ try {
             $entries[] = [
                 'id' => $entry['entry_id'],
                 'day' => $entry['day'],
-                'startTime' => $entry['start_time'],
-                'endTime' => $entry['end_time'],
-                'radioShow' => [
+                'start_time' => $entry['start_time'],
+                'end_time' => $entry['end_time'],
+                'show' => [
                     'id' => $entry['radio_show_id'],
                     'title' => $entry['title'],
                     'description' => $entry['description'],
@@ -98,8 +98,8 @@ try {
         $response = [
             'id' => $schedule['id'],
             'name' => $schedule['name'],
-            'startDate' => $schedule['start_date'],
-            'endDate' => $schedule['end_date'],
+            'start_date' => $schedule['start_date'],
+            'end_date' => $schedule['end_date'],
             'entries' => $entries
         ];
 
@@ -123,8 +123,8 @@ try {
             $schedules[] = [
                 'id' => $row['id'],
                 'name' => $row['name'],
-                'startDate' => $row['start_date'],
-                'endDate' => $row['end_date']
+                'start_date' => $row['start_date'],
+                'end_date' => $row['end_date']
             ];
         }
 

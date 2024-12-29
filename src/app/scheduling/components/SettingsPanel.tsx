@@ -5,7 +5,7 @@ import {Box, Button, Callout, Flex, Heading, IconButton, Popover, Select, Switch
 import {ExclamationTriangleIcon, QuestionMarkCircledIcon} from "@radix-ui/react-icons";
 import {initialState, iSettings, settingsReducer} from "@/app/scheduling/components/settingsReducer";
 import {GET_RADIOSHOW_ENDPOINT, GET_SETTINGS_ENDPOINT, UPDATE_SETTINGS_ENDPOINT} from "@/lib/endpoints";
-import {IShow} from "@/lib/IShow";
+import {IShow} from "@/interfaces/IShow";
 
 export default function SettingsPanel() {
   const [{settings, shows, loading, error}, dispatch] = useReducer(settingsReducer, initialState);

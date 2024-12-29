@@ -1,5 +1,4 @@
 "use client"
-import {notFound, useParams} from "next/navigation";
 import {
   Text,
   Flex,
@@ -14,72 +13,16 @@ import {
 } from "@radix-ui/themes";
 import {ArrowLeftIcon, ExclamationTriangleIcon} from "@radix-ui/react-icons";
 import Link from "next/link";
-import {ChangeEvent, useEffect, useReducer} from "react";
+import {ChangeEvent, useReducer} from "react";
 import {initialState, scheduleReducer} from "@/app/scheduling/edit/scheduleReducer";
-import {
-  GET_SCHEDULES_ENDPOINT,
-  UPDATE_SCHEDULE_ENDPOINT,
-} from "@/lib/endpoints";
+import {INSERT_SCHEDULE_ENDPOINT} from "@/lib/endpoints";
 
-export default function EditSchedulePage() {
+export default function NewSchedulePage() {
   const [{schedule, loading, error, originalSchedule}, dispatch] = useReducer(scheduleReducer, initialState);
-
-  // Get id parameter
-  const params = useParams();
-  const id = Number(params.id);
-  const isInvalidId = isNaN(id) || id <= 0;
 
   const hasChanges = JSON.stringify(schedule) !== JSON.stringify(originalSchedule);
 
-  // Fetch settings on mount
-  useEffect(() => {
-    if (isInvalidId) return;
-
-    const fetchSchedule = async () => {
-      dispatch({ type: "FETCH_REQUEST" });
-
-      try {
-        const response = await fetch(GET_SCHEDULES_ENDPOINT(id), {
-          method: "GET",
-          headers: {
-            "Accept": "application/json",
-          },
-        });
-
-        if (response.ok) {
-          const res = await response.json();
-          console.log(res);
-
-          dispatch({
-            type: "FETCH_SUCCESS",
-            payload: {
-              id: res.id,
-              name: res.name,
-              start_date: res.start_date ? new Date(res.start_date) : undefined,
-              end_date: res.end_date ? new Date(res.end_date) : undefined
-            }
-          });
-
-        } else {
-          throw new Error(response.statusText);
-        }
-      } catch (error) {
-        console.error(error);
-        dispatch({
-          type: "FETCH_FAILURE",
-          payload: "An error occurred while fetching General Settings"
-        });
-        return;
-      }
-    };
-
-    fetchSchedule().then();
-  }, [id, isInvalidId]);
-
-  if (isInvalidId)
-    return notFound();
-
-  const updateSchedule = async () => {
+  const insertSchedule = async () => {
     dispatch({ type: "FETCH_REQUEST" });
 
     const formatted = {
@@ -90,7 +33,7 @@ export default function EditSchedulePage() {
 
     try {
       console.log("Data to send: " + JSON.stringify(formatted))
-      const response = await fetch(UPDATE_SCHEDULE_ENDPOINT(id), {
+      const response = await fetch(INSERT_SCHEDULE_ENDPOINT, {
         method: "POST",
         body: JSON.stringify(formatted),
 
@@ -109,7 +52,7 @@ export default function EditSchedulePage() {
       console.error(error);
       dispatch({
         type: "FETCH_FAILURE",
-        payload: "An error occurred while saving changes to schedule"
+        payload: "An error occurred while saving new schedule"
       });
     }
   };
@@ -136,7 +79,7 @@ export default function EditSchedulePage() {
             </Link>
           </IconButton>
           <Flex direction="column">
-            <Text color="purple">Edit Schedule</Text>
+            <Text color="purple">New Schedule</Text>
             <Skeleton loading={loading}>
               {schedule.name !== "" ? (
                   <Heading color="purple">{schedule.name}</Heading>
@@ -231,7 +174,7 @@ export default function EditSchedulePage() {
                       onClick={() => dispatch({ type: "RESET_SCHEDULE" })}>
                 Revert changes
               </Button>
-              <Button onClick={updateSchedule}>Apply changes</Button>
+              <Button onClick={insertSchedule}>Save schedule</Button>
             </Flex>
           }
 

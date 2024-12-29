@@ -4,14 +4,31 @@ import {useEffect, useReducer} from "react";
 import {initialState, schedulesReducer} from "@/app/scheduling/components/schedulesReducer";
 import {GET_SCHEDULES_ENDPOINT} from "@/lib/endpoints";
 import ScheduleCard from "@/app/scheduling/components/ScheduleCard";
-import {ISchedule} from "@/lib/ISchedule";
+import {ISchedule} from "@/interfaces/ISchedule";
+import Link from "next/link";
 
 export default function SchedulesList() {
   const [{schedules, error, loading}, dispatch] = useReducer(schedulesReducer, initialState);
 
-  const previous = schedules.filter(schedule => schedule.end_date ? schedule.end_date.getTime() < Date.now() : false);
-  const active = schedules.filter(schedule => schedule.end_date ? schedule.end_date.getTime() > Date.now() : true);
-  const upcoming = schedules.filter(schedule => schedule.start_date ? schedule.start_date.getTime() > Date.now() : false);
+  const now = Date.now(); // Cache the current timestamp
+
+  const previous: ISchedule[] = [];
+  const active: ISchedule[] = [];
+  const upcoming: ISchedule[] = [];
+
+  schedules.forEach(schedule => {
+    const startDate = schedule.start_date ? schedule.start_date.getTime() : null;
+    const endDate = schedule.end_date ? schedule.end_date.getTime() : null;
+
+    // Classify the schedule
+    if (endDate && endDate < now) {
+      previous.push(schedule);
+    } else if (startDate && startDate > now) {
+      upcoming.push(schedule);
+    } else {
+      active.push(schedule);
+    }
+  });
 
   // Fetch settings on mount
   useEffect(() => {
@@ -33,8 +50,11 @@ export default function SchedulesList() {
         const res = await response.json();
         // Map dates to desired format
         console.log(res);
-        // @ts-expect-error type of any causes an error. Defining a specific type defining what the db returns feels too verbose.
-        const payload = res.map((x): ISchedule[] => ({ ...x, start_date: new Date(x.startDate), end_date: new Date(x.endDate) }))
+        const payload = res.map((x): ISchedule[] => ({
+          ...x,
+          start_date: x.start_date ? new Date(x.start_date) : undefined,
+          end_date: x.end_date ? new Date(x.end_date) : undefined
+        }));
         dispatch({
           type: "FETCH_SUCCESS",
           payload: payload,
@@ -56,8 +76,10 @@ export default function SchedulesList() {
         <Flex mt="6" gap="4" justify="between" align="center">
           <Heading size="3">Schedules</Heading>
 
-          <Button>
-            <PlusIcon /> New schedule
+          <Button asChild>
+            <Link href={'/scheduling/new'} >
+              <PlusIcon /> New schedule
+            </Link>
           </Button>
         </Flex>
 

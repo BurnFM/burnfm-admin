@@ -2,7 +2,7 @@ import Link from "next/link";
 import {Card, Flex, Text} from "@radix-ui/themes";
 import {ArrowRightIcon} from "@radix-ui/react-icons";
 import React from "react";
-import {ISchedule} from "@/lib/ISchedule";
+import {ISchedule} from "@/interfaces/ISchedule";
 
 export default function ScheduleCard({schedule}: {schedule: ISchedule}) {
   return (

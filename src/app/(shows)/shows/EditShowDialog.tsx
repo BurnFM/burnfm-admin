@@ -1,7 +1,7 @@
 "use client"
 
 import {Button, Dialog, Flex, Kbd, Link, Text, TextArea, TextField} from "@radix-ui/themes";
-import {isShow, IShow} from "@/lib/IShow";
+import {isShow, IShow} from "@/interfaces/IShow";
 import {ReactNode, useActionState, useState} from "react";
 import NextLink from "next/link";
 import {useToast} from "@/app/components/Toast";

@@ -1,4 +1,4 @@
-import {ISchedule} from "@/lib/ISchedule";
+import {ISchedule} from "@/interfaces/ISchedule";
 
 export interface ScheduleState {
   loading: boolean;

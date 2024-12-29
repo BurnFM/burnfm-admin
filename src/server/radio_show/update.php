@@ -35,12 +35,14 @@ try {
         exit();
     }
 
-    // Ensure the 'id' query parameter is present
-    $id = $_GET['id'] ?? null;
-    if (empty($id)) {
-        send_json_error_response(['error' => 'Missing required query parameter: id'], 400);
+    // Check if the 'id' query parameter is present
+    if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+        send_json_error_response(['error' => 'Invalid or missing radio_show ID.'], 400);
         exit();
     }
+
+    // Extract the radio show ID from the query parameter
+    $id = (int) $_GET['id'];
 
     // Check if form_data is provided in body
     if (empty($_POST)) {
