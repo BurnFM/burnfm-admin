@@ -1,65 +1,55 @@
 "use client"
 
-import {Button, Callout, Dialog, Flex, Kbd, Link, Text, TextArea, TextField} from "@radix-ui/themes";
-import {isShow, Show, Show_Partial} from "@/lib/show";
-import {useActionState, useState} from "react";
+import {Button, Dialog, Flex, Kbd, Link, Text, TextArea, TextField} from "@radix-ui/themes";
+import {isShow, IShow} from "@/lib/IShow";
+import {ReactNode, useActionState, useState} from "react";
 import NextLink from "next/link";
-import {ExclamationTriangleIcon} from "@radix-ui/react-icons";
 import {useToast} from "@/app/components/Toast";
+import {INSERT_RADIOSHOW_ENDPOINT, UPDATE_RADIOSHOW_ENDPOINT} from "@/lib/endpoints";
 
 export default function EditShowDialog({
+  key,
   show,
   onSuccess,
   children
 } : {
-  show?: Show,
+  key?: number,
+  show?: IShow,
   onSuccess?: () => void,
-  children?: React.ReactNode
+  children?: ReactNode
 }) {
-
-  const toast = useToast();
-
-  const [open, setOpen] = useState(false);
-  // const [file, setFile] = useState<{file: object|null, error: null|string}>({file: null, error: null});
-  // const delay = async (milliseconds) => new Promise(resolve => {
-  //     setTimeout(resolve, milliseconds);
-  // })
-
-  const initial_form_data: {
-    error: null | string,
-    show: Show | Show_Partial
-  } = {
-    error: null,
-    show: show ?? {
+  const initial_form_data: IShow | Omit<IShow, 'id'> = show ?? {
       title: "",
       description: "",
       hosts: "",
       photo: ""
-    } as Show_Partial
   }
+
+  const toast = useToast();
+
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState(initial_form_data)
 
   // Define form action and state variables
   const [state, dispatch, isPending] = useActionState(
-      async (previousState, payload: FormData) => {
+      async (previousState: null, payload: FormData) => {
         try {
           let response;
           if (!show) {
-            response = await fetch("api/radio_show", {
-              method: "PUT",
+            response = await fetch(INSERT_RADIOSHOW_ENDPOINT, {
+              method: "POST",
+              body: payload,  // For form-data type don't include Content-Type in header, otherwise issues
               headers: {
-                "Accept": "application/json",
-                // "Content-Type": "multipart/form-data",
-              },
-              body: payload
+                'Authorization': `${process.env.NEXT_PUBLIC_AUTH_TOKEN}`
+              }
             });
           } else {
-            response = await fetch(`api/radio_show/${show.id}`, {
+            response = await fetch(UPDATE_RADIOSHOW_ENDPOINT(show.id), {
               method: "POST",
+              body: payload,  // For form-data type don't include Content-Type in header, otherwise issues
               headers: {
-                "Accept": "application/json",
-                // "Content-Type": "multipart/form-data",
-              },
-              body: payload
+                'Authorization': `${process.env.NEXT_PUBLIC_AUTH_TOKEN}`
+              }
             });
           }
 
@@ -67,19 +57,24 @@ export default function EditShowDialog({
             if (onSuccess) onSuccess();
             setOpen(false);
             const body = await response.json();
-            toast.showToast(`Added show`, "");
-            return {...previousState, id: body.id};
+            console.log(body)
+            if (show)
+              toast.showToast("Success", `Updated show with ID: ${body.updated_id}`);
+            else
+              toast.showToast("Success", `Added show with ID: ${body.id}`);
+            return null;
           } else {
             toast.showToast("An error occurred", `${response.status} Error: ${response.statusText}`);
-            return previousState;
+            return null;
           }
-        } catch (error) {
+        } catch (e) {
+          console.log(e)
           toast.showToast("An error occurred", "An unexpected error occurred. Please refresh the page or try again later.");
-          return previousState;
+          return null;
         }
       },
-      initial_form_data
-  );
+      null
+);
 
   // const handleFileDrop = (acceptedFiles, fileRejections: FileRejection[]) => {
   //   if (fileRejections.length) {
@@ -101,7 +96,7 @@ export default function EditShowDialog({
   // }
 
   return (
-      <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Root key={key} open={open} onOpenChange={setOpen}>
         <Dialog.Trigger>
           { children }
         </Dialog.Trigger>
@@ -117,25 +112,31 @@ export default function EditShowDialog({
 
           <form action={dispatch}>
             <Flex direction="column" gap="3">
-              {isShow(state.show) &&
+              {isShow(form) &&
                   <label>
                       <Text as="div" size="2" mb="1" weight="bold">
-                          Title
+                          ID*
                       </Text>
                       <TextField.Root
-                          name="title"
+                          name="id"
                           disabled
-                          value={state.show.id}
+                          value={form.id}
                       />
                   </label>
               }
               <label>
                 <Text as="div" size="2" mb="1" weight="bold">
-                  Title
+                  Title*
                 </Text>
                 <TextField.Root
                     name="title"
                     disabled={isPending}
+                    value={form.title}
+                    onChange={(x) =>
+                        setForm({
+                          ...form,
+                          title: x.target.value
+                        })}
                     placeholder="Enter the show's name"
                     required
                 />
@@ -147,6 +148,12 @@ export default function EditShowDialog({
                 <TextArea
                     name="description"
                     disabled={isPending}
+                    value={form.description}
+                    onChange={(x) =>
+                        setForm({
+                          ...form,
+                          description: x.target.value
+                        })}
                     placeholder="Enter the show's description"
                 />
               </label>
@@ -157,6 +164,12 @@ export default function EditShowDialog({
                 <TextField.Root
                     name="hosts"
                     disabled={isPending}
+                    value={form.hosts}
+                    onChange={(x) =>
+                        setForm({
+                          ...form,
+                          hosts: x.target.value
+                        })}
                     placeholder="Enter the host(s) of the show, split by commas"
                 />
               </label>
@@ -167,6 +180,12 @@ export default function EditShowDialog({
                 <TextField.Root
                     name="photo"
                     disabled={isPending}
+                    value={form.photo}
+                    onChange={(x) =>
+                        setForm({
+                          ...form,
+                          photo: x.target.value
+                        })}
                     placeholder="Enter the photo's file path"
                 />
               </label>
@@ -199,16 +218,16 @@ export default function EditShowDialog({
               {/*  </Flex>*/}
               {/*</label>*/}
 
-              {state.error &&
-                  <Callout.Root color="crimson" role="alert">
-                      <Callout.Icon>
-                          <ExclamationTriangleIcon/>
-                      </Callout.Icon>
-                      <Callout.Text>
-                        {state.error}
-                      </Callout.Text>
-                  </Callout.Root>
-              }
+              {/*{state &&*/}
+              {/*    <Callout.Root color="crimson" role="alert">*/}
+              {/*        <Callout.Icon>*/}
+              {/*            <ExclamationTriangleIcon/>*/}
+              {/*        </Callout.Icon>*/}
+              {/*        <Callout.Text>*/}
+              {/*          {state}*/}
+              {/*        </Callout.Text>*/}
+              {/*    </Callout.Root>*/}
+              {/*}*/}
 
               {/*{file.error &&*/}
               {/*    <Callout.Root color="crimson" role="alert">*/}

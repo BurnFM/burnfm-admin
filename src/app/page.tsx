@@ -2,6 +2,7 @@ import {Card, Flex, Heading, Text} from "@radix-ui/themes";
 import Link from "next/link";
 import {ActivityLogIcon, ChatBubbleIcon, DashboardIcon} from "@radix-ui/react-icons";
 import "./home.css";
+
 export default function Home() {
   return (
       <Flex height="100%" direction="column" px="6" py="9" flexGrow="1" justify="between">

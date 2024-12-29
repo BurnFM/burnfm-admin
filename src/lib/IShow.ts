@@ -1,4 +1,4 @@
-export type Show = {
+export type IShow = {
   id: number,
   title: string,
   description?: string,
@@ -6,14 +6,7 @@ export type Show = {
   photo?: string
 }
 
-export type Show_Partial = {
-  title: string,
-  description?: string,
-  hosts?: string,
-  photo?: string
-}
-
-export function isShow(obj): obj is Show {
+export function isShow(obj): obj is IShow {
   return (
       typeof obj === "object" &&
       obj !== null &&
