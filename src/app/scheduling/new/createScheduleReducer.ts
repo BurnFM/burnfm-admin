@@ -1,16 +1,14 @@
-import {ISchedule} from "@/interfaces/ISchedule";
+import {ISchedulePartial} from "@/interfaces/ISchedule";
 
 export interface ScheduleState {
   loading: boolean;
-  schedule: ISchedule;
-  originalSchedule: ISchedule;
+  schedule: ISchedulePartial;
+  originalSchedule: ISchedulePartial;
   error: { status: "FETCH_FAILURE" | "SAVE_FAILURE", message: string } | null;
 }
 
 export type ScheduleAction =
     | { type: "START_REQUEST" }
-    | { type: "FETCH_SUCCESS"; payload: ISchedule }
-    | { type: "FETCH_FAILURE"; payload: string }
     | { type: "UPDATE_SUCCESS" }
     | { type: "UPDATE_FAILURE"; payload: string }
     | { type: "SET_NAME"; payload: string }
@@ -22,14 +20,10 @@ export function scheduleReducer(state: ScheduleState, action: ScheduleAction): S
   switch (action.type) {
     case "START_REQUEST":
       return { ...state, loading: true, error: null };
-    case "FETCH_SUCCESS":
-      return { ...state, loading: false, schedule: action.payload, originalSchedule: action.payload };
-    case "FETCH_FAILURE":
-      return { ...state, loading: false, error: { status: "FETCH_FAILURE", message: action.payload } };
     case "UPDATE_SUCCESS":
       return { ...state, loading: false, originalSchedule: state.schedule };
     case "UPDATE_FAILURE":
-      return { ...state, loading: false, error: { status: "SAVE_FAILURE", message: action.payload }, originalSchedule: state.schedule };
+      return { ...state, loading: false, error: { status: "SAVE_FAILURE", message: action.payload } };
     case "SET_NAME":
       return { ...state, schedule: { ...state.schedule, name: action.payload } };
     case "SET_START_DATE":

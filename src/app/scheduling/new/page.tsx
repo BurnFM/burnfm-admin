@@ -14,16 +14,33 @@ import {
 import {ArrowLeftIcon, ExclamationTriangleIcon} from "@radix-ui/react-icons";
 import Link from "next/link";
 import {ChangeEvent, useReducer} from "react";
-import {initialState, scheduleReducer} from "@/app/scheduling/edit/scheduleReducer";
+import {scheduleReducer, ScheduleState} from "@/app/scheduling/new/createScheduleReducer";
 import {INSERT_SCHEDULE_ENDPOINT} from "@/lib/endpoints";
+import {useRouter} from "next/navigation";
+
+const initialState: ScheduleState = {
+  loading: false,
+  schedule: {
+    name: "",
+    start_date: null,
+    end_date: null
+  },
+  originalSchedule: {
+    name: "",
+    start_date: null,
+    end_date: null
+  },
+  error: null,
+};
 
 export default function NewSchedulePage() {
   const [{schedule, loading, error, originalSchedule}, dispatch] = useReducer(scheduleReducer, initialState);
+  const router = useRouter();
 
   const hasChanges = JSON.stringify(schedule) !== JSON.stringify(originalSchedule);
 
   const insertSchedule = async () => {
-    dispatch({ type: "FETCH_REQUEST" });
+    dispatch({ type: "START_REQUEST" });
 
     const formatted = {
       ... schedule,
@@ -44,6 +61,8 @@ export default function NewSchedulePage() {
       });
 
       if (response.ok) {
+        const res = await response.json();
+        router.push("/scheduling/edit/" + res.id);
         dispatch({ type: "UPDATE_SUCCESS" });
       } else {
         throw new Error(`${response.status} - ${response.statusText}`);
@@ -51,7 +70,7 @@ export default function NewSchedulePage() {
     } catch (error) {
       console.error(error);
       dispatch({
-        type: "FETCH_FAILURE",
+        type: "UPDATE_FAILURE",
         payload: "An error occurred while saving new schedule"
       });
     }
@@ -91,7 +110,8 @@ export default function NewSchedulePage() {
           </Flex>
         </Flex>
 
-        <Flex p="6" direction="column" gap="2" >
+        <Flex p="6" direction="column" gap="2" asChild>
+          <form action={insertSchedule}>
 
           <label>
             <Text as="div" size="2" mb="1" weight="bold">
@@ -112,14 +132,14 @@ export default function NewSchedulePage() {
           <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap">
             <Text as="label">
               <Flex gap="4" align="center">
-                <Switch checked={schedule.start_date !== undefined}
+                <Switch checked={schedule.start_date !== null}
                         onCheckedChange={(checked) =>
                             dispatch({
                               type: "SET_START_DATE",
-                              payload: checked ? originalSchedule.start_date ?? new Date() : undefined
+                              payload: checked ? originalSchedule.start_date ?? new Date() : null
                             })
                         }
-                        disabled={loading || error != null}
+                        disabled={ error ? error.status == "FETCH_FAILURE" : loading }
                 />
                 <Box>
                   <Text as="p" size="2" weight="medium">Start Date</Text>
@@ -141,14 +161,14 @@ export default function NewSchedulePage() {
           <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap">
             <Text as="label">
               <Flex gap="4" align="center">
-                <Switch checked={schedule.end_date !== undefined}
+                <Switch checked={schedule.end_date !== null}
                         onCheckedChange={(checked) =>
                           dispatch({
                             type: "SET_END_DATE",
-                            payload: checked ? originalSchedule.end_date ?? new Date() : undefined
+                            payload: checked ? originalSchedule.end_date ?? new Date() : null
                           })
                         }
-                        disabled={loading || error != null}
+                        disabled={ error ? error.status == "FETCH_FAILURE" : loading }
                 />
                 <Box>
                   <Text as="p" size="2" weight="medium">End Date</Text>
@@ -167,27 +187,27 @@ export default function NewSchedulePage() {
             }
           </Flex>
 
-          {hasChanges &&
-            <Flex gap="2" wrap="wrap">
-              <Button variant="soft"
-                      color="gray"
-                      onClick={() => dispatch({ type: "RESET_SCHEDULE" })}>
-                Revert changes
-              </Button>
-              <Button onClick={insertSchedule}>Save schedule</Button>
-            </Flex>
-          }
+          <Flex gap="2" wrap="wrap">
+            <Button variant="soft"
+                    color="gray"
+                    onClick={() => dispatch({ type: "RESET_SCHEDULE" })}
+                    disabled={!hasChanges}>
+              Revert changes
+            </Button>
+            <Button type="submit" disabled={!hasChanges}>Save schedule</Button>
+          </Flex>
 
-          {error &&
+          { error &&
             <Callout.Root role={"alert"} color={"crimson"}>
               <Callout.Icon>
                 <ExclamationTriangleIcon/>
               </Callout.Icon>
               <Callout.Text>
-                {error}
+                { error.message }
               </Callout.Text>
             </Callout.Root>
           }
+          </form>
         </Flex>
       </Flex>
   );

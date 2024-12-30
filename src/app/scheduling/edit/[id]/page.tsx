@@ -15,11 +15,29 @@ import {
 import {ArrowLeftIcon, ExclamationTriangleIcon} from "@radix-ui/react-icons";
 import Link from "next/link";
 import {ChangeEvent, useEffect, useReducer} from "react";
-import {initialState, scheduleReducer} from "@/app/scheduling/edit/scheduleReducer";
+import {scheduleReducer, ScheduleState} from "@/app/scheduling/edit/scheduleReducer";
 import {
   GET_SCHEDULES_ENDPOINT,
   UPDATE_SCHEDULE_ENDPOINT,
 } from "@/lib/endpoints";
+import WeekView from "@/app/scheduling/components/Calendar";
+
+const initialState: ScheduleState = {
+  loading: false,
+  schedule: {
+    id: 0,
+    name: "",
+    start_date: null,
+    end_date: null
+  },
+  originalSchedule: {
+    id: 0,
+    name: "",
+    start_date: null,
+    end_date: null
+  },
+  error: null,
+};
 
 export default function EditSchedulePage() {
   const [{schedule, loading, error, originalSchedule}, dispatch] = useReducer(scheduleReducer, initialState);
@@ -36,7 +54,7 @@ export default function EditSchedulePage() {
     if (isInvalidId) return;
 
     const fetchSchedule = async () => {
-      dispatch({ type: "FETCH_REQUEST" });
+      dispatch({ type: "START_REQUEST" });
 
       try {
         const response = await fetch(GET_SCHEDULES_ENDPOINT(id), {
@@ -55,8 +73,8 @@ export default function EditSchedulePage() {
             payload: {
               id: res.id,
               name: res.name,
-              start_date: res.start_date ? new Date(res.start_date) : undefined,
-              end_date: res.end_date ? new Date(res.end_date) : undefined
+              start_date: res.start_date ? new Date(res.start_date) : null,
+              end_date: res.end_date ? new Date(res.end_date) : null
             }
           });
 
@@ -80,7 +98,7 @@ export default function EditSchedulePage() {
     return notFound();
 
   const updateSchedule = async () => {
-    dispatch({ type: "FETCH_REQUEST" });
+    dispatch({ type: "START_REQUEST" });
 
     const formatted = {
       ... schedule,
@@ -108,7 +126,7 @@ export default function EditSchedulePage() {
     } catch (error) {
       console.error(error);
       dispatch({
-        type: "FETCH_FAILURE",
+        type: "UPDATE_FAILURE",
         payload: "An error occurred while saving changes to schedule"
       });
     }
@@ -125,30 +143,32 @@ export default function EditSchedulePage() {
   };
 
   return (
-      <Flex height="100%" direction="column" flexGrow="1">
-        <Flex direction="row"
-              gap="4" p="6"
-              align="center"
-              style={{backgroundColor: "var(--accent-3)", borderBottom: "1px solid var(--accent-6)"}}>
-          <IconButton variant="ghost" size="2" asChild>
-            <Link href={"/scheduling"}>
-              <ArrowLeftIcon height={24} width={24}/>
-            </Link>
-          </IconButton>
-          <Flex direction="column">
-            <Text color="purple">Edit Schedule</Text>
-            <Skeleton loading={loading}>
-              {schedule.name !== "" ? (
-                  <Heading color="purple">{schedule.name}</Heading>
-              ) : (
-                  <Heading color="purple" style={{opacity: "0.5"}}>No schedule name</Heading>
-              )
-              }
-            </Skeleton>
-          </Flex>
+    <Flex height="100%" direction="column" flexGrow="1">
+      <Flex direction="row"
+            gap="4" p="6"
+            align="center"
+            style={{backgroundColor: "var(--accent-3)", borderBottom: "1px solid var(--accent-6)"}}>
+        <IconButton variant="ghost" size="2" asChild>
+          <Link href={"/scheduling"}>
+            <ArrowLeftIcon height={24} width={24}/>
+          </Link>
+        </IconButton>
+        <Flex direction="column">
+          <Text color="purple">Edit Schedule</Text>
+          <Skeleton loading={loading}>
+            {schedule.name !== "" ? (
+                <Heading color="purple">{schedule.name}</Heading>
+            ) : (
+                <Heading color="purple" style={{opacity: "0.5"}}>No schedule name</Heading>
+            )
+            }
+          </Skeleton>
         </Flex>
+      </Flex
+      >
 
-        <Flex p="6" direction="column" gap="2" >
+      <Flex p="6" direction="column" gap="2" asChild>
+        <form action={updateSchedule}>
 
           <label>
             <Text as="div" size="2" mb="1" weight="bold">
@@ -169,14 +189,14 @@ export default function EditSchedulePage() {
           <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap">
             <Text as="label">
               <Flex gap="4" align="center">
-                <Switch checked={schedule.start_date !== undefined}
+                <Switch checked={schedule.start_date !== null}
                         onCheckedChange={(checked) =>
                             dispatch({
                               type: "SET_START_DATE",
-                              payload: checked ? originalSchedule.start_date ?? new Date() : undefined
+                              payload: checked ? originalSchedule.start_date ?? new Date() : null
                             })
                         }
-                        disabled={loading || error != null}
+                        disabled={error ? error.status == "FETCH_FAILURE" : loading}
                 />
                 <Box>
                   <Text as="p" size="2" weight="medium">Start Date</Text>
@@ -185,7 +205,7 @@ export default function EditSchedulePage() {
               </Flex>
             </Text>
 
-            { schedule.start_date &&
+            {schedule.start_date &&
 
               <TextField.Root type="date"
                               disabled={loading}
@@ -198,14 +218,14 @@ export default function EditSchedulePage() {
           <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap">
             <Text as="label">
               <Flex gap="4" align="center">
-                <Switch checked={schedule.end_date !== undefined}
+                <Switch checked={schedule.end_date !== null}
                         onCheckedChange={(checked) =>
-                          dispatch({
-                            type: "SET_END_DATE",
-                            payload: checked ? originalSchedule.end_date ?? new Date() : undefined
-                          })
+                            dispatch({
+                              type: "SET_END_DATE",
+                              payload: checked ? originalSchedule.end_date ?? new Date() : null
+                            })
                         }
-                        disabled={loading || error != null}
+                        disabled={error ? error.status == "FETCH_FAILURE" : loading}
                 />
                 <Box>
                   <Text as="p" size="2" weight="medium">End Date</Text>
@@ -214,7 +234,7 @@ export default function EditSchedulePage() {
               </Flex>
             </Text>
 
-            { schedule.end_date &&
+            {schedule.end_date &&
 
               <TextField.Root type="date"
                               disabled={loading}
@@ -228,10 +248,10 @@ export default function EditSchedulePage() {
             <Flex gap="2" wrap="wrap">
               <Button variant="soft"
                       color="gray"
-                      onClick={() => dispatch({ type: "RESET_SCHEDULE" })}>
+                      onClick={() => dispatch({type: "RESET_SCHEDULE"})}>
                 Revert changes
               </Button>
-              <Button onClick={updateSchedule}>Apply changes</Button>
+              <Button type={"submit"}>Apply changes</Button>
             </Flex>
           }
 
@@ -241,11 +261,17 @@ export default function EditSchedulePage() {
                 <ExclamationTriangleIcon/>
               </Callout.Icon>
               <Callout.Text>
-                {error}
+                {error.message}
               </Callout.Text>
             </Callout.Root>
           }
-        </Flex>
+        </form>
       </Flex>
+
+      <Box p="6">
+        <WeekView />
+      </Box>
+
+    </Flex>
   );
 }

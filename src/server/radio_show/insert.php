@@ -2,7 +2,7 @@
 
 global $mysqli;
 require '../helper_functions.php';
-require '../db_connect.php'; // Ensure this establishes a proper database connection
+require '../db_connect.php';
 
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
