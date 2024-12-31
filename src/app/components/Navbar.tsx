@@ -11,11 +11,11 @@ export default function Navbar({justify, links }: {
   const path = usePathname();
   return (
       <TabNav.Root justify={justify}>
-        {links.map(({ href, label }) => (
-            <TabNav.Link key={href} asChild active={path === href}>
-              <Link href={href}>{label}</Link>
-            </TabNav.Link>
-        ))}
+          {links.map(({ href, label }) => (
+              <TabNav.Link key={href} asChild active={path === href}>
+                <Link href={href}>{label}</Link>
+              </TabNav.Link>
+          ))}
       </TabNav.Root>
   );
 }

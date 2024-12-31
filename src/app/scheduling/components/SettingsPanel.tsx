@@ -117,7 +117,7 @@ export default function SettingsPanel() {
   };
 
   return (
-      <Flex direction="column" gap="2">
+      <Flex direction="column" gap="2" mb="4">
         <Heading size="3">General Settings</Heading>
 
         <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap">

@@ -1,5 +1,5 @@
 import {Flex, Heading, Text} from "@radix-ui/themes";
-import {ChatBubbleIcon, DashboardIcon} from "@radix-ui/react-icons";
+import {ChatBubbleIcon} from "@radix-ui/react-icons";
 
 export default function Home() {
   return (
@@ -10,7 +10,7 @@ export default function Home() {
         }}>
           <Flex align="center" gap="3">
             <ChatBubbleIcon style={{color: "var(--accent-11)"}} height={30} width={31}/>
-            <Heading color="purple">Posts</Heading>
+            <Heading style={{color: "var(--accent-11)"}}>Posts</Heading>
           </Flex>
           <Flex direction="column" gap="1">
             <Text weight="medium" style={{color: "var(--accent-12)"}}>Create, edit, and delete Posts</Text>

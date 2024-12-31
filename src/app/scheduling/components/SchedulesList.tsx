@@ -72,7 +72,7 @@ export default function SchedulesList() {
   };
 
   return (
-      <>
+      <Flex direction="column" gap="4">
         <Flex mt="6" gap="4" justify="between" align="center">
           <Heading size="3">Schedules</Heading>
 
@@ -170,6 +170,6 @@ export default function SchedulesList() {
             <Text align="center" color="gray" size="2">No previous schedules</Text>
           </Skeleton>
         }
-      </>
+      </Flex>
   );
 }

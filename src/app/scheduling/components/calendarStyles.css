@@ -1,4 +1,9 @@
 @charset "UTF-8";
+
+:root {
+    --time-slot-min-height: 30px;
+}
+
 .rbc-btn {
     color: inherit;
     font: inherit;
@@ -93,7 +98,7 @@ button.rbc-input::-moz-focus-inner {
     text-align: center;
     vertical-align: middle;
     font-weight: bold;
-    font-size: 90%;
+    font-size: 70%;
     min-height: 0;
     border-bottom: 1px solid var(--gray-8);
 }
@@ -675,6 +680,7 @@ button.rbc-input::-moz-focus-inner {
     -webkit-box-flex: 1;
     -ms-flex: 1 0 0px;
     flex: 1 0 0;
+    min-height: var(--time-slot-min-height);
 }
 .rbc-time-slot.rbc-now {
     font-weight: bold;

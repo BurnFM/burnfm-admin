@@ -9,7 +9,7 @@ import {
   Skeleton,
   TextField,
   Switch,
-  Box
+  Box, Container
 } from "@radix-ui/themes";
 import {ArrowLeftIcon, ExclamationTriangleIcon} from "@radix-ui/react-icons";
 import Link from "next/link";
@@ -88,29 +88,34 @@ export default function NewSchedulePage() {
 
   return (
       <Flex height="100%" direction="column" flexGrow="1">
-        <Flex direction="row"
-              gap="4" p="6"
-              align="center"
-              style={{backgroundColor: "var(--accent-3)", borderBottom: "1px solid var(--accent-6)"}}>
-          <IconButton variant="ghost" size="2" asChild>
-            <Link href={"/scheduling"}>
-              <ArrowLeftIcon height={24} width={24}/>
-            </Link>
-          </IconButton>
-          <Flex direction="column">
-            <Text color="purple">New Schedule</Text>
-            <Skeleton loading={loading}>
-              {schedule.name !== "" ? (
-                  <Heading color="purple">{schedule.name}</Heading>
-              ) : (
-                  <Heading color="purple" style={{opacity: "0.5"}}>No schedule name</Heading>
-              )
-              }
-            </Skeleton>
-          </Flex>
-        </Flex>
+        <Box p="6" style={{backgroundColor: "var(--accent-3)", borderBottom: "1px solid var(--accent-6)"}}>
+          <Container size="4">
+            <Flex align="center" gap="4">
+              <IconButton variant="ghost" size="2" asChild>
+                <Link href={"/scheduling"}>
+                  <ArrowLeftIcon height={24} width={24}/>
+                </Link>
+              </IconButton>
 
-        <Flex p="6" direction="column" gap="2" asChild>
+              <Flex direction="column">
+                <Text style={{color: "var(--accent-11)"}}>New Schedule</Text>
+                <Skeleton loading={loading}>
+                  { schedule.name !== "" ? (
+                      <Heading style={{color: "var(--accent-11)"}}>{schedule.name}</Heading>
+                  ) : (
+                      <Heading style={{color: "var(--accent-7)"}}>No schedule name</Heading>
+                  )
+                  }
+                </Skeleton>
+              </Flex>
+            </Flex>
+
+          </Container>
+        </Box>
+
+        <Box p="6">
+          <Container size="4">
+            <Flex direction="column" gap="2" asChild>
           <form action={insertSchedule}>
 
           <label>
@@ -209,6 +214,8 @@ export default function NewSchedulePage() {
           }
           </form>
         </Flex>
+          </Container>
+        </Box>
       </Flex>
   );
 }
