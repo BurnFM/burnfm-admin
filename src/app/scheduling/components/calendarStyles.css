@@ -4,6 +4,11 @@
     --time-slot-min-height: 30px;
 }
 
+/* hide all day row */
+.rbc-allday-cell {
+    display: none;
+}
+
 .rbc-btn {
     color: inherit;
     font: inherit;

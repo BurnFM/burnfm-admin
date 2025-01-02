@@ -81,6 +81,9 @@ try {
             exit();
         }
 
+
+        $scheduleId = $stmt->insert_id;
+
         // Insert schedule entries
         $insertEntryQuery = "
             INSERT INTO ScheduleEntries (schedule_id, day, start_time, end_time, radio_show_id)
@@ -93,14 +96,14 @@ try {
         }
 
         foreach ($entries as $entry) {
-            if (!isset($entry['day'], $entry['start_time'], $entry['end_time'], $entry['id'])) {
+            if (!isset($entry['day'], $entry['start_time'], $entry['end_time'], $entry['radio_show_id'])) {
                 throw new Exception('Invalid entry structure.');
             }
 
             $day = $mysqli->real_escape_string($entry['day']);
             $startTime = $mysqli->real_escape_string($entry['start_time']);
             $endTime = $mysqli->real_escape_string($entry['end_time']);
-            $radioShowId = (int) $entry['id'];
+            $radioShowId = (int) $entry['radio_show_id'];
 
             $insertStmt->bind_param('isssi', $scheduleId, $day, $startTime, $endTime, $radioShowId);
 
@@ -113,8 +116,7 @@ try {
         $mysqli->commit();
 
         // Respond with the newly created schedule ID
-        $newId = $stmt->insert_id;
-        echo json_encode(['id' => $newId]);
+        echo json_encode(['id' => $scheduleId]);
 
         $insertStmt->close();
 

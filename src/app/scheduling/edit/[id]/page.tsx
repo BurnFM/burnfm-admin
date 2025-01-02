@@ -15,32 +15,39 @@ import {
 import {ArrowLeftIcon, ExclamationTriangleIcon} from "@radix-ui/react-icons";
 import Link from "next/link";
 import {ChangeEvent, useEffect, useReducer} from "react";
-import {scheduleReducer, ScheduleState} from "@/app/scheduling/edit/scheduleReducer";
+import {editScheduleReducer, EditScheduleState} from "@/app/scheduling/edit/editScheduleReducer";
 import {
+  GET_RADIOSHOW_ENDPOINT,
   GET_SCHEDULES_ENDPOINT,
   UPDATE_SCHEDULE_ENDPOINT,
 } from "@/lib/endpoints";
-import WeekView from "@/app/scheduling/components/Calendar";
+import ScheduleEditor from "@/app/scheduling/components/ScheduleEditor";
+import {IEntry, IScheduleExtended} from "@/interfaces/ISchedule";
+import {IShow} from "@/interfaces/IShow";
+import {getDate} from "@/lib/dates";
 
-const initialState: ScheduleState = {
+const initialState: EditScheduleState = {
   loading: false,
+  shows: [],
   schedule: {
     id: 0,
     name: "",
     start_date: null,
-    end_date: null
+    end_date: null,
+    entries: []
   },
   originalSchedule: {
     id: 0,
     name: "",
     start_date: null,
-    end_date: null
+    end_date: null,
+    entries: []
   },
   error: null,
 };
 
 export default function EditSchedulePage() {
-  const [{schedule, loading, error, originalSchedule}, dispatch] = useReducer(scheduleReducer, initialState);
+  const [{schedule, shows, loading, error, originalSchedule}, dispatch] = useReducer(editScheduleReducer, initialState);
 
   // Get id parameter
   const params = useParams();
@@ -56,6 +63,15 @@ export default function EditSchedulePage() {
     const fetchSchedule = async () => {
       dispatch({ type: "START_REQUEST" });
 
+      const data: {
+        schedule?: IScheduleExtended
+        shows: { id: number, title: string }[]
+      } = {
+        schedule: undefined,
+        shows: []
+      };
+
+      // Get schedule
       try {
         const response = await fetch(GET_SCHEDULES_ENDPOINT(id), {
           method: "GET",
@@ -67,17 +83,19 @@ export default function EditSchedulePage() {
         if (response.ok) {
           const res = await response.json();
           console.log(res);
-
-          dispatch({
-            type: "FETCH_SUCCESS",
-            payload: {
-              id: res.id,
-              name: res.name,
-              start_date: res.start_date ? new Date(res.start_date) : null,
-              end_date: res.end_date ? new Date(res.end_date) : null
-            }
-          });
-
+          data.schedule = {
+            id: res.id,
+            name: res.name,
+            start_date: res.start_date ? new Date(res.start_date) : null,
+            end_date: res.end_date ? new Date(res.end_date) : null,
+            entries: res.entries.map(entry => ({
+              id: entry.entry_id,
+              day: parseInt(entry.day),
+              start_time: getDate(parseInt(entry.day), entry.start_time),
+              end_time: getDate(parseInt(entry.day), entry.end_time),
+              radio_show_id: entry.show.id,
+            }))
+          };
         } else {
           throw new Error(response.statusText);
         }
@@ -89,6 +107,39 @@ export default function EditSchedulePage() {
         });
         return;
       }
+
+      // Get radio shows
+      try {
+        const response = await fetch(GET_RADIOSHOW_ENDPOINT(), {
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const res = (await response.json()).shows as IShow[];
+          console.log(res);
+          data.shows = res.map(show => ({id: show.id, title: show.title}));
+        } else {
+          throw new Error(response.statusText);
+        }
+      } catch (error) {
+        console.error(error);
+        dispatch({
+          type: "FETCH_FAILURE",
+          payload: "An error occurred while fetching Shows"
+        });
+        return;
+      }
+
+      dispatch({
+        type: "FETCH_SUCCESS",
+        payload: {
+          schedule: data.schedule!,
+          shows: data.shows
+        }
+      });
     };
 
     fetchSchedule().then();
@@ -170,7 +221,6 @@ export default function EditSchedulePage() {
         </Container>
       </Box>
 
-
       <Container size="4" p="6">
         <Flex direction="column" gap="2" mb="6" asChild>
           <form action={updateSchedule}>
@@ -189,7 +239,6 @@ export default function EditSchedulePage() {
                 />
               </Skeleton>
             </label>
-
 
             <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap">
               <Text as="label">
@@ -273,9 +322,14 @@ export default function EditSchedulePage() {
           </form>
         </Flex>
 
-        <WeekView />
+        <Skeleton loading={loading}>
+          <ScheduleEditor
+              entries={schedule.entries}
+              setEntries={(entries: Omit<IEntry, "schedule_id">[]) => dispatch({ type: "SET_ENTRIES", payload: entries })}
+              shows={shows}
+          />
+        </Skeleton>
       </Container>
-
     </Flex>
   );
 }
