@@ -1,9 +1,9 @@
 import {Button, Callout, Flex, Heading, IconButton, Popover, Separator, Skeleton, Text} from "@radix-ui/themes";
 import {ExclamationTriangleIcon, PlusIcon, QuestionMarkCircledIcon} from "@radix-ui/react-icons";
 import {useEffect, useReducer} from "react";
-import {initialState, schedulesReducer} from "@/app/scheduling/components/schedulesReducer";
+import {initialState, schedulesReducer} from "@/app/scheduling/components/SchedulesList/schedulesReducer";
 import {GET_SCHEDULES_ENDPOINT} from "@/lib/endpoints";
-import ScheduleCard from "@/app/scheduling/components/ScheduleCard";
+import ScheduleCard from "@/app/scheduling/components/ScheduleEditor/ScheduleCard";
 import {ISchedule} from "@/interfaces/ISchedule";
 import Link from "next/link";
 

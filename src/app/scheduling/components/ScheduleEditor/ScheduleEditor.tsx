@@ -1,9 +1,9 @@
 import {Callout, Flex, Slider, Text, TextField} from "@radix-ui/themes";
 import {ChangeEventHandler, useCallback, useEffect, useState} from "react";
 import {CursorArrowIcon, HandIcon} from "@radix-ui/react-icons";
-import Calendar from "@/app/scheduling/components/DnDCalendar";
+import Calendar from "@/app/scheduling/components/ScheduleEditor/DnDCalendar";
 import {IEntry} from "@/interfaces/ISchedule";
-import EntryEditDialog from "@/app/scheduling/components/EntryEditDialog";
+import EntryEditDialog from "@/app/scheduling/components/ScheduleEditor/EntryEditDialog";
 import {start} from "node:repl";
 
 

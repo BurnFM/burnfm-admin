@@ -3,7 +3,7 @@
 import {useEffect, useReducer, useState} from "react";
 import {Box, Button, Callout, Flex, Heading, IconButton, Popover, Select, Switch, Text} from "@radix-ui/themes";
 import {ExclamationTriangleIcon, QuestionMarkCircledIcon} from "@radix-ui/react-icons";
-import {initialState, iSettings, settingsReducer} from "@/app/scheduling/components/settingsReducer";
+import {initialState, iSettings, settingsReducer} from "@/app/scheduling/components/SettingsPanel/settingsReducer";
 import {GET_RADIOSHOW_ENDPOINT, GET_SETTINGS_ENDPOINT, UPDATE_SETTINGS_ENDPOINT} from "@/lib/endpoints";
 import {IShow} from "@/interfaces/IShow";
 

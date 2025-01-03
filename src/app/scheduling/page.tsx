@@ -2,8 +2,8 @@
 
 import {Box, Container, Flex, Heading, Text} from "@radix-ui/themes";
 import {ActivityLogIcon} from "@radix-ui/react-icons";
-import SettingsPanel from "@/app/scheduling/components/SettingsPanel";
-import SchedulesList from "@/app/scheduling/components/SchedulesList";
+import SettingsPanel from "@/app/scheduling/components/SettingsPanel/SettingsPanel";
+import SchedulesList from "@/app/scheduling/components/SchedulesList/SchedulesList";
 
 
 export default function SchedulePage() {

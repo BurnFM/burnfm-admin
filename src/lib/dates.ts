@@ -1,4 +1,4 @@
-import {DATE} from "@/app/scheduling/components/DnDCalendar";
+import {DATE} from "@/app/scheduling/components/ScheduleEditor/DnDCalendar";
 
 export function getDate(day: number, time?: string) {
   const date = new Date(DATE);

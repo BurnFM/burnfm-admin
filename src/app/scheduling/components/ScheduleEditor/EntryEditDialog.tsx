@@ -1,5 +1,5 @@
 import {Dialog, Flex, Text, TextField, Button, Select} from "@radix-ui/themes";
-import {ICalendarEvent, NewEntry} from "@/app/scheduling/components/ScheduleEditor";
+import {ICalendarEvent, NewEntry} from "@/app/scheduling/components/ScheduleEditor/ScheduleEditor";
 import {getDate} from "@/lib/dates";
 
 export default function EntryEditDialog({ data, open, onOpenChange, shows, setData }: {

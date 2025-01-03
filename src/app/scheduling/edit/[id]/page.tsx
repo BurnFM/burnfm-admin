@@ -21,7 +21,7 @@ import {
   GET_SCHEDULES_ENDPOINT,
   UPDATE_SCHEDULE_ENDPOINT,
 } from "@/lib/endpoints";
-import ScheduleEditor from "@/app/scheduling/components/ScheduleEditor";
+import ScheduleEditor from "@/app/scheduling/components/ScheduleEditor/ScheduleEditor";
 import {IEntry, IScheduleAPI, IScheduleExtended} from "@/interfaces/ISchedule";
 import {IShow} from "@/interfaces/IShow";
 import {getDate} from "@/lib/dates";

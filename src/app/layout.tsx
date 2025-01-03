@@ -18,7 +18,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body style={{margin: 0, height: "100%"}}>
         <ThemeProvider attribute="class">
-          <Theme accentColor="plum" grayColor="auto" panelBackground="solid" scaling="105%">
+          <Theme accentColor="purple" grayColor="auto" panelBackground="solid" scaling="105%">
             <Flex direction="column" minHeight="100vh" height="100%">
               <Box position="sticky">
                 <Navbar justify={"end"} links={[
