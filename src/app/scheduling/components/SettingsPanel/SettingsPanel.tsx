@@ -1,15 +1,26 @@
 "use client"
 
-import {useEffect, useReducer, useState} from "react";
-import {Box, Button, Callout, Flex, Heading, IconButton, Popover, Select, Switch, Text} from "@radix-ui/themes";
+import React, {useEffect, useReducer} from "react";
+import {
+  Box,
+  Button,
+  Callout,
+  Container,
+  Flex,
+  Heading,
+  IconButton,
+  Popover,
+  Select,
+  Switch,
+  Text
+} from "@radix-ui/themes";
 import {ExclamationTriangleIcon, QuestionMarkCircledIcon} from "@radix-ui/react-icons";
 import {initialState, iSettings, settingsReducer} from "@/app/scheduling/components/SettingsPanel/settingsReducer";
 import {GET_RADIOSHOW_ENDPOINT, GET_SETTINGS_ENDPOINT, UPDATE_SETTINGS_ENDPOINT} from "@/lib/endpoints";
 import {IShow} from "@/interfaces/IShow";
 
-export default function SettingsPanel() {
-  const [{settings, shows, loading, error}, dispatch] = useReducer(settingsReducer, initialState);
-  const [originalSettings, setOriginalSettings] = useState<iSettings>(initialState.settings)
+export default function SettingsPanel({ children } : {children: React.ReactNode}) {
+  const [{settings, originalSettings, shows, loading, error}, dispatch] = useReducer(settingsReducer, initialState);
   const hasChanges = JSON.stringify(settings) !== JSON.stringify(originalSettings);
 
   // Fetch settings on mount
@@ -83,8 +94,6 @@ export default function SettingsPanel() {
         shows: data.shows
       }
     });
-
-    setOriginalSettings(data.settings!);
   };
 
   const updateSettings = async () => {
@@ -103,7 +112,6 @@ export default function SettingsPanel() {
 
       if (response.ok) {
         dispatch({ type: "UPDATE_SUCCESS" });
-        setOriginalSettings(settings);
       } else {
         throw new Error(response.statusText);
       }
@@ -117,135 +125,152 @@ export default function SettingsPanel() {
   };
 
   return (
-      <Flex direction="column" gap="2" mb="4">
-        <Heading size="3">General Settings</Heading>
+      <Box >
+        <Container size="4" p="6">
+          <Flex direction="column" gap="2">
+            <Heading size="3">General Settings</Heading>
 
-        <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap">
-          {/* Default Show Switch */}
-          <Text as="label">
-            <Flex gap="4" align="center">
-              <Switch
-                  checked={settings.defaultShow.enabled}
-                  onCheckedChange={(checked) =>
-                      dispatch({ type: "TOGGLE_DEFAULT_SHOW", payload: checked })
-                  }
-                  disabled={loading || error != null}
-              />
-              <Box>
-                <Text as="p" size="2" weight="medium">Use default show</Text>
-                <Text as="p" size="1">Choose a show to be displayed whenever there is a gap in the schedule.</Text>
-              </Box>
+            <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap">
+              {/* Default Show Switch */}
+              <Text as="label">
+                <Flex gap="4" align="center">
+                  <Switch
+                      checked={settings.defaultShow.enabled}
+                      onCheckedChange={(checked) =>
+                          dispatch({ type: "TOGGLE_DEFAULT_SHOW", payload: checked })
+                      }
+                      disabled={loading || error != null}
+                  />
+                  <Box>
+                    <Text as="p" size="2" weight="medium">Use default show</Text>
+                    <Text as="p" size="1">Choose a show to be displayed whenever there is a gap in the schedule.</Text>
+                  </Box>
 
-            </Flex>
-          </Text>
+                </Flex>
+              </Text>
 
-          { settings.defaultShow.enabled &&
+              { settings.defaultShow.enabled &&
 
-            <Text as="label" size="2">
-              <Flex gap="2" align="center">
-                Default Show:
-                <Select.Root value={"" + settings.defaultShow.show}
-                             disabled={!settings.defaultShow.enabled || loading || error != null}
-                             onValueChange={(value) =>
-                                 dispatch({ type: "SET_DEFAULT_SHOW", payload: parseInt(value) })
-                             }>
-                  <Select.Trigger />
-                  <Select.Content>
-                    {
-                      shows.map((show) =>
-                          <Select.Item key={show.id} value={""+show.id}>{show.title}</Select.Item>
-                      )
-                    }
-                  </Select.Content>
-                </Select.Root>
-              </Flex>
-            </Text>
-          }
-        </Flex>
-
-        <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap">
-          <Text as="label">
-            <Flex gap="4" align="center">
-              <Switch
-                  checked={settings.offAirMode.enabled}
-                  onCheckedChange={(checked) =>
-                      dispatch({ type: "TOGGLE_OFF_AIR_MODE", payload: checked })
-                  }
-                  disabled={loading || error != null}
-              />
-              <Box>
-                <Text as="p" size="2" weight="medium">
-                  Off-Air mode
-                  <Popover.Root>
-                    <Popover.Trigger>
-                      <IconButton size="1" variant="ghost" ml="1">
-                        <QuestionMarkCircledIcon width="18" height="18" />
-                      </IconButton>
-                    </Popover.Trigger>
-                    <Popover.Content size="1" maxWidth="300px">
-                      <Text as="p" trim="both" size="1">
-                        This is useful for over the holidays, or if the station has an unexpected
-                        period where no shows are presenting.
-                      </Text>
-                    </Popover.Content>
-                  </Popover.Root>
+                <Text as="label" size="2">
+                  <Flex gap="2" align="center">
+                    Default Show:
+                    <Select.Root value={"" + settings.defaultShow.show}
+                                 disabled={!settings.defaultShow.enabled || loading || error != null}
+                                 onValueChange={(value) =>
+                                     dispatch({ type: "SET_DEFAULT_SHOW", payload: parseInt(value) })
+                                 }>
+                      <Select.Trigger />
+                      <Select.Content>
+                        {
+                          shows.map((show) =>
+                              <Select.Item key={show.id} value={""+show.id}>{show.title}</Select.Item>
+                          )
+                        }
+                      </Select.Content>
+                    </Select.Root>
+                  </Flex>
                 </Text>
-                <Text as="p" size="1">Instantly replace the current schedules with a single show.</Text>
-              </Box>
+              }
+            </Flex>
+
+            <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap">
+              <Text as="label">
+                <Flex gap="4" align="center">
+                  <Switch
+                      checked={settings.offAirMode.enabled}
+                      onCheckedChange={(checked) =>
+                          dispatch({ type: "TOGGLE_OFF_AIR_MODE", payload: checked })
+                      }
+                      disabled={loading || error != null}
+                  />
+                  <Box>
+                    <Text as="p" size="2" weight="medium">
+                      Off-Air mode
+                      <Popover.Root>
+                        <Popover.Trigger>
+                          <IconButton size="1" variant="ghost" ml="1">
+                            <QuestionMarkCircledIcon width="18" height="18" />
+                          </IconButton>
+                        </Popover.Trigger>
+                        <Popover.Content size="1" maxWidth="300px">
+                          <Text as="p" trim="both" size="1">
+                            This is useful for over the holidays, or if the station has an unexpected
+                            period where no shows are presenting.
+                          </Text>
+                        </Popover.Content>
+                      </Popover.Root>
+                    </Text>
+                    <Text as="p" size="1">Instantly replace the current schedules with a single show.</Text>
+                  </Box>
+
+                </Flex>
+              </Text>
+
+              { settings.offAirMode.enabled &&
+
+                <Text as="label" size="2">
+                  <Flex gap="2" align="center">
+                    Off-Air Show:
+                    <Select.Root
+                      value={"" + settings.offAirMode.show}
+                      disabled={!settings.offAirMode.enabled || loading || error != null}
+                      onValueChange={(value) =>
+                          dispatch({ type: "SET_OFF_AIR_MODE_SHOW", payload: parseInt(value) })
+                      }
+                    >
+                      <Select.Trigger />
+                      <Select.Content>
+                        {
+                          shows.map((show) =>
+                              <Select.Item key={show.id} value={""+show.id}>{show.title}</Select.Item>
+                          )
+                        }
+                      </Select.Content>
+                    </Select.Root>
+                  </Flex>
+                </Text>
+              }
 
             </Flex>
-          </Text>
 
-          { settings.offAirMode.enabled &&
+            { error &&
+              <Callout.Root role={"alert"} color={"crimson"}>
+                <Callout.Icon>
+                  <ExclamationTriangleIcon />
+                </Callout.Icon>
+                <Callout.Text>
+                  {error}
+                </Callout.Text>
+              </Callout.Root>
+            }
 
-            <Text as="label" size="2">
-              <Flex gap="2" align="center">
-                Off-Air Show:
-                <Select.Root
-                  value={"" + settings.offAirMode.show}
-                  disabled={!settings.offAirMode.enabled || loading || error != null}
-                  onValueChange={(value) =>
-                      dispatch({ type: "SET_OFF_AIR_MODE_SHOW", payload: parseInt(value) })
-                  }
-                >
-                  <Select.Trigger />
-                  <Select.Content>
-                    {
-                      shows.map((show) =>
-                          <Select.Item key={show.id} value={""+show.id}>{show.title}</Select.Item>
-                      )
-                    }
-                  </Select.Content>
-                </Select.Root>
-              </Flex>
-            </Text>
-          }
+            {children}
 
-        </Flex>
+          </Flex>
+        </Container>
 
         {/* Action Buttons */}
-        { hasChanges && (
-            <Flex gap="2" wrap="wrap">
-              <Button variant="soft"
-                      color="gray"
-                      onClick={() => dispatch({ type: "RESET_SETTINGS", payload: originalSettings })}>
-                Revert changes
-              </Button>
-              <Button onClick={updateSettings}>Apply changes</Button>
-            </Flex>
-        )}
+        {hasChanges &&
+          <Box
+            px="6" py="4" width="100%"
+            position="sticky" bottom="0"
+            style={{background: "var(--gray-2)", boxShadow: "var(--shadow-6)"}}
+          >
+            <Container size="4">
+              <Flex gap="2" align="center" justify="end">
+                <Text size="2" style={{width: "100%"}}>You have unsaved changes</Text>
+                <Button variant="soft"
+                        color="gray"
+                        onClick={() => dispatch({type: "RESET_SETTINGS"})}>
+                  Revert changes
+                </Button>
+                <Button onClick={updateSettings}>Apply changes</Button>
+              </Flex>
 
-        { error &&
-            <Callout.Root role={"alert"} color={"crimson"}>
-              <Callout.Icon>
-                <ExclamationTriangleIcon />
-              </Callout.Icon>
-              <Callout.Text>
-                {error}
-              </Callout.Text>
-            </Callout.Root>
+            </Container>
+          </Box>
         }
+      </Box>
 
-      </Flex>
   );
 }

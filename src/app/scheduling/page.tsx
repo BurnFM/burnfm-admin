@@ -21,12 +21,9 @@ export default function SchedulePage() {
           </Container>
         </Box>
 
-        <Box p="6">
-          <Container size="4">
-            <SettingsPanel />
-            <SchedulesList />
-          </Container>
-        </Box>
+        <SettingsPanel>
+          <SchedulesList />
+        </SettingsPanel>
       </Flex>
   );
 }

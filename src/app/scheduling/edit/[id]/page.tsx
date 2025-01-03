@@ -10,7 +10,7 @@ import {
   Skeleton,
   TextField,
   Switch,
-  Box, Container
+  Box, Container, Em
 } from "@radix-ui/themes";
 import {ArrowLeftIcon, ExclamationTriangleIcon} from "@radix-ui/react-icons";
 import Link from "next/link";
@@ -298,17 +298,6 @@ export default function EditSchedulePage() {
               }
             </Flex>
 
-            {hasChanges &&
-              <Flex gap="2" wrap="wrap">
-                <Button variant="soft"
-                        color="gray"
-                        onClick={() => dispatch({type: "RESET_SCHEDULE"})}>
-                  Revert changes
-                </Button>
-                <Button type={"submit"}>Apply changes</Button>
-              </Flex>
-            }
-
             {error &&
               <Callout.Root role={"alert"} color={"crimson"}>
                 <Callout.Icon>
@@ -330,6 +319,23 @@ export default function EditSchedulePage() {
           />
         </Skeleton>
       </Container>
+
+      {hasChanges &&
+        <Box px="6" py="4" width="100%" position="sticky" bottom="0" style={{background: "var(--gray-2)", boxShadow: "var(--shadow-6)"}}>
+          <Container size="4">
+            <Flex gap="2" justify="end" align="center">
+              <Text size="2" style={{width: "100%"}}>You have unsaved changes</Text>
+              <Button variant="soft"
+                      color="gray"
+                      onClick={() => dispatch({type: "RESET_SCHEDULE"})}>
+                Revert changes
+              </Button>
+              <Button type={"submit"}>Apply changes</Button>
+            </Flex>
+
+          </Container>
+        </Box>
+      }
     </Flex>
   );
 }

@@ -12,6 +12,7 @@ export interface iSettings {
 export interface SettingsState {
   loading: boolean;
   settings: iSettings;
+  originalSettings: iSettings;
   shows: { id: number, title: string }[]
   error: string | null;
 }
@@ -19,6 +20,16 @@ export interface SettingsState {
 export const initialState: SettingsState = {
   loading: true,
   settings: {
+    defaultShow: {
+      enabled: false,
+      show: undefined
+    },
+    offAirMode: {
+      enabled: false,
+      show: undefined
+    }
+  },
+  originalSettings: {
     defaultShow: {
       enabled: false,
       show: undefined
@@ -41,7 +52,7 @@ export type SettingsAction =
     | { type: 'SET_DEFAULT_SHOW', payload: number }
     | { type: 'TOGGLE_OFF_AIR_MODE', payload: boolean }
     | { type: 'SET_OFF_AIR_MODE_SHOW', payload: number }
-    | { type: 'RESET_SETTINGS', payload: iSettings };
+    | { type: 'RESET_SETTINGS' };
 
 export function settingsReducer(state: SettingsState, action: SettingsAction): SettingsState {
   switch (action.type) {
@@ -49,9 +60,9 @@ export function settingsReducer(state: SettingsState, action: SettingsAction): S
     case "FETCH_REQUEST":
       return { ...state, loading: true, error: null };
     case 'FETCH_SUCCESS':
-      return { ...state, loading: false, settings: action.payload.settings, shows: action.payload.shows };
+      return { ...state, loading: false, settings: action.payload.settings, originalSettings: action.payload.settings, shows: action.payload.shows };
     case 'UPDATE_SUCCESS':
-      return { ...state, loading: false };
+      return { ...state, loading: false, originalSettings: state.settings};
     case 'FETCH_FAILURE':
       return { ...state, loading: false, error: action.payload };
 
@@ -101,7 +112,7 @@ export function settingsReducer(state: SettingsState, action: SettingsAction): S
         }
       };
     case "RESET_SETTINGS":
-      return { ...state, settings: action.payload };
+      return { ...state, settings: state.originalSettings };
 
   }
 }
