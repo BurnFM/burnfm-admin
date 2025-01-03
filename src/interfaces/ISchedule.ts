@@ -5,6 +5,23 @@ export type ISchedule = {
   end_date: Date | null,
 }
 
+// Represents the object returned from a Schedule GET request
+export type IScheduleAPI = {
+  id: number,
+  name: string,
+  start_date: string,
+  end_date: string,
+  entries: {
+    entry_id: number;
+    day: string;
+    start_time: string;
+    end_time: string;
+    show: {
+      id: number;
+    };
+  }[]
+}
+
 export type IEntry = {
   id: number | null,
   schedule_id: number,

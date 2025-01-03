@@ -116,104 +116,104 @@ export default function NewSchedulePage() {
         <Box p="6">
           <Container size="4">
             <Flex direction="column" gap="2" asChild>
-          <form action={insertSchedule}>
+              <form action={insertSchedule}>
 
-          <label>
-            <Text as="div" size="2" mb="1" weight="bold">
-              Schedule name *
-            </Text>
-            <Skeleton loading={loading}>
-              <TextField.Root
-                  disabled={loading}
-                  value={schedule.name}
-                  onChange={(x) => dispatch({type: "SET_NAME", payload: x.target.value})}
-                  placeholder="Enter the schedule's name"
-                  required
-              />
-            </Skeleton>
-          </label>
+              <label>
+                <Text as="div" size="2" mb="1" weight="bold">
+                  Schedule name *
+                </Text>
+                <Skeleton loading={loading}>
+                  <TextField.Root
+                      disabled={loading}
+                      value={schedule.name}
+                      onChange={(x) => dispatch({type: "SET_NAME", payload: x.target.value})}
+                      placeholder="Enter the schedule's name"
+                      required
+                  />
+                </Skeleton>
+              </label>
 
 
-          <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap">
-            <Text as="label">
-              <Flex gap="4" align="center">
-                <Switch checked={schedule.start_date !== null}
-                        onCheckedChange={(checked) =>
-                            dispatch({
-                              type: "SET_START_DATE",
-                              payload: checked ? originalSchedule.start_date ?? new Date() : null
-                            })
-                        }
-                        disabled={ error ? error.status == "FETCH_FAILURE" : loading }
-                />
-                <Box>
-                  <Text as="p" size="2" weight="medium">Start Date</Text>
-                  <Text as="p" size="1">Determine a date when this schedule starts</Text>
-                </Box>
+              <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap">
+                <Text as="label">
+                  <Flex gap="4" align="center">
+                    <Switch checked={schedule.start_date !== null}
+                            onCheckedChange={(checked) =>
+                                dispatch({
+                                  type: "SET_START_DATE",
+                                  payload: checked ? originalSchedule.start_date ?? new Date() : null
+                                })
+                            }
+                            disabled={ error ? error.status == "FETCH_FAILURE" : loading }
+                    />
+                    <Box>
+                      <Text as="p" size="2" weight="medium">Start Date</Text>
+                      <Text as="p" size="1">Determine a date when this schedule starts</Text>
+                    </Box>
+                  </Flex>
+                </Text>
+
+                { schedule.start_date &&
+
+                  <TextField.Root type="date"
+                                  disabled={loading}
+                                  value={schedule.start_date.toISOString().split("T")[0]}
+                                  onChange={handleStartDateChange}
+                  />
+                }
               </Flex>
-            </Text>
 
-            { schedule.start_date &&
+              <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap">
+                <Text as="label">
+                  <Flex gap="4" align="center">
+                    <Switch checked={schedule.end_date !== null}
+                            onCheckedChange={(checked) =>
+                              dispatch({
+                                type: "SET_END_DATE",
+                                payload: checked ? originalSchedule.end_date ?? new Date() : null
+                              })
+                            }
+                            disabled={ error ? error.status == "FETCH_FAILURE" : loading }
+                    />
+                    <Box>
+                      <Text as="p" size="2" weight="medium">End Date</Text>
+                      <Text as="p" size="1">Determine a date when this schedule stops</Text>
+                    </Box>
+                  </Flex>
+                </Text>
 
-              <TextField.Root type="date"
-                              disabled={loading}
-                              value={schedule.start_date.toISOString().split("T")[0]}
-                              onChange={handleStartDateChange}
-              />
-            }
-          </Flex>
+                { schedule.end_date &&
 
-          <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap">
-            <Text as="label">
-              <Flex gap="4" align="center">
-                <Switch checked={schedule.end_date !== null}
-                        onCheckedChange={(checked) =>
-                          dispatch({
-                            type: "SET_END_DATE",
-                            payload: checked ? originalSchedule.end_date ?? new Date() : null
-                          })
-                        }
-                        disabled={ error ? error.status == "FETCH_FAILURE" : loading }
-                />
-                <Box>
-                  <Text as="p" size="2" weight="medium">End Date</Text>
-                  <Text as="p" size="1">Determine a date when this schedule stops</Text>
-                </Box>
+                  <TextField.Root type="date"
+                                  disabled={loading}
+                                  value={schedule.end_date.toISOString().split("T")[0]}
+                                  onChange={handleEndDateChange}
+                  />
+                }
               </Flex>
-            </Text>
 
-            { schedule.end_date &&
+              <Flex gap="2" wrap="wrap">
+                <Button variant="soft"
+                        color="gray"
+                        onClick={() => dispatch({ type: "RESET_SCHEDULE" })}
+                        disabled={!hasChanges}>
+                  Revert changes
+                </Button>
+                <Button type="submit" disabled={!hasChanges}>Save schedule</Button>
+              </Flex>
 
-              <TextField.Root type="date"
-                              disabled={loading}
-                              value={schedule.end_date.toISOString().split("T")[0]}
-                              onChange={handleEndDateChange}
-              />
-            }
-          </Flex>
-
-          <Flex gap="2" wrap="wrap">
-            <Button variant="soft"
-                    color="gray"
-                    onClick={() => dispatch({ type: "RESET_SCHEDULE" })}
-                    disabled={!hasChanges}>
-              Revert changes
-            </Button>
-            <Button type="submit" disabled={!hasChanges}>Save schedule</Button>
-          </Flex>
-
-          { error &&
-            <Callout.Root role={"alert"} color={"crimson"}>
-              <Callout.Icon>
-                <ExclamationTriangleIcon/>
-              </Callout.Icon>
-              <Callout.Text>
-                { error.message }
-              </Callout.Text>
-            </Callout.Root>
-          }
-          </form>
-        </Flex>
+              { error &&
+                <Callout.Root role={"alert"} color={"crimson"}>
+                  <Callout.Icon>
+                    <ExclamationTriangleIcon/>
+                  </Callout.Icon>
+                  <Callout.Text>
+                    { error.message }
+                  </Callout.Text>
+                </Callout.Root>
+              }
+              </form>
+            </Flex>
           </Container>
         </Box>
       </Flex>

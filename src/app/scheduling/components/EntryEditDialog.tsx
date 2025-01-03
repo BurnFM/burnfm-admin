@@ -1,10 +1,10 @@
-import {Dialog, Flex, Text, TextField, Button, Select, Box} from "@radix-ui/themes";
-import {ICalendarEvent} from "@/app/scheduling/components/ScheduleEditor";
+import {Dialog, Flex, Text, TextField, Button, Select} from "@radix-ui/themes";
+import {ICalendarEvent, NewEntry} from "@/app/scheduling/components/ScheduleEditor";
 import {getDate} from "@/lib/dates";
 
 export default function EntryEditDialog({ data, open, onOpenChange, shows, setData }: {
-  data: ICalendarEvent | null,
-  setData: (data: ICalendarEvent) => void,
+  data: ICalendarEvent | NewEntry | null,
+  setData: (data: ICalendarEvent | Omit<ICalendarEvent, 'calendar_id'>) => void,
   open: boolean,
   onOpenChange: (isOpen: boolean) => void,
   shows:  { id: number, title: string }[]
@@ -27,35 +27,46 @@ export default function EntryEditDialog({ data, open, onOpenChange, shows, setDa
     const radio_show_id = parseInt(radio_show_id_str);
     const day = parseInt(day_str);
 
-    const updated: ICalendarEvent = {
-      ...data,
+    if ('calendar_id' in data) {
+      const updated: ICalendarEvent = {
+        calendar_id: data.calendar_id,
+        db_id: null,
+        radio_show_id: radio_show_id,
+        start: getDate(day, start_time_str),
+        end: getDate(day, end_time_str),
+        day: day,
+        title: shows.find((show) => show.id === radio_show_id)?.title ?? "N/A"
+      };
+      setData(updated);
+      return;
+    }
+
+    const newEntry: Omit<ICalendarEvent, 'calendar_id'> = {
+      db_id: null,
       radio_show_id: radio_show_id,
       start: getDate(day, start_time_str),
       end: getDate(day, end_time_str),
       day: day,
       title: shows.find((show) => show.id === radio_show_id)?.title ?? "N/A"
     };
-
-    setData(updated);
+    setData(newEntry);
   }
+
+  if (!data) return;
 
   return (
       <Dialog.Root open={open} onOpenChange={onOpenChange}>
         <Dialog.Content maxWidth="450px">
           <form action={updateEntry}>
-            <Dialog.Title mb="4">Edit Schedule Entry</Dialog.Title>
-            {/*<Dialog.Description size="2" mb="4">*/}
-            {/*  Edit the ent*/}
-            {/*</Dialog.Description>*/}
-
+            <Dialog.Title mb="4">{"calendar_id" in data ? "Edit Schedule Entry" : "Create Schedule Entry"}</Dialog.Title>
 
             <Flex direction="column" gap="3">
               <label>
                 <Text as="div" size="2" mb="1" weight="bold">
                   Show
                 </Text>
-                <Select.Root name={"radio_show_id"} defaultValue={"" + data?.radio_show_id}>
-                  <Select.Trigger/>
+                <Select.Root name={"radio_show_id"} defaultValue={'radio_show_id' in data ? data.radio_show_id.toString() : undefined}>
+                  <Select.Trigger placeholder="Pick a show" />
                   <Select.Content>
                     {
                       shows.map((show) =>

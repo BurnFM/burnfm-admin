@@ -4,6 +4,7 @@ import {CursorArrowIcon, HandIcon} from "@radix-ui/react-icons";
 import Calendar from "@/app/scheduling/components/DnDCalendar";
 import {IEntry} from "@/interfaces/ISchedule";
 import EntryEditDialog from "@/app/scheduling/components/EntryEditDialog";
+import {start} from "node:repl";
 
 
 export type ICalendarEvent = {
@@ -14,6 +15,12 @@ export type ICalendarEvent = {
   end: Date,
   day: number,
   radio_show_id: number,
+}
+
+export type NewEntry = {
+  start: Date,
+  end: Date,
+  day: number,
 }
 
 type SelectSlotHandler = (slotInfo: {
@@ -65,7 +72,7 @@ export default function ScheduleEditor({ entries, setEntries, shows } : {
       setEntries: (entries: Omit<IEntry, "schedule_id">[]) => void,
       shows: { id: number, title: string }[]
 }) {
-  const [entryDialog, setEntryDialog] = useState<{open: boolean, entry: null | ICalendarEvent}>({open: false, entry: null})
+  const [entryDialog, setEntryDialog] = useState<{open: boolean, entry: null | ICalendarEvent | NewEntry}>({open: false, entry: null})
   const [timeSlotHeight, setTimeSlotHeight] = useState(30); // Controls the height of each calendar cell
   const [timeRange, setTimeRange] = useState(initial_dates); // Controls the range of hours the calendar shows
 
@@ -111,7 +118,7 @@ export default function ScheduleEditor({ entries, setEntries, shows } : {
     });
   };
 
-  const openDialog = (entry: ICalendarEvent)=> setEntryDialog({ open: true, entry: entry });
+  const openDialog = (entry: ICalendarEvent | NewEntry)=> setEntryDialog({ open: true, entry: entry });
 
   const moveEvent: EventDropHandler = useCallback(
     ({ event, start, end }) => {
@@ -131,20 +138,25 @@ export default function ScheduleEditor({ entries, setEntries, shows } : {
 
   const newEvent: SelectSlotHandler = useCallback(
       ({ start, end }) => {
-      const title = window.prompt('New Event name');  // TODO: Get radio_show_id here
-      if (title) {
-        // const idList = entries.map((item) => item.id);
-        // const id = (idList.length !== 0) ? Math.max(...idList) + 1 : 1;
-        const newEntry = {
-          id: null,
-          radio_show_id: 0,
-          start_time: start,
-          end_time: end,
+        openDialog({
           day: start.getDay(),
-        };
-        // Update entries by joining the original entries with the new one
-        setEntries([...entries, newEntry]);
-      }
+          start: start,
+          end: end,
+        });
+      // const title = window.prompt('New Event name');  // TODO: Get radio_show_id here
+      // if (title) {
+      //   // const idList = entries.map((item) => item.id);
+      //   // const id = (idList.length !== 0) ? Math.max(...idList) + 1 : 1;
+      //   const newEntry = {
+      //     id: null,
+      //     radio_show_id: 0,
+      //     start_time: start,
+      //     end_time: end,
+      //     day: start.getDay(),
+      //   };
+      //   // Update entries by joining the original entries with the new one
+      //   setEntries([...entries, newEntry]);
+      // }
     }, [entries, setEntries]
   );
 
@@ -167,7 +179,6 @@ export default function ScheduleEditor({ entries, setEntries, shows } : {
   const selectEvent: SelectEventHandler = useCallback(
     (event) => {
       openDialog(event);
-      console.log(`Event of index=${event.calendar_id} selected`);
     }, []
   );
 
@@ -188,18 +199,33 @@ export default function ScheduleEditor({ entries, setEntries, shows } : {
       <EntryEditDialog
           shows={shows}
           data={entryDialog.entry}
-          setData={(data: ICalendarEvent) => {
-            const other_entries = entries.filter((ev, i) => i !== data.calendar_id);
+          setData={(data: ICalendarEvent | Omit<ICalendarEvent, 'calendar_id'>) => {
+            // if updating
+            if ('calendar_id' in data) {
+              const other_entries = entries.filter((ev, i) => i !== data.calendar_id);
+              // Form new entry with the original and new values
+              const updatedEntry = {
+                id: data.db_id,
+                radio_show_id: data.radio_show_id,
+                start_time: data.start,
+                end_time: data.end,
+                day: data.day,
+              };
+              // Update entries by combining the other entries with the updated one
+              setEntries([...other_entries, updatedEntry]);
+              return;
+            }
+
             // Form new entry with the original and new values
-            const updatedEntry = {
+            const newEntry = {
               id: data.db_id,
               radio_show_id: data.radio_show_id,
               start_time: data.start,
               end_time: data.end,
               day: data.day,
             };
-            // Update entries by combining the other entries with the updated one
-            setEntries([...other_entries, updatedEntry]);
+            // Update entries by adding the new entry
+            setEntries([...entries, newEntry]);
           }}
           open={entryDialog.open}
           onOpenChange={(isOpen: boolean) => setEntryDialog({ ...entryDialog, open: isOpen })}
@@ -212,8 +238,8 @@ export default function ScheduleEditor({ entries, setEntries, shows } : {
           </Callout.Icon>
 
           <Callout.Text>
-            <Text as="p" weight="medium" size="3">Add a show</Text>
-            <Text as="p">
+            <Text weight="medium" size="3" style={{display: "block"}}>Add a show</Text>
+            <Text>
               Click on an hour slot to add a show to the schedule, or select a range by dragging from one slot to another.
             </Text>
           </Callout.Text>
@@ -225,8 +251,8 @@ export default function ScheduleEditor({ entries, setEntries, shows } : {
           </Callout.Icon>
 
           <Callout.Text>
-            <Text as="p" weight="medium" size="3">Adjust timings</Text>
-            <Text as="p">
+            <Text weight="medium" size="3" style={{display: "block"}}>Adjust timings</Text>
+            <Text>
               Move the show to a different date or time by dragging the show itself.
               Drag on the top or bottom edge of a show to change the start and end times.
             </Text>
@@ -276,9 +302,9 @@ export default function ScheduleEditor({ entries, setEntries, shows } : {
         </Flex>
       </Flex>
 
-      <p>
-        {entries.map(((entry, i) => <p key={i}>{JSON.stringify(entry)}</p>))}
-      </p>
+      {/*<div>*/}
+      {/*  {entries.map(((entry, i) => <p key={i}>{JSON.stringify(entry)}</p>))}*/}
+      {/*</div>*/}
 
 
       <Calendar

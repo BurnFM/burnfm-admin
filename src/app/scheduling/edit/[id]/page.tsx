@@ -22,7 +22,7 @@ import {
   UPDATE_SCHEDULE_ENDPOINT,
 } from "@/lib/endpoints";
 import ScheduleEditor from "@/app/scheduling/components/ScheduleEditor";
-import {IEntry, IScheduleExtended} from "@/interfaces/ISchedule";
+import {IEntry, IScheduleAPI, IScheduleExtended} from "@/interfaces/ISchedule";
 import {IShow} from "@/interfaces/IShow";
 import {getDate} from "@/lib/dates";
 
@@ -81,7 +81,7 @@ export default function EditSchedulePage() {
         });
 
         if (response.ok) {
-          const res = await response.json();
+          const res = await response.json() as IScheduleAPI;
           console.log(res);
           data.schedule = {
             id: res.id,
