@@ -1,8 +1,8 @@
-import {ISchedule} from "@/interfaces/ISchedule";
+import {IScheduleExtended} from "@/interfaces/ISchedule";
 
 export interface SchedulesState {
   loading: boolean;
-  schedules: ISchedule[];
+  schedules: IScheduleExtended[];
   error: string | null;
 }
 
@@ -14,7 +14,7 @@ export const initialState: SchedulesState = {
 
 export type SchedulesAction =
     | { type: 'FETCH_REQUEST' }
-    | { type: 'FETCH_SUCCESS', payload: ISchedule[] }
+    | { type: 'FETCH_SUCCESS', payload: IScheduleExtended[] }
     | { type: 'FETCH_FAILURE', payload: string };
 
 export function schedulesReducer(state: SchedulesState, action: SchedulesAction): SchedulesState {

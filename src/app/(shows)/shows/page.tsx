@@ -35,9 +35,9 @@ export default function ShowPage() {
         dispatch({ type: "FETCH_SUCCESS", payload: res.map((show) => ({
             id: show.id,
             title: show.title,
-            description: show.description ?? "",
-            hosts: show.hosts ?? "",
-            photo: show.photo ?? "",
+            description: show.description,
+            hosts: show.hosts,
+            photo: show.photo,
           }))});
       } else {
         throw new Error(response.statusText);
@@ -109,7 +109,7 @@ export default function ShowPage() {
                           <Table.RowHeaderCell>{show.id}</Table.RowHeaderCell>
                           <Table.Cell>{show.title}</Table.Cell>
                           <Table.Cell>{show.description}</Table.Cell>
-                          <Table.Cell>{show.photo}</Table.Cell>
+                          <Table.Cell>{show.photo ?? "None"}</Table.Cell>
                           <Table.Cell>{show.hosts}</Table.Cell>
                           <Table.Cell>
                             <EditShowDialog show={show} onSuccess={handleSuccess}>

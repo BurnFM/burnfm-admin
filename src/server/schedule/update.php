@@ -118,14 +118,14 @@ try {
         }
 
         foreach ($entries as $entry) {
-            if (!isset($entry['day'], $entry['start_time'], $entry['end_time'], $entry['id'])) {
+            if (!isset($entry['day'], $entry['start_time'], $entry['end_time'], $entry['radio_show_id'])) {
                 throw new Exception('Invalid entry structure.');
             }
 
             $day = $mysqli->real_escape_string($entry['day']);
             $startTime = $mysqli->real_escape_string($entry['start_time']);
             $endTime = $mysqli->real_escape_string($entry['end_time']);
-            $radioShowId = (int) $entry['id'];
+            $radioShowId = (int) $entry['radio_show_id'];
 
             $insertStmt->bind_param('isssi', $scheduleId, $day, $startTime, $endTime, $radioShowId);
 

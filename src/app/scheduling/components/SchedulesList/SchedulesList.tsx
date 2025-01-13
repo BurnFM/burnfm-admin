@@ -1,20 +1,23 @@
 import {Button, Callout, Flex, Heading, IconButton, Popover, Separator, Skeleton, Text} from "@radix-ui/themes";
 import {ExclamationTriangleIcon, PlusIcon, QuestionMarkCircledIcon} from "@radix-ui/react-icons";
-import {useEffect, useReducer} from "react";
+import {useEffect, useReducer, useState} from "react";
 import {initialState, schedulesReducer} from "@/app/scheduling/components/SchedulesList/schedulesReducer";
 import {GET_SCHEDULES_ENDPOINT} from "@/lib/endpoints";
-import ScheduleCard from "@/app/scheduling/components/ScheduleEditor/ScheduleCard";
-import {ISchedule} from "@/interfaces/ISchedule";
+import ScheduleCard from "@/app/scheduling/components/SchedulesList/ScheduleCard";
+import {IEntry, IScheduleAPI, IScheduleExtended} from "@/interfaces/ISchedule";
 import Link from "next/link";
+import {getDate} from "@/lib/dates";
+import {ToastProvider} from "@/app/components/Toast";
+import DeleteScheduleDialog from "@/app/scheduling/components/DeleteScheduleDialog";
 
 export default function SchedulesList() {
   const [{schedules, error, loading}, dispatch] = useReducer(schedulesReducer, initialState);
-
+  const [scheduleToDelete, setScheduleToDelete] = useState<IScheduleExtended | null>(null)
   const now = Date.now(); // Cache the current timestamp
 
-  const previous: ISchedule[] = [];
-  const active: ISchedule[] = [];
-  const upcoming: ISchedule[] = [];
+  const previous: IScheduleExtended[] = [];
+  const active: IScheduleExtended[] = [];
+  const upcoming: IScheduleExtended[] = [];
 
   schedules.forEach(schedule => {
     const startDate = schedule.start_date ? schedule.start_date.getTime() : null;
@@ -47,14 +50,23 @@ export default function SchedulesList() {
       });
 
       if (response.ok) {
-        const res = await response.json();
+        const res = await response.json() as IScheduleAPI[];
         // Map dates to desired format
         console.log(res);
-        const payload = res.map((x): ISchedule[] => ({
-          ...x,
-          start_date: x.start_date ? new Date(x.start_date) : undefined,
-          end_date: x.end_date ? new Date(x.end_date) : undefined
+        const payload = res.map((x): IScheduleExtended => ({
+          id: x.id,
+          name: x.name,
+          entries: x.entries.map((entry): Omit<IEntry, "schedule_id"> => ({
+            id: entry.entry_id,
+            day: parseInt(entry.day),
+            start_time: getDate(parseInt(entry.day), entry.start_time),
+            end_time: getDate(parseInt(entry.day), entry.end_time),
+            radio_show_id: entry.show.id
+          })),
+          start_date: x.start_date ? new Date(x.start_date) : null,
+          end_date: x.end_date ? new Date(x.end_date) : null
         }));
+
         dispatch({
           type: "FETCH_SUCCESS",
           payload: payload,
@@ -72,104 +84,117 @@ export default function SchedulesList() {
   };
 
   return (
-      <Flex direction="column" gap="4">
-        <Flex mt="6" gap="4" justify="between" align="center">
-          <Heading size="3">Schedules</Heading>
+      <ToastProvider>
+        <DeleteScheduleDialog
+            schedule={scheduleToDelete}
+            setSchedule={setScheduleToDelete}
+            onSuccess={async () => await fetchSchedules()}>
+        </DeleteScheduleDialog>
 
-          <Button asChild>
-            <Link href={'/scheduling/new'} >
-              <PlusIcon /> New schedule
-            </Link>
-          </Button>
+        <Flex direction="column" gap="4">
+          <Flex mt="6" gap="4" justify="between" align="center">
+            <Heading size="3">Schedules</Heading>
+
+            <Button asChild>
+              <Link href={'/scheduling/new'} >
+                <PlusIcon /> New schedule
+              </Link>
+            </Button>
+          </Flex>
+
+          { error &&
+            <Callout.Root role={"alert"} color={"crimson"}>
+              <Callout.Icon>
+                <ExclamationTriangleIcon />
+              </Callout.Icon>
+              <Callout.Text>
+                {error}
+              </Callout.Text>
+            </Callout.Root>
+          }
+
+          <Flex gap="3" align="center" height="1em">
+            <Separator size="1"/>
+            <Text>Active</Text>
+            <Popover.Root>
+              <Popover.Trigger>
+                <IconButton size="1" variant="ghost">
+                  <QuestionMarkCircledIcon width="18" height="18" />
+                </IconButton>
+              </Popover.Trigger>
+              <Popover.Content size="1" maxWidth="300px">
+                <Text as="p" trim="both" size="1">
+                  The current combination of schedules that defines the final schedule shown on the website.
+                  The simplest setup is a single schedule, but defining multiple allows you to override the main schedule.
+                </Text>
+              </Popover.Content>
+            </Popover.Root>
+            <Separator size="4"/>
+          </Flex>
+
+          { active.map((schedule, i) =>
+              <ScheduleCard
+                key={i}
+                schedule={schedule}
+                openDeleteDialog={setScheduleToDelete}
+              />
+          ) }
+
+          {active.length == 0 &&
+            <Skeleton loading={loading}>
+              <Text align="center" color="gray" size="2">No active schedules</Text>
+            </Skeleton>
+          }
+
+          <Flex gap="3" align="center" height="1em">
+            <Separator size="1"/>
+            <Text>Upcoming</Text>
+            <Popover.Root>
+              <Popover.Trigger>
+                <IconButton size="1" variant="ghost">
+                  <QuestionMarkCircledIcon width="18" height="18" />
+                </IconButton>
+              </Popover.Trigger>
+              <Popover.Content size="1" maxWidth="300px">
+                <Text as="p" trim="both" size="1">
+                  The schedules planned for the future.
+                </Text>
+              </Popover.Content>
+            </Popover.Root>
+            <Separator size="4"/>
+          </Flex>
+
+          { upcoming.map((schedule, i) =>
+              <ScheduleCard key={i} schedule={schedule} openDeleteDialog={setScheduleToDelete} /> )
+          }
+
+          {upcoming.length == 0 &&
+            <Skeleton loading={loading}>
+              <Text align="center" color="gray" size="2">No upcoming schedules</Text>
+            </Skeleton>
+          }
+
+          <Flex gap="3" align="center" height="1em">
+            <Separator size="4"/>
+          </Flex>
+
+          <Flex gap="3" mt="4" align="center" height="1em">
+            <Separator size="1"/>
+            <Text>Previous</Text>
+            <Separator size="4"/>
+          </Flex>
+
+          { previous.map((schedule, i) =>
+              <ScheduleCard key={i} schedule={schedule} openDeleteDialog={setScheduleToDelete} /> )
+          }
+
+          {upcoming.length == 0 &&
+            <Skeleton loading={loading}>
+              <Text align="center" color="gray" size="2">No previous schedules</Text>
+            </Skeleton>
+          }
         </Flex>
+      </ToastProvider>
 
-        { error &&
-          <Callout.Root role={"alert"} color={"crimson"}>
-            <Callout.Icon>
-              <ExclamationTriangleIcon />
-            </Callout.Icon>
-            <Callout.Text>
-              {error}
-            </Callout.Text>
-          </Callout.Root>
-        }
-
-        <Flex gap="3" align="center" height="1em">
-          <Separator size="1"/>
-          <Text>Active</Text>
-          <Popover.Root>
-            <Popover.Trigger>
-              <IconButton size="1" variant="ghost">
-                <QuestionMarkCircledIcon width="18" height="18" />
-              </IconButton>
-            </Popover.Trigger>
-            <Popover.Content size="1" maxWidth="300px">
-              <Text as="p" trim="both" size="1">
-                The current combination of schedules that defines the final schedule shown on the website.
-                The simplest setup is a single schedule, but defining multiple allows you to override the main schedule.
-              </Text>
-            </Popover.Content>
-          </Popover.Root>
-          <Separator size="4"/>
-        </Flex>
-
-        { active.map((schedule, i) =>
-            <ScheduleCard key={i} schedule={schedule}/> )
-        }
-
-        {active.length == 0 &&
-          <Skeleton loading={loading}>
-            <Text align="center" color="gray" size="2">No active schedules</Text>
-          </Skeleton>
-        }
-
-        <Flex gap="3" align="center" height="1em">
-          <Separator size="1"/>
-          <Text>Upcoming</Text>
-          <Popover.Root>
-            <Popover.Trigger>
-              <IconButton size="1" variant="ghost">
-                <QuestionMarkCircledIcon width="18" height="18" />
-              </IconButton>
-            </Popover.Trigger>
-            <Popover.Content size="1" maxWidth="300px">
-              <Text as="p" trim="both" size="1">
-                The schedules planned for the future.
-              </Text>
-            </Popover.Content>
-          </Popover.Root>
-          <Separator size="4"/>
-        </Flex>
-
-        { upcoming.map((schedule, i) =>
-            <ScheduleCard key={i} schedule={schedule}/> )
-        }
-
-        {upcoming.length == 0 &&
-          <Skeleton loading={loading}>
-            <Text align="center" color="gray" size="2">No upcoming schedules</Text>
-          </Skeleton>
-        }
-
-        <Flex gap="3" align="center" height="1em">
-          <Separator size="4"/>
-        </Flex>
-
-        <Flex gap="3" mt="4" align="center" height="1em">
-          <Separator size="1"/>
-          <Text>Previous</Text>
-          <Separator size="4"/>
-        </Flex>
-
-        { previous.map((schedule, i) =>
-              <ScheduleCard key={i} schedule={schedule}/> )
-        }
-
-        {upcoming.length == 0 &&
-          <Skeleton loading={loading}>
-            <Text align="center" color="gray" size="2">No previous schedules</Text>
-          </Skeleton>
-        }
-      </Flex>
   );
 }

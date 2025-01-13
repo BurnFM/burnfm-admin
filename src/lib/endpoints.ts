@@ -21,3 +21,4 @@ export const GET_SCHEDULES_ENDPOINT = (id?: number) => {
 }
 export const UPDATE_SCHEDULE_ENDPOINT = (id: number) => "https://api.burnfm.com/new/schedule/update?id=" + id;
 export const INSERT_SCHEDULE_ENDPOINT = "https://api.burnfm.com/new/schedule/insert";
+export const DELETE_SCHEDULE_ENDPOINT = (id: number) => "https://api.burnfm.com/new/schedule/delete?id=" + id;

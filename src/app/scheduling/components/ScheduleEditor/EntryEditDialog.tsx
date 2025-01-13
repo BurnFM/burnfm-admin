@@ -1,6 +1,7 @@
-import {Dialog, Flex, Text, TextField, Button, Select} from "@radix-ui/themes";
+import {Dialog, Flex, Text, TextField, Button, Select, Separator, Box} from "@radix-ui/themes";
 import {ICalendarEvent, NewEntry} from "@/app/scheduling/components/ScheduleEditor/ScheduleEditor";
 import {getDate} from "@/lib/dates";
+import {TrashIcon} from "@radix-ui/react-icons";
 
 export default function EntryEditDialog({ data, open, onOpenChange, shows, setData }: {
   data: ICalendarEvent | NewEntry | null,
@@ -125,15 +126,25 @@ export default function EntryEditDialog({ data, open, onOpenChange, shows, setDa
 
             </Flex>
 
-            <Flex gap="3" mt="4" justify="end">
+            <Flex gap="3" mt="4" justify="between" align="center">
               <Dialog.Close>
-                <Button variant="soft" color="gray">
-                  Cancel
+                <Button variant="soft" color="ruby">
+                  Delete <TrashIcon />
                 </Button>
               </Dialog.Close>
-              <Dialog.Close>
-                <Button type={"submit"}>Save</Button>
-              </Dialog.Close>
+              <Flex gap="3">
+                <Dialog.Close>
+                  <Button variant="soft" color="gray">
+                    Cancel
+                  </Button>
+                </Dialog.Close>
+                <Dialog.Close>
+                  <Button type={"submit"}>
+                    Save
+                  </Button>
+                </Dialog.Close>
+              </Flex>
+
             </Flex>
           </form>
         </Dialog.Content>

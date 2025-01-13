@@ -1,11 +1,48 @@
 "use client"
 
-import {Button, Dialog, Flex, Kbd, Link, Text, TextArea, TextField} from "@radix-ui/themes";
+import {Box, Button, Card, Dialog, Flex, Inset, Kbd, Link, Text, TextArea, TextField} from "@radix-ui/themes";
 import {isShow, IShow} from "@/interfaces/IShow";
 import {ReactNode, useActionState, useState} from "react";
 import NextLink from "next/link";
 import {useToast} from "@/app/components/Toast";
 import {INSERT_RADIOSHOW_ENDPOINT, UPDATE_RADIOSHOW_ENDPOINT} from "@/lib/endpoints";
+import Image from "next/image";
+import {StaticImport} from "next/dist/shared/lib/get-img-props";
+
+const ImageWithFallbackDiv = ({ src, alt, width, height } :
+  {
+    src: string | StaticImport,
+    alt: string,
+    width: number,
+    height: number
+  }) => {
+  const [imgError, setImgError] = useState(false);
+
+  return imgError ? (
+      <Card asChild>
+        <Box
+          height={height.toString() + "px"}
+          width={width.toString() + "px"}
+        >
+          <Text as="p" align={"center"} size="2">Image does not exist</Text>
+        </Box>
+
+      </Card>
+  ) : (
+      <Card>
+        <Inset>
+          <Image
+              src={src}
+              alt={alt}
+              width={width}
+              height={height}
+              onError={() => setImgError(true)}
+          />
+        </Inset>
+      </Card>
+
+  );
+};
 
 export default function EditShowDialog({
   key,
@@ -189,6 +226,10 @@ export default function EditShowDialog({
                     placeholder="Enter the photo's file path"
                 />
               </label>
+
+              { form.photo &&
+                <ImageWithFallbackDiv src={"https://api.burnfm.com/uploads/" + encodeURIComponent(form.photo)} alt={""} width={100} height={100}/>
+              }
 
               {/*<label>*/}
               {/*  <Flex direction="column">*/}

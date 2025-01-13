@@ -23,7 +23,7 @@ export default function Home() {
 
             <Flex gap="4" wrap="wrap">
 
-              <Card asChild>
+              <Card variant="classic" asChild>
                 <Link href="/shows">
                   <Flex direction="column" align="center" py="2" gap="4" width="140px">
                     <DashboardIcon style={{height: 24, width: 24}}/>
@@ -34,7 +34,7 @@ export default function Home() {
                 </Link>
               </Card>
 
-              <Card asChild>
+              <Card variant="classic" asChild>
                 <Link href="/scheduling">
                   <Flex direction="column" align="center" py="2" gap="4" width="140px">
                     <ActivityLogIcon style={{height: 24, width: 24}}/>
@@ -45,7 +45,7 @@ export default function Home() {
                 </Link>
               </Card>
 
-              <Card asChild>
+              <Card variant="classic" asChild>
                 <Link href="/posts">
                   <Flex direction="column" align="center" py="2" gap="4" width="140px">
                     <ChatBubbleIcon style={{height: 24, width: 24}}/>

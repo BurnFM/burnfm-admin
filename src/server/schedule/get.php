@@ -120,18 +120,64 @@ try {
 
         $schedules = [];
         while ($row = $result->fetch_assoc()) {
+            $scheduleId = $row['id'];
+
+            // Fetch entries for this schedule
+            $entriesQuery = "
+        SELECT 
+            ScheduleEntries.id AS entry_id,
+            ScheduleEntries.day,
+            ScheduleEntries.start_time,
+            ScheduleEntries.end_time,
+            RadioShows.id AS radio_show_id,
+            RadioShows.title,
+            RadioShows.description,
+            RadioShows.hosts,
+            RadioShows.photo
+        FROM ScheduleEntries
+        LEFT JOIN RadioShows ON ScheduleEntries.radio_show_id = RadioShows.id
+        WHERE ScheduleEntries.schedule_id = ?";
+
+            $entriesStmt = $mysqli->prepare($entriesQuery);
+            $entriesStmt->bind_param('i', $scheduleId);
+
+            if (!$entriesStmt->execute()) {
+                send_json_error_response(['error' => 'Query failed: (' . $mysqli->errno . ') ' . htmlspecialchars($mysqli->error)], 500);
+                exit();
+            }
+
+            $entriesResult = $entriesStmt->get_result();
+            $entries = [];
+            while ($entryRow = $entriesResult->fetch_assoc()) {
+                $entries[] = [
+                    'entry_id' => $entryRow['entry_id'],
+                    'day' => $entryRow['day'],
+                    'start_time' => $entryRow['start_time'],
+                    'end_time' => $entryRow['end_time'],
+                    'show' => [
+                        'id' => $entryRow['radio_show_id'],
+                        'title' => $entryRow['title'],
+                        'description' => $entryRow['description'],
+                        'hosts' => $entryRow['hosts'],
+                        'photo' => $entryRow['photo']
+                    ]
+                ];
+            }
+            $entriesStmt->close();
+
             $schedules[] = [
                 'id' => $row['id'],
                 'name' => $row['name'],
                 'start_date' => $row['start_date'],
-                'end_date' => $row['end_date']
+                'end_date' => $row['end_date'],
+                'entries' => $entries
             ];
         }
 
-        // Send response
+// Send response
         echo json_encode($schedules);
 
-        // Clean up
+// Clean up
         $result->free();
     }
 

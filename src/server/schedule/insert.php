@@ -17,12 +17,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0); // Exit early for OPTIONS requests
 }
 
-header('Content-Type: application/json');  // Set the content type to JSON
+header('Content-Type: application/json'); // JSON response type
 
 try {
     // Check if Authorization header is present
     if (!isset($_SERVER['HTTP_AUTHORIZATION'])) {
-        send_json_error_response(['error' => 'Authorization token is required.'], 401);
+        send_error_response(['error' => 'Authorization token is required.'], 401);
         exit();
     }
 
@@ -31,7 +31,7 @@ try {
 
     // Validate the authorization token (you can implement token validation logic as needed)
     if (!validate_auth_token($authToken)) {
-        send_json_error_response(['error' => 'Invalid or expired authorization token.'], 403);
+        send_error_response(['error' => 'Invalid or expired authorization token.'], 403);
         exit();
     }
 
@@ -39,7 +39,7 @@ try {
     $input = json_decode(file_get_contents('php://input'), true);
 
     if (!$input || !isset($input['name'])) {
-        send_json_error_response(['error' => 'Invalid or missing input parameters.'], 400);
+        send_error_response(['error' => 'Invalid or missing input parameters.'], 400);
         exit();
     }
 
@@ -56,7 +56,7 @@ try {
         $endDateObj = DateTime::createFromFormat('Y-m-d', $endDate);
 
         if ($startDateObj >= $endDateObj) {
-            send_json_error_response(['error' => 'start_date must be earlier than end_date.'], 400);
+            send_error_response(['error' => 'start_date must be earlier than end_date.'], 400);
             exit();
         }
     }
@@ -70,14 +70,14 @@ try {
         $stmt = $mysqli->prepare($query);
 
         if (!$stmt) {
-            send_json_error_response(['error' => 'Prepare failed: (' . $mysqli->errno . ') ' . htmlspecialchars($mysqli->error)], 500);
+            send_error_response(['error' => 'Prepare failed: (' . $mysqli->errno . ') ' . htmlspecialchars($mysqli->error)], 500);
             exit();
         }
 
         $stmt->bind_param('sss', $name, $startDate, $endDate);
 
         if (!$stmt->execute()) {
-            send_json_error_response(['error' => 'Execute failed: (' . $stmt->errno . ') ' . htmlspecialchars($stmt->error)], 500);
+            send_error_response(['error' => 'Execute failed: (' . $stmt->errno . ') ' . htmlspecialchars($stmt->error)], 500);
             exit();
         }
 
@@ -123,7 +123,7 @@ try {
     } catch (Exception $transactionException) {
         // Roll back the transaction on failure
         $mysqli->rollback();
-        send_json_error_response(['error' => $transactionException->getMessage()], 500);
+        send_error_response(['error' => $transactionException->getMessage()], 500);
     }
 
     // Clean up

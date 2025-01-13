@@ -7,6 +7,31 @@ function send_json_error_response(array $errors, int $response_code)
     exit;
 }
 
+/**
+ * Send a success response as JSON.
+ *
+ * @param array $data The data to include in the response.
+ */
+function send_success_response(array $data = [])
+{
+    header('Content-Type: application/json');
+    echo json_encode(['success' => true, 'data' => $data]);
+    exit();
+}
+
+/**
+ * Send an error response as JSON.
+ *
+ * @param array $data The error details.
+ * @param int $httpCode The HTTP status code to set in the response.
+ */
+function send_error_response(array $data = [], int $httpCode = 400)
+{
+    header('Content-Type: application/json', true, $httpCode);
+    echo json_encode(['success' => false, 'error' => $data]);
+    exit();
+}
+
 function check_not_empty(...$vars)
 {
     foreach ($vars as $var)
