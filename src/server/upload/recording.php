@@ -52,6 +52,7 @@ try {
     // Validate and sanitize input fields (e.g., radio_show_id and recording_date)
     $radio_show_id = isset($_POST['radio_show_id']) ? (int) $_POST['radio_show_id'] : null;
     $recording_date = isset($_POST['recorded_at']) ? $mysqli->real_escape_string($_POST['recorded_at']) : null;
+    $title = isset($_POST['title']) ? $mysqli->real_escape_string($_POST['title']) : null;
 
     if (!$radio_show_id || !$recording_date) {
         send_error_response(['error' => 'Missing required fields: radio_show_id or recorded_at.'], 400);
@@ -97,7 +98,7 @@ try {
         }
 
         // Step 2: Insert the file metadata into the database
-        $query = "INSERT INTO Recordings (radio_show_id, recording, recorded_at) VALUES (?, ?, ?)";
+        $query = "INSERT INTO Recordings (radio_show_id, recording, title, recorded_at) VALUES (?, ?, ?, ?)";
         $stmt = $mysqli->prepare($query);
 
         if (!$stmt) {
@@ -106,7 +107,7 @@ try {
 
         $filePathDB = $relDir . $fileName;
 
-        $stmt->bind_param('iss', $radio_show_id, $filePathDB, $recording_date);
+        $stmt->bind_param('isss', $radio_show_id, $filePathDB, $title, $recording_date);
 
         if (!$stmt->execute()) {
             throw new Exception('Execute failed: ' . $stmt->error);
@@ -118,7 +119,7 @@ try {
         $mysqli->commit();
 
         // Respond with the newly created recording ID
-        echo json_encode(['id' => $recordingId, 'file_path' => $filePath]);
+        echo json_encode(['id' => $recordingId, 'relative_file_path' => $filePathDB]);
 
         // Cleanup
         $stmt->close();
