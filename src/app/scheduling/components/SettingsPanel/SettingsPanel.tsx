@@ -162,7 +162,7 @@ export default function SettingsPanel({ children } : {children: React.ReactNode}
                       <Select.Trigger />
                       <Select.Content>
                         {
-                          shows.map((show) =>
+                          shows.toSorted((a, b) => a.title.localeCompare(b.title)).map((show) =>
                               <Select.Item key={show.id} value={""+show.id}>{show.title}</Select.Item>
                           )
                         }
@@ -221,7 +221,7 @@ export default function SettingsPanel({ children } : {children: React.ReactNode}
                       <Select.Trigger />
                       <Select.Content>
                         {
-                          shows.map((show) =>
+                          shows.toSorted((a, b) => a.title.localeCompare(b.title)).map((show) =>
                               <Select.Item key={show.id} value={""+show.id}>{show.title}</Select.Item>
                           )
                         }

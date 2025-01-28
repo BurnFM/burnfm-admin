@@ -61,7 +61,7 @@ export default function EntryEditDialog({ data, open, onOpenChange, shows, setDa
                   <Select.Trigger placeholder="Pick a show" />
                   <Select.Content>
                     {
-                      shows.map((show) =>
+                      shows.toSorted((a, b) => a.title.localeCompare(b.title)).map((show) =>
                           <Select.Item key={show.id} value={"" + show.id}>{show.title}</Select.Item>
                       )
                     }
