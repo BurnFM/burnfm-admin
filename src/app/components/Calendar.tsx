@@ -84,9 +84,13 @@ export default function Calendar({onEventDrop, onEventResize, onSelectEvent, eve
           view={"week"}
           localizer={localizer}
           toolbar={false}
+          // @ts-expect-error the events defined don't match react-big-calendar
           onEventDrop={onEventDrop}
+          // @ts-expect-error the events defined don't match react-big-calendar
           onEventResize={onEventResize}
+          // @ts-expect-error the events defined don't match react-big-calendar
           onSelectSlot={onSelectSlot}
+          // @ts-expect-error the events defined don't match react-big-calendar
           onSelectEvent={onSelectEvent}
           events={events}
           resizable
