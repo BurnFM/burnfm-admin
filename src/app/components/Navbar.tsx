@@ -1,8 +1,9 @@
 "use client"
 
 import {usePathname} from "next/navigation";
-import {TabNav} from "@radix-ui/themes";
+import {DropdownMenu, TabNav} from "@radix-ui/themes";
 import Link from "next/link";
+import {ExitIcon, HomeIcon} from "@radix-ui/react-icons";
 
 export default function Navbar({justify, links }: {
   justify: "start" | "center" | "end",
