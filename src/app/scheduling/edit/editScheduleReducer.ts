@@ -43,7 +43,11 @@ export function editScheduleReducer(state: EditScheduleState, action: EditSchedu
         error: { status: "FETCH_FAILURE", message: action.payload }
       };
     case "UPDATE_SUCCESS":
-      return { ...state, loading: false, originalSchedule: state.schedule };
+      return {
+        ...state,
+        loading: false,
+        originalSchedule: state.schedule
+      };
     case "UPDATE_FAILURE":
       return {
         ...state,

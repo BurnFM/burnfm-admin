@@ -1,5 +1,3 @@
-"use client"
-
 import {AlertDialog, Button, Callout, Flex, Link, Text} from "@radix-ui/themes";
 import {ReactNode} from "react";
 import {useToast} from "@/app/components/Toast";

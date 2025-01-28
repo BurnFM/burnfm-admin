@@ -1,66 +1,19 @@
 import {Callout, Flex, Slider, Text, TextField} from "@radix-ui/themes";
-import {ChangeEventHandler, useCallback, useEffect, useState} from "react";
+import {ChangeEventHandler, useCallback, useState} from "react";
 import {CursorArrowIcon, HandIcon} from "@radix-ui/react-icons";
-import Calendar from "@/app/scheduling/components/ScheduleEditor/DnDCalendar";
+import Calendar, {
+  DropEventHandler,
+  ICalendarEvent, ResizeEventHandler, SelectEventHandler,
+  SelectSlotHandler
+} from "@/app/components/Calendar";
 import {IEntry} from "@/interfaces/ISchedule";
 import EntryEditDialog from "@/app/scheduling/components/ScheduleEditor/EntryEditDialog";
-import {start} from "node:repl";
-
-
-export type ICalendarEvent = {
-  calendar_id: number,
-  db_id: number | null,
-  title: string,
-  start: Date,
-  end: Date,
-  day: number,
-  radio_show_id: number,
-}
 
 export type NewEntry = {
   start: Date,
   end: Date,
   day: number,
 }
-
-type SelectSlotHandler = (slotInfo: {
-  start: Date,
-  end: Date,
-  slots: Array<Date>,
-  action: 'select' | 'click' | 'doubleClick',
-  resourceId?: number, // only if the calendar is resource view
-  bounds?: {
-    // For "select" action
-    x: number,
-    y: number,
-    top: number,
-    right: number,
-    left: number,
-    bottom: number,
-  },
-  box?: {
-    // For "click" or "doubleClick" actions
-    clientX: number,
-    clientY: number,
-    x: number,
-    y: number,
-  },
-}) => void;
-
-type SelectEventHandler = (event: ICalendarEvent) => void;
-
-type EventResizeHandler = (resize: {
-  event: ICalendarEvent,
-  start: Date,
-  end: Date
-}) => void;
-
-type EventDropHandler = (event: {
-  event: ICalendarEvent,
-  start: Date,
-  end: Date,
-  allDay: boolean
-}) => void;
 
 const initial_dates = {
   start: new Date(1972, 0, 1, 0, 0, 0),
@@ -75,10 +28,6 @@ export default function ScheduleEditor({ entries, setEntries, shows } : {
   const [entryDialog, setEntryDialog] = useState<{open: boolean, entry: null | ICalendarEvent | NewEntry}>({open: false, entry: null})
   const [timeSlotHeight, setTimeSlotHeight] = useState(30); // Controls the height of each calendar cell
   const [timeRange, setTimeRange] = useState(initial_dates); // Controls the range of hours the calendar shows
-
-  useEffect(() => {
-    document.documentElement.style.setProperty('--time-slot-min-height', `${timeSlotHeight}px`);
-  }, [timeSlotHeight]);
 
   const handleStartTimeChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     const hours = event.target.value.split(":")[0]; // Destructure hours and minutes
@@ -120,7 +69,7 @@ export default function ScheduleEditor({ entries, setEntries, shows } : {
 
   const openDialog = (entry: ICalendarEvent | NewEntry)=> setEntryDialog({ open: true, entry: entry });
 
-  const moveEvent: EventDropHandler = useCallback(
+  const moveEvent: DropEventHandler = useCallback(
     ({ event, start, end }) => {
       const other_entries = entries.filter((ev, i) => i !== event.calendar_id);
       // Form new entry with the original and new values
@@ -143,24 +92,10 @@ export default function ScheduleEditor({ entries, setEntries, shows } : {
           start: start,
           end: end,
         });
-      // const title = window.prompt('New Event name');  // TODO: Get radio_show_id here
-      // if (title) {
-      //   // const idList = entries.map((item) => item.id);
-      //   // const id = (idList.length !== 0) ? Math.max(...idList) + 1 : 1;
-      //   const newEntry = {
-      //     id: null,
-      //     radio_show_id: 0,
-      //     start_time: start,
-      //     end_time: end,
-      //     day: start.getDay(),
-      //   };
-      //   // Update entries by joining the original entries with the new one
-      //   setEntries([...entries, newEntry]);
-      // }
-    }, [entries, setEntries]
+    }, []
   );
 
-  const resizeEvent: EventResizeHandler = useCallback(
+  const resizeEvent: ResizeEventHandler = useCallback(
     ({ event, start, end }) => {
       const other_entries = entries.filter((ev, i) => i !== event.calendar_id);
       // Form new entry with the original and new values
@@ -183,7 +118,7 @@ export default function ScheduleEditor({ entries, setEntries, shows } : {
   );
 
   // Convert the entries state to a format the calendar can understand
-  const cal_entries = entries.map((each, i) => ({
+  const cal_entries: ICalendarEvent[] = entries.map((each, i) => ({
     calendar_id: i,
     db_id: each.id,
     title: shows.find(show => show.id === each.radio_show_id)?.title ?? "N/A",
@@ -199,6 +134,13 @@ export default function ScheduleEditor({ entries, setEntries, shows } : {
       <EntryEditDialog
           shows={shows}
           data={entryDialog.entry}
+          deleteEntry={() => {
+            if (entryDialog.entry && "calendar_id" in entryDialog.entry) {
+              const id = entryDialog.entry.calendar_id;
+              const other_entries = entries.filter((ev, i) => i !== id);
+              setEntries([...other_entries]);
+            }
+          }}
           setData={(data: ICalendarEvent | Omit<ICalendarEvent, 'calendar_id'>) => {
             // if updating
             if ('calendar_id' in data) {
@@ -302,11 +244,6 @@ export default function ScheduleEditor({ entries, setEntries, shows } : {
         </Flex>
       </Flex>
 
-      {/*<div>*/}
-      {/*  {entries.map(((entry, i) => <p key={i}>{JSON.stringify(entry)}</p>))}*/}
-      {/*</div>*/}
-
-
       <Calendar
         events={cal_entries}
         min={timeRange.start}
@@ -315,6 +252,7 @@ export default function ScheduleEditor({ entries, setEntries, shows } : {
         onSelectEvent={selectEvent}
         onEventResize={resizeEvent}
         onEventDrop={moveEvent}
+        timeSlotHeight={timeSlotHeight}
       />
     </Flex>
 

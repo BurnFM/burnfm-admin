@@ -1,64 +1,55 @@
-import {Dialog, Flex, Text, TextField, Button, Select, Separator, Box} from "@radix-ui/themes";
-import {ICalendarEvent, NewEntry} from "@/app/scheduling/components/ScheduleEditor/ScheduleEditor";
+import {Dialog, Flex, Text, TextField, Button, Select} from "@radix-ui/themes";
+import {NewEntry} from "@/app/scheduling/components/ScheduleEditor/ScheduleEditor";
 import {getDate} from "@/lib/dates";
 import {TrashIcon} from "@radix-ui/react-icons";
+import DeleteEntryDialog from "@/app/scheduling/components/ScheduleEditor/DeleteEntryDialog";
+import {ICalendarEvent} from "@/app/components/Calendar";
 
-export default function EntryEditDialog({ data, open, onOpenChange, shows, setData }: {
+export default function EntryEditDialog({ data, open, onOpenChange, shows, setData, deleteEntry }: {
   data: ICalendarEvent | NewEntry | null,
   setData: (data: ICalendarEvent | Omit<ICalendarEvent, 'calendar_id'>) => void,
+  deleteEntry: () => void,
   open: boolean,
   onOpenChange: (isOpen: boolean) => void,
   shows:  { id: number, title: string }[]
 }) {
 
-  const updateEntry = (formData: FormData) => {
-    if (data === null) return;
+  const DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-    const radio_show_id_str = formData.get("radio_show_id");
-    const day_str = formData.get("day");
-    const start_time_str = formData.get("start_time");
-    const end_time_str = formData.get("end_time");
+  const handleSave = (formData: FormData) => {
+    if (!data) return;
 
-
-    if (typeof radio_show_id_str !== "string" || typeof day_str !== "string" ||
-        typeof start_time_str !== "string" || typeof end_time_str !== "string") {
-      return;
-    }
-
-    const radio_show_id = parseInt(radio_show_id_str);
-    const day = parseInt(day_str);
-
-    if ('calendar_id' in data) {
-      const updated: ICalendarEvent = {
-        calendar_id: data.calendar_id,
-        db_id: null,
-        radio_show_id: radio_show_id,
-        start: getDate(day, start_time_str),
-        end: getDate(day, end_time_str),
-        day: day,
-        title: shows.find((show) => show.id === radio_show_id)?.title ?? "N/A"
-      };
-      setData(updated);
-      return;
-    }
-
-    const newEntry: Omit<ICalendarEvent, 'calendar_id'> = {
-      db_id: null,
-      radio_show_id: radio_show_id,
-      start: getDate(day, start_time_str),
-      end: getDate(day, end_time_str),
-      day: day,
-      title: shows.find((show) => show.id === radio_show_id)?.title ?? "N/A"
+    const parsedData = {
+      radio_show_id: parseInt(formData.get("radio_show_id") as string),
+      day: parseInt(formData.get("day") as string),
+      start: getDate(parseInt(formData.get("day") as string), formData.get("start_time") as string),
+      end: getDate(parseInt(formData.get("day") as string), formData.get("end_time") as string),
     };
-    setData(newEntry);
-  }
+
+    if ("calendar_id" in data) {
+      setData({ ...data, ...parsedData });
+    } else {
+      setData({
+        ...parsedData,
+        db_id: null,
+        title: shows.find((show) => show.id === parsedData.radio_show_id)?.title ?? "N/A"
+      });
+    }
+  };
 
   if (!data) return;
+
+  const handleDelete = () => {
+    if ("calendar_id" in data) {
+      deleteEntry(); // Call the passed delete handler
+      onOpenChange(false); // Close the main dialog
+    }
+  };
 
   return (
       <Dialog.Root open={open} onOpenChange={onOpenChange}>
         <Dialog.Content maxWidth="450px">
-          <form action={updateEntry}>
+          <form action={handleSave}>
             <Dialog.Title mb="4">{"calendar_id" in data ? "Edit Schedule Entry" : "Create Schedule Entry"}</Dialog.Title>
 
             <Flex direction="column" gap="3">
@@ -87,7 +78,7 @@ export default function EntryEditDialog({ data, open, onOpenChange, shows, setDa
                     <Select.Trigger/>
                     <Select.Content>
                       {
-                        ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((show, i) =>
+                        DAYS_OF_WEEK.map((show, i) =>
                             <Select.Item key={i} value={"" + (i + 1) % 7}>{show}</Select.Item>
                         )
                       }
@@ -126,12 +117,7 @@ export default function EntryEditDialog({ data, open, onOpenChange, shows, setDa
 
             </Flex>
 
-            <Flex gap="3" mt="4" justify="between" align="center">
-              <Dialog.Close>
-                <Button variant="soft" color="ruby">
-                  Delete <TrashIcon />
-                </Button>
-              </Dialog.Close>
+            <Flex gap="3" mt="4" direction={"row-reverse"} justify="between" align="center">
               <Flex gap="3">
                 <Dialog.Close>
                   <Button variant="soft" color="gray">
@@ -144,6 +130,16 @@ export default function EntryEditDialog({ data, open, onOpenChange, shows, setDa
                   </Button>
                 </Dialog.Close>
               </Flex>
+
+              { "calendar_id" in data && (
+                // <Dialog.Close>
+                  <DeleteEntryDialog action={handleDelete}>
+                    <Button variant="soft" color="ruby">
+                      Remove <TrashIcon />
+                    </Button>
+                  </DeleteEntryDialog>
+
+)}
 
             </Flex>
           </form>
