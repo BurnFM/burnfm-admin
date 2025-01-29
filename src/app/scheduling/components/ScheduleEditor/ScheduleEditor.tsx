@@ -16,7 +16,7 @@ export type NewEntry = {
 }
 
 const initial_dates = {
-  start: new Date(1972, 0, 1, 0, 0, 0),
+  start: new Date(1972, 0, 1, 9, 0, 0),
   end: new Date(1972, 0, 1, 23, 59, 59)
 }
 
