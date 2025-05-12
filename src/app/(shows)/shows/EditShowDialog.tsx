@@ -58,7 +58,7 @@ export default function EditShowDialog({
   const initial_form_data: IShow | Omit<IShow, 'id'> = show ?? {
       title: "",
       description: "",
-      hosts: "",
+      hosts: [],
       photo: ""
   }
 
@@ -201,11 +201,11 @@ export default function EditShowDialog({
                 <TextField.Root
                     name="hosts"
                     disabled={isPending}
-                    value={form.hosts}
+                    value={form.hosts.toString()}
                     onChange={(x) =>
                         setForm({
                           ...form,
-                          hosts: x.target.value
+                          hosts: x.target.value.split(",")
                         })}
                     placeholder="Enter the host(s) of the show, split by commas"
                 />

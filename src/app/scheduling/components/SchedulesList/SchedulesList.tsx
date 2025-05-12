@@ -4,7 +4,7 @@ import {useEffect, useReducer, useState} from "react";
 import {initialState, schedulesReducer} from "@/app/scheduling/components/SchedulesList/schedulesReducer";
 import {GET_SCHEDULES_ENDPOINT} from "@/lib/endpoints";
 import ScheduleCard from "@/app/scheduling/components/SchedulesList/ScheduleCard";
-import {IEntry, IScheduleAPI, IScheduleExtended} from "@/interfaces/ISchedule";
+import {API, IEntry, IScheduleAPI, IScheduleExtended} from "@/interfaces/ISchedule";
 import Link from "next/link";
 import {getDate} from "@/lib/dates";
 import {ToastProvider} from "@/app/components/Toast";

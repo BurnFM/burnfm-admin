@@ -5,6 +5,11 @@ export type ISchedule = {
   end_date: Date | null,
 }
 
+export type API<T> = {
+  data: T;
+  time_zone: string;
+}
+
 // Represents the object returned from a Schedule GET request
 export type IScheduleAPI = {
   id: number,

@@ -3,7 +3,7 @@ export interface iShow {
   id: number,
   title: string,
   description?: string,
-  hosts?: string,
+  hosts: string[],
   photo?: string
 }
 

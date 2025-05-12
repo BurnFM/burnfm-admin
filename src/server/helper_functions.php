@@ -15,7 +15,7 @@ function send_json_error_response(array $errors, int $response_code)
 function send_success_response(array $data = [])
 {
     header('Content-Type: application/json');
-    echo json_encode(['success' => true, 'data' => $data]);
+    echo json_encode(['success' => true, 'data' => $data, 'time_zone' => date_default_timezone_get()]);
     exit();
 }
 

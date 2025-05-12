@@ -47,14 +47,33 @@ try {
 
         $show = $result->fetch_assoc();
         $response = [
-            'show' => [
-                'id' => $show['id'],
-                'title' => $show['title'],
-                'description' => empty_to_null($show['description']),
-                'photo' => empty_to_null($show['photo']),
-                'hosts' => !empty($show['hosts']) ? explode(',', $show['hosts']) : []
-            ]
+            'id' => $show['id'],
+            'title' => $show['title'],
+            'description' => empty_to_null($show['description']),
+            'photo' => empty_to_null($show['photo']),
+            'hosts' => !empty($show['hosts']) ? explode(',', $show['hosts']) : []
         ];
+
+        // Fetch the schedule timings for the show, needed for both recordings, and of course timings
+        $schedule_query = "SELECT s.start_date, s.end_date, se.start_time, se.end_time, se.day 
+                               FROM ScheduleEntries se 
+                               JOIN Schedules s ON se.schedule_id = s.id 
+                               WHERE se.radio_show_id = ?";
+        $stmt = $mysqli->prepare($schedule_query);
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $schedule_result = $stmt->get_result();
+        $timings = [];
+
+        while ($row = $schedule_result->fetch_assoc()) {
+            $timings[] = [
+                'start_time' => $row['start_time'],
+                'end_time' => $row['end_time'],
+                'day' => (int) $row['day'],
+                'start_date' => $row['start_date'],
+                'end_date' => $row['end_date']
+            ];
+        }
 
         // Fetch recordings if required
         $recordings = [];
@@ -73,27 +92,6 @@ try {
                     'title' => $row['title'],
                     'recording' => $row['recording'],
                     'recorded_at' => $row['recorded_at']
-                ];
-            }
-
-            // Fetch the schedule timings for the show
-            $schedule_query = "SELECT s.start_date, s.end_date, se.start_time, se.end_time, se.day 
-                               FROM ScheduleEntries se 
-                               JOIN Schedules s ON se.schedule_id = s.id 
-                               WHERE se.radio_show_id = ?";
-            $stmt = $mysqli->prepare($schedule_query);
-            $stmt->bind_param('i', $id);
-            $stmt->execute();
-            $schedule_result = $stmt->get_result();
-            $timings = [];
-
-            while ($row = $schedule_result->fetch_assoc()) {
-                $timings[] = [
-                    'start_time' => $row['start_time'],
-                    'end_time' => $row['end_time'],
-                    'day' => (int) $row['day'],
-                    'start_date' => $row['start_date'],
-                    'end_date' => $row['end_date']
                 ];
             }
 
@@ -132,15 +130,15 @@ try {
                 }
             }
 
-            $response['show']['recordings'] = $recordings;
+            $response['recordings'] = $recordings;
         }
 
         // Fetch schedule timings if required
         if ($include_timings) {
-            $response['show']['timings'] = $timings;
+            $response['timings'] = $timings;
         }
 
-        echo json_encode($response);
+        send_success_response($response);
 
     } else {
         $query = "SELECT * FROM RadioShows";
@@ -169,7 +167,7 @@ try {
             ];
         }
 
-        echo json_encode(['shows' => $rows]);
+        send_success_response($rows);
     }
 
     $stmt->close();

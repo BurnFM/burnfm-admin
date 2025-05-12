@@ -8,6 +8,8 @@ import { ToastProvider } from "@/app/components/Toast";
 import DeleteShowDialog from "@/app/(shows)/shows/DeleteShowDialog";
 import { GET_RADIOSHOW_ENDPOINT } from "@/lib/endpoints";
 import {initialState, showsReducer} from "@/app/(shows)/shows/showsReducer";
+import {API} from "@/interfaces/ISchedule";
+import {IShow} from "@/interfaces/IShow";
 
 
 export default function ShowPage() {
@@ -31,8 +33,8 @@ export default function ShowPage() {
       });
 
       if (response.ok) {
-        const res = (await response.json()).shows;
-        dispatch({ type: "FETCH_SUCCESS", payload: res.map((show) => ({
+        const res = await response.json() as API<IShow[]>;
+        dispatch({ type: "FETCH_SUCCESS", payload: res.data.map((show) => ({
             id: show.id,
             title: show.title,
             description: show.description,
@@ -110,7 +112,7 @@ export default function ShowPage() {
                           <Table.Cell>{show.title}</Table.Cell>
                           <Table.Cell>{show.description}</Table.Cell>
                           <Table.Cell>{show.photo ?? "None"}</Table.Cell>
-                          <Table.Cell>{show.hosts}</Table.Cell>
+                          <Table.Cell>{show.hosts.join(", ")}</Table.Cell>
                           <Table.Cell>
                             <EditShowDialog show={show} onSuccess={handleSuccess}>
                               <IconButton size="1" color="gray" variant="soft" type="button">

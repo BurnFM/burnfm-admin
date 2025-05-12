@@ -18,6 +18,7 @@ import {ExclamationTriangleIcon, QuestionMarkCircledIcon} from "@radix-ui/react-
 import {initialState, iSettings, settingsReducer} from "@/app/scheduling/components/SettingsPanel/settingsReducer";
 import {GET_RADIOSHOW_ENDPOINT, GET_SETTINGS_ENDPOINT, UPDATE_SETTINGS_ENDPOINT} from "@/lib/endpoints";
 import {IShow} from "@/interfaces/IShow";
+import {API} from "@/interfaces/ISchedule";
 
 export default function SettingsPanel({ children } : {children: React.ReactNode}) {
   const [{settings, originalSettings, shows, loading, error}, dispatch] = useReducer(settingsReducer, initialState);
@@ -72,9 +73,9 @@ export default function SettingsPanel({ children } : {children: React.ReactNode}
       });
 
       if (response.ok) {
-        const res = (await response.json()).shows as IShow[];
+        const res = await response.json() as API<IShow[]>;
         console.log(res);
-        data.shows = res.map(show => ({id: show.id, title: show.title}));
+        data.shows = res.data.map(show => ({id: show.id, title: show.title}));
       } else {
         throw new Error(response.statusText);
       }
@@ -82,7 +83,7 @@ export default function SettingsPanel({ children } : {children: React.ReactNode}
       console.error(error);
       dispatch({
         type: "FETCH_FAILURE",
-        payload: "An error occurred while fetching Shows"
+        payload: "An error occurred while fetching Settings"
       });
       return;
     }

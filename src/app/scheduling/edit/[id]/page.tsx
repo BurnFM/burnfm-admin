@@ -22,7 +22,7 @@ import {
   UPDATE_SCHEDULE_ENDPOINT,
 } from "@/lib/endpoints";
 import ScheduleEditor from "@/app/scheduling/components/ScheduleEditor/ScheduleEditor";
-import {IEntry, IScheduleAPI, IScheduleExtended} from "@/interfaces/ISchedule";
+import {API, IEntry, IScheduleAPI, IScheduleExtended} from "@/interfaces/ISchedule";
 import {IShow} from "@/interfaces/IShow";
 import {getDate, toDateString, toTimeString} from "@/lib/dates";
 import entry from "next/dist/server/typescript/rules/entry";
@@ -119,9 +119,9 @@ export default function EditSchedulePage() {
         });
 
         if (response.ok) {
-          const res = (await response.json()).shows as IShow[];
+          const res = await response.json() as API<IShow[]>;
           console.log(res);
-          data.shows = res.map(show => ({id: show.id, title: show.title}));
+          data.shows = res.data.map(show => ({id: show.id, title: show.title}));
         } else {
           throw new Error(response.statusText);
         }

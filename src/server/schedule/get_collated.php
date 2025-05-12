@@ -62,10 +62,6 @@ function get_schedule_entries($mysqli, $schedule, $day = null) {
         $entries = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
         return array_filter($entries, function ($entry) use ($start_date, $end_date) {
-//            if ($filter_day !== null && $entry['day'] != $filter_day) {
-//                return false;
-//            }
-
             $current_day_of_week = (int) date('w'); // 0 (Sunday) to 6 (Saturday)
             $days_ahead = ($entry['day'] - $current_day_of_week + 7) % 7;
 
@@ -162,53 +158,58 @@ function resolve_show_details($mysqli, $schedule) {
     }
 }
 
-function get_schedule_response($mysqli, $include_default, $filter_day) {
+function get_schedule_response($mysqli, $include_default, $ignore_off_air,  $filter_day, $show_limit) {
     try {
         $settings = get_settings($mysqli);
-
-        // Handle the case that you are only getting schedule for one day
-        if (!is_null($filter_day)) {
-            // Return the off air show for one day
-//            if (!empty($settings['off_air_show'])) {
-//                return [['radio_show_id' => $settings['off_air_show']]];
-//            }
-
-            $current_day_of_week = (int) date('w'); // 0 (Sunday) to 6 (Saturday)
-            $days_ahead = ($filter_day - $current_day_of_week + 7) % 7;
-
-            $target_day = date('Y-m-d', strtotime("+{$days_ahead} days"));
-
-            // Get current schedule (if there is one) for the given day
-            $schedule_data = get_active_schedules($mysqli, $target_day)[0] ?? null;
-
-            $schedule = get_schedule_entries($mysqli, $schedule_data, $filter_day);
-
-            if ($include_default) {
-                $default_show = $settings['default_show'] ?? null;
-                fill_missing_slots($schedule, $default_show, $filter_day);
-            }
-
-            return resolve_show_details($mysqli, $schedule);
-        }
-
         $today = date('Y-m-d');
         $in7days = date('Y-m-d', strtotime('+7 days'));
 
         $schedule_data = get_active_schedules($mysqli, $today, $in7days);
+        $schedule = [];
 
-        $final_schedule = [];
-        foreach ($schedule_data as $each_schedule) {
-            $final_schedule = array_merge($final_schedule, get_schedule_entries($mysqli, $each_schedule));
-        }
-
-        if ($include_default) {
-            $default_show = $settings['default_show'] ?? null;
+        if (! ($ignore_off_air || empty($settings['off_air_show']))) {
             for ($day = 0; $day <= 6; $day++) {
-                fill_missing_slots($final_schedule, $default_show, $day);
+                fill_missing_slots($schedule, $settings['off_air_show'], $day);
             }
+        } else {
+            foreach ($schedule_data as $each_schedule) {
+                $schedule = array_merge($schedule, get_schedule_entries($mysqli, $each_schedule));
+            }
+
+            if ($include_default && !empty($settings['default_show'])) {
+                for ($day = 0; $day <= 6; $day++) {
+                    fill_missing_slots($schedule, $settings['default_show'], $day);
+                }
+            }
+
+            usort($schedule, fn($a, $b) => $a['day'] === $b['day'] ? strtotime($a['start_time']) - strtotime($b['start_time']) : $a['day'] - $b['day']);
         }
 
-        return resolve_show_details($mysqli, $final_schedule);
+        if (!is_null($filter_day)) {
+            $schedule = array_filter($schedule, fn($entry) => $entry['day'] == $filter_day);
+        } elseif (!is_null($show_limit)) {
+            $now = date('H:i:s');
+            $current_day = date('w');
+            $index = 0;
+
+            foreach ($schedule as $i => $show) {
+                if ($show['day'] > $current_day || ($show['day'] == $current_day && $show['start_time'] <= $now && $show['end_time'] >= $now)) {
+                    $index = $i;
+                    break;
+                }
+            }
+
+            $selected_shows = [];
+            $count = count($schedule);
+            for ($i = 0; $i < $show_limit; $i++) {
+                $selected_shows[] = $schedule[$index];
+                $index = ($index + 1) % $count;
+            }
+
+            return resolve_show_details($mysqli, $selected_shows);
+        }
+
+        return resolve_show_details($mysqli, $schedule);
     } catch (Exception $e) {
         send_error_response(['message' => 'Error generating schedule response', 'error' => $e->getMessage()], 500);
     }
@@ -242,13 +243,16 @@ function format_schedule_response($schedule) {
 
 try {
     $include_default = isset($_GET['include_default']) ? filter_var($_GET['include_default'], FILTER_VALIDATE_BOOLEAN) : false;
+    $ignore_off_air = isset($_GET['ignore_off_air']) ? filter_var($_GET['ignore_off_air'], FILTER_VALIDATE_BOOLEAN) : false;
+
     $filter_day = isset($_GET['day']) ? filter_var($_GET['day'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 0, 'max_range' => 6]]) : null;
+    $limit_shows = isset($_GET['limit_shows']) ? filter_var($_GET['limit_shows'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) : null;
 
     if (is_bool($filter_day) && !$filter_day) {
         $filter_day = null;
     }
 
-    $schedule = get_schedule_response($mysqli, $include_default, $filter_day);
+    $schedule = get_schedule_response($mysqli, $include_default, $ignore_off_air, $filter_day, $limit_shows);
     $formatted_schedule = format_schedule_response($schedule);
     send_success_response($formatted_schedule);
 } catch (Exception $e) {
