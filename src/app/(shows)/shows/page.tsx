@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useReducer} from "react";
+import {useEffect, useReducer, useState} from "react";
 import {Button, IconButton, Skeleton, Strong, Table, Text, TextField} from "@radix-ui/themes";
 import { MagnifyingGlassIcon, Pencil1Icon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import EditShowDialog from "@/app/(shows)/shows/EditShowDialog";
@@ -10,10 +10,19 @@ import { GET_RADIOSHOW_ENDPOINT } from "@/lib/endpoints";
 import {initialState, showsReducer} from "@/app/(shows)/shows/showsReducer";
 import {API} from "@/interfaces/ISchedule";
 import {IShow} from "@/interfaces/IShow";
+import Image from "next/image";
 
 
 export default function ShowPage() {
   const [{shows, loading, error}, dispatch] = useReducer(showsReducer, initialState);
+  const [search, setSearch] = useState("");
+
+  //searchbar
+  const filteredShows = shows.filter((show) =>
+    show.title.toLowerCase().includes(search.toLowerCase()) ||
+    show.description?.toLowerCase().includes(search.toLowerCase()) ||
+    show.hosts.join(", ").toLowerCase().includes(search.toLowerCase())
+  );
 
   // Fetch shows on mount
   useEffect(() => {
@@ -77,7 +86,6 @@ export default function ShowPage() {
               </>
           )}
 
-
           <EditShowDialog onSuccess={handleSuccess}>
             <Button>
               <PlusIcon /> New show
@@ -86,7 +94,11 @@ export default function ShowPage() {
 
           {shows.length > 0 && (
               <>
-                <TextField.Root placeholder="Search shows...">
+                <TextField.Root
+                  placeholder="Search shows..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                >
                   <TextField.Slot>
                     <MagnifyingGlassIcon height="15" width="15" />
                   </TextField.Slot>
@@ -98,7 +110,7 @@ export default function ShowPage() {
                       <Table.ColumnHeaderCell>ID</Table.ColumnHeaderCell>
                       <Table.ColumnHeaderCell>Title*</Table.ColumnHeaderCell>
                       <Table.ColumnHeaderCell>Description</Table.ColumnHeaderCell>
-                      <Table.ColumnHeaderCell>Photo</Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell style={{textAlign:"center"}}>Photo</Table.ColumnHeaderCell>
                       <Table.ColumnHeaderCell>Hosts</Table.ColumnHeaderCell>
                       <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
                     </Table.Row>
@@ -106,12 +118,19 @@ export default function ShowPage() {
 
 
                   <Table.Body>
-                    {shows.toSorted((a, b) => a.title.localeCompare(b.title)).map((show, i) => (
+                    {filteredShows.toSorted((a, b) => a.title.localeCompare(b.title)).map((show, i) => (
                         <Table.Row key={i}>
                           <Table.RowHeaderCell>{show.id}</Table.RowHeaderCell>
                           <Table.Cell>{show.title}</Table.Cell>
                           <Table.Cell>{show.description}</Table.Cell>
-                          <Table.Cell>{show.photo ?? "None"}</Table.Cell>
+                          <Table.Cell>
+                            <div style={{alignItems:"center", display:"flex", justifyContent:"center", flexDirection:"column"}}>
+                              {show.photo ? (
+                                  <Image src={"https://api.burnfm.com/uploads/schedule_img/" + encodeURIComponent(show.photo)}alt=""width={100}height={100}/>
+                              ) : (<div></div>)}
+                              <div style={{width:"fit-content"}} >{show.photo ?? "None"}</div>
+                            </div>  
+                          </Table.Cell>                          
                           <Table.Cell>{show.hosts.join(", ")}</Table.Cell>
                           <Table.Cell>
                             <EditShowDialog show={show} onSuccess={handleSuccess}>
@@ -119,6 +138,7 @@ export default function ShowPage() {
                                 <Pencil1Icon/>
                               </IconButton>
                             </EditShowDialog>
+                            <div style={{marginBottom:"10px"}}></div>
                             <DeleteShowDialog show_id={show.id} onSuccess={handleSuccess}>
                               <IconButton size="1" color="crimson" variant="soft" type="button">
                                 <TrashIcon/>

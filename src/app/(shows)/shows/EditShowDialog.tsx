@@ -1,48 +1,12 @@
 "use client"
 
-import {Box, Button, Card, Dialog, Flex, Inset, Kbd, Link, Text, TextArea, TextField} from "@radix-ui/themes";
+import {Button, Dialog, Flex, Kbd, Link, Text, TextArea, TextField} from "@radix-ui/themes";
 import {isShow, IShow} from "@/interfaces/IShow";
-import {ReactNode, useActionState, useState} from "react";
+import {ReactNode, useActionState, useState, useEffect} from "react";
 import NextLink from "next/link";
 import {useToast} from "@/app/components/Toast";
 import {INSERT_RADIOSHOW_ENDPOINT, UPDATE_RADIOSHOW_ENDPOINT} from "@/lib/endpoints";
 import Image from "next/image";
-import {StaticImport} from "next/dist/shared/lib/get-img-props";
-
-const ImageWithFallbackDiv = ({ src, alt, width, height } :
-  {
-    src: string | StaticImport,
-    alt: string,
-    width: number,
-    height: number
-  }) => {
-  const [imgError, setImgError] = useState(false);
-
-  return imgError ? (
-      <Card asChild>
-        <Box
-          height={height.toString() + "px"}
-          width={width.toString() + "px"}
-        >
-          <Text as="p" align={"center"} size="2">Image does not exist</Text>
-        </Box>
-
-      </Card>
-  ) : (
-      <Card>
-        <Inset>
-          <Image
-              src={src}
-              alt={alt}
-              width={width}
-              height={height}
-              onError={() => setImgError(true)}
-          />
-        </Inset>
-      </Card>
-
-  );
-};
 
 export default function EditShowDialog({
   key,
@@ -62,10 +26,19 @@ export default function EditShowDialog({
       photo: ""
   }
 
-  const toast = useToast();
-
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(initial_form_data)
+  const [photoPreview, setPhotoPreview] = useState(form.photo);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setPhotoPreview(form.photo);
+    }, 1000); // wait 1sec after typing stops
+
+    return () => clearTimeout(timeout);
+  }, [form.photo]);
+
+  const toast = useToast();
 
   // Define form action and state variables
   const [state, dispatch, isPending] = useActionState(
@@ -227,8 +200,21 @@ export default function EditShowDialog({
                 />
               </label>
 
-              { form.photo &&
-                <ImageWithFallbackDiv src={"https://api.burnfm.com/uploads/" + encodeURIComponent(form.photo)} alt={""} width={100} height={100}/>
+              {
+                <div style={{alignItems:"center", display:"flex", justifyContent:"center", flexDirection:"column"}}>
+                  {form.photo ? (
+
+                    photoPreview ? (
+                        <Image
+                          src={"https://api.burnfm.com/uploads/schedule_img/" + encodeURIComponent(photoPreview)}
+                          alt=""
+                          width={100}
+                          height={100}
+                        />
+                      ) : null
+
+                  ) : (<div></div>)}
+                </div>  
               }
 
               {/*<label>*/}
