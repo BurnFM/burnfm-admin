@@ -201,7 +201,7 @@ export default function EditShowDialog({
               </label>
 
               {
-                <div style={{alignItems:"center", display:"flex", justifyContent:"center", flexDirection:"column"}}>
+                <Flex direction="column" align="center">
                   {form.photo ? (
 
                     photoPreview ? (
@@ -214,7 +214,7 @@ export default function EditShowDialog({
                       ) : null
 
                   ) : (<div></div>)}
-                </div>  
+                </Flex>
               }
 
               {/*<label>*/}

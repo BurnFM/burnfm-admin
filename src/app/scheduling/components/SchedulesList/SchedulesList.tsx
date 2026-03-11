@@ -19,6 +19,7 @@ export default function SchedulesList() {
   const active: IScheduleExtended[] = [];
   const upcoming: IScheduleExtended[] = [];
 
+  // Split up the schedules into previous, active, and upcoming lists
   schedules.forEach(schedule => {
     const startDate = schedule.start_date ? schedule.start_date.getTime() : null;
     const endDate = schedule.end_date ? schedule.end_date.getTime() : null;
@@ -184,7 +185,7 @@ export default function SchedulesList() {
             <Separator size="4"/>
           </Flex>
 
-          { previous.map((schedule, i) =>
+          { previous.toReversed().map((schedule, i) =>
               <ScheduleCard key={i} schedule={schedule} openDeleteDialog={setScheduleToDelete} /> )
           }
 
