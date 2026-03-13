@@ -8,8 +8,8 @@ import { ToastProvider } from "@/app/components/Toast";
 import DeletePodcastDialog from "@/app/(shows)/podcasts/DeletePodcastDialog";
 import { GET_PODCAST_ENDPOINT } from "@/lib/endpoints";
 import {initialState, podcastsReducer} from "@/app/(shows)/podcasts/podcastsReducer";
-import {API} from "@/interfaces/ISchedule"; //????
 import {Ipodcast} from "@/interfaces/IPodcast";
+import {API} from "@/interfaces/ISchedule";
 import Image from "next/image";
 
 
@@ -50,7 +50,8 @@ export default function PodcastPage() {
             hosts: podcast.hosts,
             photo: podcast.photo,
             startDate: podcast.startDate,
-            endDate: podcast.endDate
+            endDate: podcast.endDate,
+            latestShow: podcast.latestShow
           }))});
       } else {
         throw new Error(response.statusText);
@@ -116,6 +117,7 @@ export default function PodcastPage() {
                       <Table.ColumnHeaderCell>End Date</Table.ColumnHeaderCell>
                       <Table.ColumnHeaderCell style={{textAlign:"center"}}>Photo</Table.ColumnHeaderCell>
                       <Table.ColumnHeaderCell>Hosts</Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell>Latest Show</Table.ColumnHeaderCell>
                       <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
                     </Table.Row>
                   </Table.Header>
@@ -138,6 +140,7 @@ export default function PodcastPage() {
                             </div>  
                           </Table.Cell>                       
                           <Table.Cell>{podcast.hosts.join(", ")}</Table.Cell>
+                          <Table.Cell>{podcast.latestShow}</Table.Cell>
                           <Table.Cell>
                             <EditPodcastDialog podcast={podcast} onSuccess={handleSuccess}>
                               <IconButton size="1" color="gray" variant="soft" type="button">

@@ -7,6 +7,7 @@ export interface ipodcast {
   photo?: string,
   startDate?: string,
   endDate?: string,
+  latestShow?: string,
 
 }
 

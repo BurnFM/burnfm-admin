@@ -26,6 +26,7 @@ export default function EditPodcastDialog({
       photo: "",
       startDate: "",
       endDate: "",
+      latestShow: "",
   }
 
   const [open, setOpen] = useState(false);
@@ -215,6 +216,22 @@ export default function EditPodcastDialog({
                     style={{width:"fit-content"}}
                   />
                 </div>
+              </label>
+              <label>
+                <Text as="div" size="2" mb="1" weight="bold">
+                  Latest Show ID
+                </Text>
+                <TextField.Root
+                    name="latestShow"
+                    disabled={isPending}
+                    value={form.latestShow}
+                    onChange={(x) =>
+                        setForm({
+                          ...form,
+                          latestShow: x.target.value
+                        })}
+                    placeholder="Enter the podcast's latests show ID"
+                />
               </label>
               <label>
                 <Text as="div" size="2" mb="1" weight="bold">

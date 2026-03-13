@@ -5,7 +5,8 @@ export type Ipodcast = {
   hosts: string[],
   photo?: string,
   startDate?: string,
-  endDate?: string
+  endDate?: string,
+  latestShow?: string
 }
 
 export function isPodcast(obj): obj is Ipodcast {
@@ -18,6 +19,7 @@ export function isPodcast(obj): obj is Ipodcast {
       (obj.hosts === undefined || typeof obj.hosts === "object") &&
       (obj.photo === undefined || typeof obj.photo === "string")&&
       (obj.startDate === undefined || typeof obj.startDate === "string") &&
-      (obj.endDate === undefined || typeof obj.endDate === "string")
+      (obj.endDate === undefined || typeof obj.endDate === "string") &&
+      (obj.latestShow === undefined || typeof obj.latestShow === "string")
   );
 }
