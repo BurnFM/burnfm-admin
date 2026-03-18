@@ -95,7 +95,6 @@ export default function ShowPage() {
   
         if (responsePeople.ok) {
           const resPeople = await responsePeople.json() as API<IPerson[]>;
-          console.log(resPeople);
           setPeople({ type: "FETCH_SUCCESS", payload: resPeople.data.map((person) => ({
                 id: person.id,
                 name: person.name,

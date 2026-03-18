@@ -6,6 +6,8 @@ const BASE_ENDPOINT_PODCAST = BASE_ENDPOINT + "podcast/"
 const BASE_ENDPOINT_COMMITTEE = BASE_ENDPOINT + "committee/"
 const BASE_ENDPOINT_PEOPLE = BASE_ENDPOINT_COMMITTEE + "people/"
 const BASE_ENDPOINT_ROLE = BASE_ENDPOINT_COMMITTEE + "role/"
+const BASE_ENDPOINT_IMAGES  = "https://api.burnfm.com/uploads/"
+const GET_IMAGE_FILENAME = "/images.php"
 
 //radio shows
 export const GET_RADIOSHOW_ENDPOINT = (id?: number) => {
@@ -69,3 +71,7 @@ export const GET_ROLE_ENDPOINT = (id?: number, year?: number) => {
 export const INSERT_ROLE_ENDPOINT = BASE_ENDPOINT_ROLE + "insert";
 export const DELETE_ROLE_ENDPOINT = (id: number) => BASE_ENDPOINT_ROLE + "delete?id=" + id;
 export const UPDATE_ROLE_ENDPOINT = (id: number) => BASE_ENDPOINT_ROLE + "update?id=" + id;
+
+export const GET_PODCAST_IMAGES_ENDPOINT = BASE_ENDPOINT_IMAGES + "podcast_img" + GET_IMAGE_FILENAME;
+export const GET_PEOPLE_IMAGES_ENDPOINT = BASE_ENDPOINT_IMAGES + "committee_img" + GET_IMAGE_FILENAME;
+export const GET_SHOW_IMAGES_ENDPOINT = BASE_ENDPOINT_IMAGES + "schedule_img" + GET_IMAGE_FILENAME;

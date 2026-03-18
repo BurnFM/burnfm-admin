@@ -1,11 +1,11 @@
 "use client"
 
-import {Button, Dialog, Flex, Kbd, Link, Text, TextArea, TextField} from "@radix-ui/themes";
+import {Button, Dialog, Flex, Kbd, Link, Text, TextArea, TextField, DropdownMenu} from "@radix-ui/themes";
 import {isPerson, IPerson} from "@/interfaces/ICommittee";
 import {ReactNode, useActionState, useState, useEffect} from "react";
 import NextLink from "next/link";
 import {useToast} from "@/app/components/Toast";
-import {INSERT_PEOPLE_ENDPOINT, UPDATE_PEOPLE_ENDPOINT} from "@/lib/endpoints";
+import {INSERT_PEOPLE_ENDPOINT, UPDATE_PEOPLE_ENDPOINT, GET_PEOPLE_IMAGES_ENDPOINT} from "@/lib/endpoints";
 import Image from "next/image";
 
 export default function EditCommitteeDialog({
@@ -30,15 +30,28 @@ export default function EditCommitteeDialog({
 
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(initial_form_data)
-  const [photoPreview, setPhotoPreview] = useState(form.photo);
+  const [images, setImages] = useState<string[]>([]);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setPhotoPreview(form.photo);
-    }, 1000); // wait 1sec after typing stops
+    async function fetchImages() {
+      try {
+        const res = await fetch(GET_PEOPLE_IMAGES_ENDPOINT,{
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+          },
+        }
+        );
+        const data = await res.json(); // assuming it returns JSON array
 
-    return () => clearTimeout(timeout);
-  }, [form.photo]);
+        setImages(data);
+      } catch (err) {
+        console.error("Failed to fetch images", err);
+      }
+    }
+
+    fetchImages();
+  }, []);
 
   const toast = useToast();
 
@@ -201,33 +214,54 @@ export default function EditCommitteeDialog({
                 <Text as="div" size="2" mb="1" weight="bold">
                   Photo
                 </Text>
-                <TextField.Root
-                    name="photo"
-                    disabled={isPending}
-                    value={form.photo}
-                    onChange={(x) =>
-                        setForm({
-                          ...form,
-                          photo: x.target.value
-                        })}
-                    placeholder="Enter the photo's file path"
-                />
+<Flex direction="column" align="center">
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger>
+                      <Button variant="soft" style={{ width: "max-content" }}>
+                        {form.photo || "Select an image"}
+                        <DropdownMenu.TriggerIcon />
+                      </Button>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content>
+                      <DropdownMenu.Item
+                        key="none"
+                        onSelect={() => setForm({ ...form, photo: '' })}
+                      >
+                        No image
+                      </DropdownMenu.Item>
+                      {images.map((image) => (
+                        <DropdownMenu.Item
+                          key={image}
+                          onSelect={() => {
+                            setForm({
+                              ...form,
+                              photo: image,
+                            });
+                          }}
+                        >
+                          {image}
+                        </DropdownMenu.Item>
+                      ))}
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Root>
+                </Flex>
+
+                {/* IMPORTANT: this is what gets submitted */}
+                <input type="hidden" name="photo" value={form.photo} />
               </label>
 
               {
                 <Flex direction="column" align="center">
                   {form.photo ? (
-
-                    photoPreview ? (
-                        <Image
-                          src={"https://api.burnfm.com/uploads/committee_img/" + encodeURIComponent(photoPreview)}
-                          alt=""
-                          width={100}
-                          height={100}
-                        />
-                      ) : null
-
-                  ) : (<div></div>)}
+                    <Image
+                      src={"https://api.burnfm.com/uploads/committee_img/" + encodeURIComponent(form.photo)}
+                      alt=""
+                      width={100}
+                      height={100}
+                    />
+                  ) : (
+                    <div></div>
+                  )}
                 </Flex>
               }
 
