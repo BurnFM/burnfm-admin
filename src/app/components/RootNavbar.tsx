@@ -22,14 +22,14 @@ export default function RootNavbar() {
         {href: '/', label: 'Home'},
         {href: '/shows', label: 'Shows & Podcasts'},
         {href: '/scheduling', label: 'Scheduling'},
-        {href: '/posts', label: 'Posts'},
+        {href: '/people', label: 'Committee'},
   ]
 
   return (
       <>
         <TabNav.Root justify={"end"}>
           {links.map(({ href, label }) => (
-              <TabNav.Link key={href} asChild active={path === href}>
+              <TabNav.Link key={href} asChild active={path === href || path == "/podcasts" && href == "/shows" || path == "/roles" && href == "/people"}>
                 <Link href={href}>{label}</Link>
               </TabNav.Link>
           ))}

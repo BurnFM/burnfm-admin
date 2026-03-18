@@ -3,6 +3,9 @@ const BASE_ENDPOINT_RADIO = BASE_ENDPOINT + "radio_show/"
 const BASE_ENDPOINT_SETTINGS = BASE_ENDPOINT + "settings/"
 const BASE_ENDPOINT_SCHEDULES = BASE_ENDPOINT + "schedule/"
 const BASE_ENDPOINT_PODCAST = BASE_ENDPOINT + "podcast/"
+const BASE_ENDPOINT_COMMITTEE = BASE_ENDPOINT + "committee/"
+const BASE_ENDPOINT_PEOPLE = BASE_ENDPOINT_COMMITTEE + "people/"
+const BASE_ENDPOINT_ROLE = BASE_ENDPOINT_COMMITTEE + "role/"
 
 //radio shows
 export const GET_RADIOSHOW_ENDPOINT = (id?: number) => {
@@ -42,3 +45,27 @@ export const GET_PODCAST_ENDPOINT = (id?: number) => {
 export const INSERT_PODCAST_ENDPOINT = BASE_ENDPOINT_PODCAST + "insert";
 export const DELETE_PODCAST_ENDPOINT = (id: number) => BASE_ENDPOINT_PODCAST + "delete?id=" + id;
 export const UPDATE_PODCAST_ENDPOINT = (id: number) => BASE_ENDPOINT_PODCAST + "update?id=" + id;
+
+//committee
+//people on committee
+export const GET_PEOPLE_ENDPOINT = (id?: number) => {
+  if (id)
+    return BASE_ENDPOINT_PEOPLE + "get?id=" + id;
+  else
+    return BASE_ENDPOINT_PEOPLE + "get";
+}
+export const INSERT_PEOPLE_ENDPOINT = BASE_ENDPOINT_PEOPLE + "insert";
+export const DELETE_PEOPLE_ENDPOINT = (id: number) => BASE_ENDPOINT_PEOPLE + "delete?id=" + id;
+export const UPDATE_PEOPLE_ENDPOINT = (id: number) => BASE_ENDPOINT_PEOPLE + "update?id=" + id;
+//roles on committee
+export const GET_ROLE_ENDPOINT = (id?: number, year?: number) => {
+  if (id)
+    return BASE_ENDPOINT_ROLE + "get?id=" + id;
+  if (year)
+    return BASE_ENDPOINT_ROLE + "get?year=" + year;
+  else
+    return BASE_ENDPOINT_ROLE + "get";
+}
+export const INSERT_ROLE_ENDPOINT = BASE_ENDPOINT_ROLE + "insert";
+export const DELETE_ROLE_ENDPOINT = (id: number) => BASE_ENDPOINT_ROLE + "delete?id=" + id;
+export const UPDATE_ROLE_ENDPOINT = (id: number) => BASE_ENDPOINT_ROLE + "update?id=" + id;
