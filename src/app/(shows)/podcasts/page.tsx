@@ -125,7 +125,7 @@ export default function PodcastPage() {
 
                   <Table.Body>
                     {filteredPodcasts.toSorted((a, b) => a.title.localeCompare(b.title)).map((podcast, i) => (
-                        <Table.Row key={i}>
+                        <Table.Row key={podcast.id}>
                           <Table.RowHeaderCell>{podcast.id}</Table.RowHeaderCell>
                           <Table.Cell>{podcast.title}</Table.Cell>
                           <Table.Cell>{podcast.description}</Table.Cell>

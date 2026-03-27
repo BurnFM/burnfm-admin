@@ -33,6 +33,7 @@ export const GET_SCHEDULES_ENDPOINT = (id?: number) => {
 export const UPDATE_SCHEDULE_ENDPOINT = (id: number) => BASE_ENDPOINT_SCHEDULES + "update?id=" + id;
 export const INSERT_SCHEDULE_ENDPOINT = BASE_ENDPOINT_SCHEDULES + "insert";
 export const DELETE_SCHEDULE_ENDPOINT = (id: number) => BASE_ENDPOINT_SCHEDULES + "delete?id=" + id;
+export const DUPLICATE_SCHEDULE_ENDPOINT = (id: number) => BASE_ENDPOINT_SCHEDULES + "duplicate?id=" + id;
 
 //login
 export const LOGIN_ENDPOINT = "https://api.burnfm.com/new/auth/login"

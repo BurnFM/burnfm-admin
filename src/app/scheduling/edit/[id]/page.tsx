@@ -10,7 +10,8 @@ import {
   Skeleton,
   TextField,
   Switch,
-  Box, Container
+  Box, Container,
+  Grid
 } from "@radix-ui/themes";
 import {ArrowLeftIcon, ExclamationTriangleIcon} from "@radix-ui/react-icons";
 import Link from "next/link";
@@ -231,9 +232,9 @@ export default function EditSchedulePage() {
           </Box>
 
           <Container size="4" p="6">
-            <Flex direction="column" gap="2" mb="6">
+            <div style={{display:"grid", gridTemplateColumns:"50% 50%", marginBottom:"10px"}}>
 
-              <label>
+              <label style={{gridColumn: "span 2", paddingBottom:"10px"}}>
                 <Text as="div" size="2" mb="1" weight="bold">
                   Schedule name *
                 </Text>
@@ -248,18 +249,20 @@ export default function EditSchedulePage() {
                 </Skeleton>
               </label>
 
-              <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap">
+              <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap" style={{marginRight:"5px"}}>
                 <Text as="label">
                   <Flex gap="4" align="center">
-                    <Switch checked={schedule.start_date !== null}
-                            onCheckedChange={(checked) =>
-                                dispatch({
-                                  type: "SET_START_DATE",
-                                  payload: checked ? originalSchedule.start_date ?? new Date() : null
-                                })
-                            }
-                            disabled={error ? error.status == "FETCH_FAILURE" : loading}
-                    />
+                    {/*
+                      <Switch checked={schedule.start_date !== null}
+                              onCheckedChange={(checked) =>
+                                  dispatch({
+                                    type: "SET_START_DATE",
+                                    payload: checked ? originalSchedule.start_date ?? new Date() : null
+                                  })
+                              }
+                              disabled={error ? error.status == "FETCH_FAILURE" : loading}
+                      >
+                      */}
                     <Box>
                       <Text as="p" size="2" weight="medium">Start Date</Text>
                       <Text as="p" size="1">Determine a date when this schedule starts</Text>
@@ -277,9 +280,23 @@ export default function EditSchedulePage() {
                 }
               </Flex>
 
-              <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap">
+              <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap" style={{marginLeft:"5px"}}>
                 <Text as="label">
                   <Flex gap="4" align="center">
+                    <Box>
+                      <Text as="p" size="2" weight="medium">Schedule Active</Text>
+                      <Text as="p" size="1">Determine if ths schedule should be used</Text>
+                    </Box>
+                  </Flex>
+                </Text>
+
+                <Switch/>
+              </Flex>
+
+              <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap" style={{marginRight:"5px"}}>
+                <Text as="label">
+                  <Flex gap="4" align="center">
+                    {/*
                     <Switch checked={schedule.end_date !== null}
                             onCheckedChange={(checked) =>
                                 dispatch({
@@ -289,6 +306,7 @@ export default function EditSchedulePage() {
                             }
                             disabled={error ? error.status == "FETCH_FAILURE" : loading}
                     />
+                    */}
                     <Box>
                       <Text as="p" size="2" weight="medium">End Date</Text>
                       <Text as="p" size="1">Determine a date when this schedule stops</Text>
@@ -306,6 +324,19 @@ export default function EditSchedulePage() {
                 }
               </Flex>
 
+              <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap" style={{marginLeft:"5px"}}>
+                <Text as="label">
+                  <Flex gap="4" align="center">
+                    <Box>
+                      <Text as="p" size="2" weight="medium">Priority schedule</Text>
+                      <Text as="p" size="1">Determine if this schedule should overide the other schedule</Text>
+                    </Box>
+                  </Flex>
+                </Text>
+
+                <Switch/>
+              </Flex>
+
               {error &&
                 <Callout.Root role={"alert"} color={"crimson"}>
                   <Callout.Icon>
@@ -316,7 +347,7 @@ export default function EditSchedulePage() {
                   </Callout.Text>
                 </Callout.Root>
               }
-            </Flex>
+            </div>
 
             <Skeleton loading={loading}>
               <ScheduleEditor

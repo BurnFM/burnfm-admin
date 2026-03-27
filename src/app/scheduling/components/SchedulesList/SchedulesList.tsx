@@ -186,7 +186,7 @@ export default function SchedulesList() {
           </Flex>
 
           { previous.toReversed().map((schedule, i) =>
-              <ScheduleCard key={i} schedule={schedule} openDeleteDialog={setScheduleToDelete} /> )
+              <ScheduleCard key={i} schedule={schedule} openDeleteDialog={setScheduleToDelete}/> )
           }
 
           {upcoming.length == 0 &&

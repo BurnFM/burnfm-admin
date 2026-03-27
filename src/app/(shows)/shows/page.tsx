@@ -119,7 +119,7 @@ export default function ShowPage() {
 
                   <Table.Body>
                     {filteredShows.toSorted((a, b) => a.title.localeCompare(b.title)).map((show, i) => (
-                        <Table.Row key={i}>
+                        <Table.Row key={show.id}>
                           <Table.RowHeaderCell>{show.id}</Table.RowHeaderCell>
                           <Table.Cell>{show.title}</Table.Cell>
                           <Table.Cell>{show.description}</Table.Cell>
