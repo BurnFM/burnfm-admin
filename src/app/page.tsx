@@ -65,17 +65,6 @@ export default function Home() {
                   </Link>
                 </Card>
 
-                <Card variant="classic" asChild>
-                  <Link href="/posts">
-                    <Flex direction="column" align="center" py="2" gap="4" width="140px">
-                      <ChatBubbleIcon style={{height: 24, width: 24}}/>
-                      <Text size="2" weight="medium">
-                        Posts
-                      </Text>
-                    </Flex>
-                  </Link>
-                </Card>
-
               </Flex>
             </Flex>
           ) }

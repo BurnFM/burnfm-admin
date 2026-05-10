@@ -83,7 +83,7 @@ export default function PodcastPage() {
           {podcasts.length === 0 && (
               <>
                 <Text align="center" size="3">
-                  <Strong>You have podcasts</Strong>
+                  <Strong>You have no podcasts</Strong>
                 </Text>
                 <Text align="center" size="1">Create one below</Text>
               </>

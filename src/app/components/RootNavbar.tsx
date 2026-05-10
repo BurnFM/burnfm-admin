@@ -22,7 +22,7 @@ export default function RootNavbar() {
         {href: '/', label: 'Home'},
         {href: '/shows', label: 'Shows & Podcasts'},
         {href: '/scheduling', label: 'Scheduling'},
-        {href: '/people', label: 'Committee'},
+        {href: '/committee', label: 'Committee'},
   ]
 
   return (

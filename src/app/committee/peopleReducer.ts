@@ -1,11 +1,13 @@
 export interface iPerson {
   id: number,
   name: string,
+  role: string,
   course?: string,
   description?: string,
   fact?: string,
   song?: string,
-  photo?: string
+  photo?: string,
+  year: number
 }
 
 export interface PeopleState {

@@ -1,61 +1,59 @@
 "use client"
 
 import {Button, Dialog, Flex, Kbd, Link, Text, TextArea, TextField, DropdownMenu} from "@radix-ui/themes";
-import {isRole, IRole} from "@/interfaces/ICommittee";
+import {isPerson, IPerson} from "@/interfaces/ICommittee";
 import {ReactNode, useActionState, useState, useEffect} from "react";
 import NextLink from "next/link";
 import {useToast} from "@/app/components/Toast";
-import {INSERT_ROLE_ENDPOINT, UPDATE_ROLE_ENDPOINT} from "@/lib/endpoints";
+import {INSERT_COMMITTEE_ENDPOINT, UPDATE_COMMITTEE_ENDPOINT, GET_PEOPLE_IMAGES_ENDPOINT} from "@/lib/endpoints";
 import Image from "next/image";
-import { iRole } from "./roleReducer";
-import { iPerson } from "../people/peopleReducer";
 
-export default function EditRoleDialog({
+export default function EditCommitteeDialog({
   key,
-  role,
+  person,
   onSuccess,
-  children,
-  people
+  children
 } : {
   key?: number,
-  role?: iRole,
+  person?: IPerson,
   onSuccess?: () => void,
   children?: ReactNode
-  people: iPerson[],
 }) {
-  const initial_form_data: IRole | Omit<iRole, 'id'> = role ?? {
+  const initial_form_data: IPerson | Omit<IPerson, 'id'> = person ?? {
+      name: "",
       role: "",
-      personID: -1,
-      year: new Date().getFullYear() % 100,  // default to current year
+      course: "",
+      description: "",
+      fact: "",
+      song: "",
+      photo: "",
+      year: 0,
   }
 
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(initial_form_data)
-  const [selectedPerson, setSelectedPerson] = useState<iPerson | null>(
-    role ? people?.find(p => p.id === role.personID) ?? null : null
-  );
+  const [images, setImages] = useState<string[]>([]);
+
   useEffect(() => {
-    if (!people?.length) return;
+    async function fetchImages() {
+      try {
+        const res = await fetch(GET_PEOPLE_IMAGES_ENDPOINT,{
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+          },
+        }
+        );
+        const data = await res.json(); // assuming it returns JSON array
 
-    if (role) {
-      // existing edit logic
-      const personToSelect = typeof role.personID === "object"
-        ? role.personID
-        : people.find(p => p.id === role.personID);
-
-      setSelectedPerson(personToSelect ?? null);
-      setForm(prev => ({
-        ...prev,
-        personID: typeof role.personID === "object" ? role.personID.id : role.personID
-      }));
-    } else {
-      // new role logic: default to first person in the list
-      const firstPerson = people[0];
-      setSelectedPerson(firstPerson);
-      setForm(prev => ({ ...prev, personID: firstPerson?.id ?? -1 }));
+        setImages(data);
+      } catch (err) {
+        console.error("Failed to fetch images", err);
+      }
     }
-  }, [people, role]);
 
+    fetchImages();
+  }, []);
 
   const toast = useToast();
 
@@ -64,8 +62,8 @@ export default function EditRoleDialog({
       async (previousState: null, payload: FormData) => {
         try {
           let response;
-          if (!role) {
-            response = await fetch(INSERT_ROLE_ENDPOINT, {
+          if (!person) {
+            response = await fetch(INSERT_COMMITTEE_ENDPOINT, {
               method: "POST",
               body: payload,  // For form-data type don't include Content-Type in header, otherwise issues
               headers: {
@@ -73,7 +71,7 @@ export default function EditRoleDialog({
               }
             });
           } else {
-            response = await fetch(UPDATE_ROLE_ENDPOINT(role.id), {
+            response = await fetch(UPDATE_COMMITTEE_ENDPOINT(person.id), {
               method: "POST",
               body: payload,  // For form-data type don't include Content-Type in header, otherwise issues
               headers: {
@@ -86,10 +84,10 @@ export default function EditRoleDialog({
             if (onSuccess) onSuccess();
             setOpen(false);
             const body = await response.json();
-            if (role)
-              toast.showToast("Success", `Updated role with ID: ${body.updated_id}`);
+            if (person)
+              toast.showToast("Success", `Updated person with ID: ${body.updated_id}`);
             else
-              toast.showToast("Success", `Added role with ID: ${body.id}`);
+              toast.showToast("Success", `Added person with ID: ${body.id}`);
             return null;
           } else {
             toast.showToast("An error occurred", `${response.status} Error: ${response.statusText}`);
@@ -130,14 +128,14 @@ export default function EditRoleDialog({
         </Dialog.Trigger>
 
         <Dialog.Content maxWidth="450px">
-          <Dialog.Title>{role? "Edit Role": "New Role"}</Dialog.Title>
+          <Dialog.Title>{person? "Edit Person": "New Person"}</Dialog.Title>
           <Dialog.Description size="2" mb="4">
-            Edit data about committe member role.
+            Edit data about committe members.
           </Dialog.Description>
 
           <form action={dispatch}>
             <Flex direction="column" gap="3">
-              {isRole(form) &&
+              {isPerson(form) &&
                   <label>
                       <Text as="div" size="2" mb="1" weight="bold">
                           ID*
@@ -149,6 +147,23 @@ export default function EditRoleDialog({
                       />
                   </label>
               }
+              <label>
+                <Text as="div" size="2" mb="1" weight="bold">
+                  Name*
+                </Text>
+                <TextField.Root
+                    name="name"
+                    disabled={isPending}
+                    value={form.name}
+                    onChange={(x) =>
+                        setForm({
+                          ...form,
+                          name: x.target.value
+                        })}
+                    placeholder="Enter the person's name"
+                    required
+                />
+              </label>
               <label>
                 <Text as="div" size="2" mb="1" weight="bold">
                   Role*
@@ -168,49 +183,139 @@ export default function EditRoleDialog({
               </label>
               <label>
                 <Text as="div" size="2" mb="1" weight="bold">
-                  Persons ID*
+                  Course
                 </Text>
-                <DropdownMenu.Root>
-                  <DropdownMenu.Trigger>
-                    <Button variant="soft" style={{ width: "max-content" }}>
-                      {selectedPerson ? selectedPerson.name : "Select a person"}
-                      <DropdownMenu.TriggerIcon />
-                    </Button>
-                  </DropdownMenu.Trigger>
-
-                  <DropdownMenu.Content>
-                    {(people ?? []).map((person) => (
-                      <DropdownMenu.Item
-                        key={person.id}
-                        onSelect={() => {
-                          setSelectedPerson(person);
-                          setForm({ ...form, personID: Number(person.id) });
-                          console.log("Selected person:", person.id);
-                        }}
-                      >
-                        {person.name}
-                      </DropdownMenu.Item>
-                    ))}
-                  </DropdownMenu.Content>
-                </DropdownMenu.Root>
-                <input type="hidden" name="personID" value={form.personID} />
+                <TextField.Root
+                    name="course"
+                    disabled={isPending}
+                    value={form.course}
+                    onChange={(x) =>
+                        setForm({
+                          ...form,
+                          course: x.target.value
+                        })}
+                    placeholder="Enter the person's course"
+                />
               </label>
               <label>
                 <Text as="div" size="2" mb="1" weight="bold">
-                  2 digits of first academic year (e.g. 23 for 2023-2024)*
+                  Description
+                </Text>
+                <TextArea
+                    name="description"
+                    disabled={isPending}
+                    value={form.description}
+                    onChange={(x) =>
+                        setForm({
+                          ...form,
+                          description: x.target.value
+                        })}
+                    placeholder="Enter the person's description"
+                />
+              </label>
+              <label>
+                <Text as="div" size="2" mb="1" weight="bold">
+                  Fact
+                </Text>
+                <TextArea
+                    name="fact"
+                    disabled={isPending}
+                    value={form.fact}
+                    onChange={(x) =>
+                        setForm({
+                          ...form,
+                          fact: x.target.value
+                        })}
+                    placeholder="Enter the person's fact"
+                />
+              </label>
+              <label>
+                <Text as="div" size="2" mb="1" weight="bold">
+                  Song
+                </Text>
+                <TextField.Root
+                    name="song"
+                    disabled={isPending}
+                    value={form.song}
+                    onChange={(x) =>
+                        setForm({
+                          ...form,
+                          song: x.target.value
+                        })}
+                    placeholder="Enter the song id from spotify"
+                />
+              </label>
+              <label>
+                <Text as="div" size="2" mb="1" weight="bold">
+                  Photo
+                </Text>
+                <Flex direction="column" align="center">
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger>
+                      <Button variant="soft" style={{ width: "max-content" }}>
+                        {form.photo || "Select an image"}
+                        <DropdownMenu.TriggerIcon />
+                      </Button>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content>
+                      <DropdownMenu.Item
+                        key="none"
+                        onSelect={() => setForm({ ...form, photo: '' })}
+                      >
+                        No image
+                      </DropdownMenu.Item>
+                      {images.map((image) => (
+                        <DropdownMenu.Item
+                          key={image}
+                          onSelect={() => {
+                            setForm({
+                              ...form,
+                              photo: image,
+                            });
+                          }}
+                        >
+                          {image}
+                        </DropdownMenu.Item>
+                      ))}
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Root>
+                </Flex>
+
+                {/* IMPORTANT: this is what gets submitted */}
+                <input type="hidden" name="photo" value={form.photo} />
+              </label>
+              <label>
+                <Text as="div" size="2" mb="1" weight="bold">
+                  Year*
                 </Text>
                 <TextField.Root
                     name="year"
                     disabled={isPending}
-                    value={form.year.toString()}
+                    value={form.year}
                     onChange={(x) =>
                         setForm({
                           ...form,
-                          year: Number(x.target.value)
+                          year: x.target.value
                         })}
-                    placeholder="Enter the 2 digits of the year"
+                    placeholder="Enter the year of this role"
+                    required
                 />
               </label>
+
+              {
+                <Flex direction="column" align="center">
+                  {form.photo ? (
+                    <Image
+                      src={"https://api.burnfm.com/uploads/committee_img/" + encodeURIComponent(form.photo)}
+                      alt=""
+                      width={100}
+                      height={100}
+                    />
+                  ) : (
+                    <div></div>
+                  )}
+                </Flex>
+              }
 
               {/*<label>*/}
               {/*  <Flex direction="column">*/}
@@ -271,7 +376,7 @@ export default function EditRoleDialog({
                 </Button>
               </Dialog.Close>
               <Button type={"submit"} loading={isPending}>
-                Save committee member role
+                Save committee member
                 <Kbd style={{background: "rgba(255,255,255, 0.1)", boxShadow: "none"}}>Enter ⏎</Kbd>
               </Button>
             </Flex>

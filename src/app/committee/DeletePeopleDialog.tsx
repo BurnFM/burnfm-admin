@@ -3,7 +3,7 @@
 import {AlertDialog, Button, Flex} from "@radix-ui/themes";
 import {ReactNode, useState} from "react";
 import {useToast} from "@/app/components/Toast";
-import {DELETE_PEOPLE_ENDPOINT} from "@/lib/endpoints";
+import {DELETE_COMMITTEE_ENDPOINT} from "@/lib/endpoints";
 
 export default function DeleteCommitteeDialog({
   person_id,
@@ -22,7 +22,7 @@ export default function DeleteCommitteeDialog({
   const deleteCommitteeMember = async () => {
     try {
       console.log(process.env.NEXT_PUBLIC_AUTH_TOKEN)
-      const response = await fetch(DELETE_PEOPLE_ENDPOINT(person_id), {
+      const response = await fetch(DELETE_COMMITTEE_ENDPOINT(person_id), {
         method: "DELETE",
         headers: {
           'Authorization': `${process.env.NEXT_PUBLIC_AUTH_TOKEN}`  // Pass the token for authorization

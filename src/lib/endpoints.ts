@@ -4,8 +4,6 @@ const BASE_ENDPOINT_SETTINGS = BASE_ENDPOINT + "settings/"
 const BASE_ENDPOINT_SCHEDULES = BASE_ENDPOINT + "schedule/"
 const BASE_ENDPOINT_PODCAST = BASE_ENDPOINT + "podcast/"
 const BASE_ENDPOINT_COMMITTEE = BASE_ENDPOINT + "committee/"
-const BASE_ENDPOINT_PEOPLE = BASE_ENDPOINT_COMMITTEE + "people/"
-const BASE_ENDPOINT_ROLE = BASE_ENDPOINT_COMMITTEE + "role/"
 const BASE_ENDPOINT_IMAGES  = "https://api.burnfm.com/uploads/"
 const GET_IMAGE_FILENAME = "/images.php"
 
@@ -50,29 +48,17 @@ export const DELETE_PODCAST_ENDPOINT = (id: number) => BASE_ENDPOINT_PODCAST + "
 export const UPDATE_PODCAST_ENDPOINT = (id: number) => BASE_ENDPOINT_PODCAST + "update?id=" + id;
 
 //committee
-//people on committee
-export const GET_PEOPLE_ENDPOINT = (id?: number) => {
+export const GET_COMMITTEE_ENDPOINT = (id?: number) => {
   if (id)
-    return BASE_ENDPOINT_PEOPLE + "get?id=" + id;
+    return BASE_ENDPOINT_COMMITTEE + "get?id=" + id;
   else
-    return BASE_ENDPOINT_PEOPLE + "get";
+    return BASE_ENDPOINT_COMMITTEE + "get";
 }
-export const INSERT_PEOPLE_ENDPOINT = BASE_ENDPOINT_PEOPLE + "insert";
-export const DELETE_PEOPLE_ENDPOINT = (id: number) => BASE_ENDPOINT_PEOPLE + "delete?id=" + id;
-export const UPDATE_PEOPLE_ENDPOINT = (id: number) => BASE_ENDPOINT_PEOPLE + "update?id=" + id;
-//roles on committee
-export const GET_ROLE_ENDPOINT = (id?: number, year?: number) => {
-  if (id)
-    return BASE_ENDPOINT_ROLE + "get?id=" + id;
-  if (year)
-    return BASE_ENDPOINT_ROLE + "get?year=" + year;
-  else
-    return BASE_ENDPOINT_ROLE + "get";
-}
-export const INSERT_ROLE_ENDPOINT = BASE_ENDPOINT_ROLE + "insert";
-export const DELETE_ROLE_ENDPOINT = (id: number) => BASE_ENDPOINT_ROLE + "delete?id=" + id;
-export const UPDATE_ROLE_ENDPOINT = (id: number) => BASE_ENDPOINT_ROLE + "update?id=" + id;
+export const INSERT_COMMITTEE_ENDPOINT = BASE_ENDPOINT_COMMITTEE + "insert";
+export const DELETE_COMMITTEE_ENDPOINT = (id: number) => BASE_ENDPOINT_COMMITTEE + "delete?id=" + id;
+export const UPDATE_COMMITTEE_ENDPOINT = (id: number) => BASE_ENDPOINT_COMMITTEE + "update?id=" + id;
 
+//images
 export const GET_PODCAST_IMAGES_ENDPOINT = BASE_ENDPOINT_IMAGES + "podcast_img" + GET_IMAGE_FILENAME;
 export const GET_PEOPLE_IMAGES_ENDPOINT = BASE_ENDPOINT_IMAGES + "committee_img" + GET_IMAGE_FILENAME;
 export const GET_SHOW_IMAGES_ENDPOINT = BASE_ENDPOINT_IMAGES + "schedule_img" + GET_IMAGE_FILENAME;
