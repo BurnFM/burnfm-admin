@@ -97,6 +97,8 @@ export function settingsReducer(state: SettingsState, action: SettingsAction): S
           offAirMode: {
             ...state.settings.offAirMode,
             enabled: action.payload,
+            show: action.payload ? state.settings.offAirMode.show : undefined,  // Set the show to undefined when turning offAirMode to false
+            // TODO - simplify the whole reducer (and API in front and backend by removing flags for offAirMode and defaultShow)
           },
         }
       };
