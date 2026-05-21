@@ -134,18 +134,6 @@ export default function EditShowDialog({
 
           <form action={dispatch}>
             <Flex direction="column" gap="3">
-              {isShow(form) &&
-                  <label>
-                      <Text as="div" size="2" mb="1" weight="bold">
-                          ID*
-                      </Text>
-                      <TextField.Root
-                          name="id"
-                          disabled
-                          value={form.id}
-                      />
-                  </label>
-              }
               <label>
                 <Text as="div" size="2" mb="1" weight="bold">
                   Title*
