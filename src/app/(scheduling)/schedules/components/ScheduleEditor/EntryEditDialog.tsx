@@ -1,8 +1,8 @@
 import {Dialog, Flex, Text, TextField, Button, Select} from "@radix-ui/themes";
-import {NewEntry} from "@/app/scheduling/components/ScheduleEditor/ScheduleEditor";
+import {NewEntry} from "@/app/(scheduling)/schedules/components/ScheduleEditor/ScheduleEditor";
 import {getDate} from "@/lib/dates";
 import {TrashIcon} from "@radix-ui/react-icons";
-import DeleteEntryDialog from "@/app/scheduling/components/ScheduleEditor/DeleteEntryDialog";
+import DeleteEntryDialog from "@/app/(scheduling)/schedules/components/ScheduleEditor/DeleteEntryDialog";
 import {ICalendarEvent} from "@/app/components/Calendar";
 
 export default function EntryEditDialog({ data, open, onOpenChange, shows, setData, deleteEntry }: {

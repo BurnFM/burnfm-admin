@@ -194,7 +194,7 @@ export default function ShowPage() {
                                 </Table.Cell>
                                 <Table.Cell>{person.year}</Table.Cell>                         
                                 <Table.Cell>
-                                  <EditCommitteeDialog person={person} onSuccess={handleSuccess}>
+                                  <EditCommitteeDialog key={person.id} person={person} onSuccess={handleSuccess}>
                                     <IconButton size="1" color="gray" variant="soft" type="button">
                                       <Pencil1Icon/>
                                     </IconButton>

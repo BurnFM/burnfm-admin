@@ -7,7 +7,7 @@ import Calendar, {
   SelectSlotHandler
 } from "@/app/components/Calendar";
 import {IEntry} from "@/interfaces/ISchedule";
-import EntryEditDialog from "@/app/scheduling/components/ScheduleEditor/EntryEditDialog";
+import EntryEditDialog from "@/app/(scheduling)/schedules/components/ScheduleEditor/EntryEditDialog";
 
 export type NewEntry = {
   start: Date,

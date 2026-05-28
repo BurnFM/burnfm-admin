@@ -55,7 +55,7 @@ export default function Home() {
                 </Card>
 
                 <Card variant="classic" asChild>
-                  <Link href="/scheduling">
+                  <Link href="/schedules">
                     <Flex direction="column" align="center" py="2" gap="4" width="140px">
                       <ActivityLogIcon style={{height: 24, width: 24}}/>
                       <Text size="2" weight="medium">

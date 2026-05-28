@@ -1,14 +1,14 @@
 import {Button, Callout, Flex, Heading, IconButton, Popover, Separator, Skeleton, Text} from "@radix-ui/themes";
 import {ExclamationTriangleIcon, PlusIcon, QuestionMarkCircledIcon} from "@radix-ui/react-icons";
 import {useEffect, useReducer, useState} from "react";
-import {initialState, schedulesReducer} from "@/app/scheduling/components/SchedulesList/schedulesReducer";
+import {initialState, schedulesReducer} from "@/app/(scheduling)/schedules/components/SchedulesList/schedulesReducer";
 import {GET_SCHEDULES_ENDPOINT} from "@/lib/endpoints";
-import ScheduleCard from "@/app/scheduling/components/SchedulesList/ScheduleCard";
+import ScheduleCard from "@/app/(scheduling)/schedules/components/SchedulesList/ScheduleCard";
 import {API, IEntry, IScheduleAPI, IScheduleExtended} from "@/interfaces/ISchedule";
 import Link from "next/link";
 import {getDate} from "@/lib/dates";
 import {ToastProvider} from "@/app/components/Toast";
-import DeleteScheduleDialog from "@/app/scheduling/components/DeleteScheduleDialog";
+import DeleteScheduleDialog from "@/app/(scheduling)/schedules/components/DeleteScheduleDialog";
 
 export default function SchedulesList() {
   const [{schedules, error, loading}, dispatch] = useReducer(schedulesReducer, initialState);
@@ -97,7 +97,7 @@ export default function SchedulesList() {
             <Heading size="3">Schedules</Heading>
 
             <Button asChild>
-              <Link href={'/scheduling/new'} >
+              <Link href={'/schedules/new'} >
                 <PlusIcon /> New schedule
               </Link>
             </Button>

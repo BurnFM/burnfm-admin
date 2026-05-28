@@ -1,12 +1,13 @@
-"use client"
-
-import {Box, Container, Flex, Heading, Text} from "@radix-ui/themes";
+import {Text, Flex, Heading, Container, Box} from "@radix-ui/themes";
 import {ActivityLogIcon} from "@radix-ui/react-icons";
-import SettingsPanel from "@/app/scheduling/components/SettingsPanel/SettingsPanel";
-import SchedulesList from "@/app/scheduling/components/SchedulesList/SchedulesList";
+import Navbar from "@/app/components/Navbar";
 
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
 
-export default function SchedulePage() {
   return (
       <Flex height="100%" direction="column" flexGrow="1">
         <Box p="6" style={{backgroundColor: "var(--accent-3)", borderBottom: "1px solid var(--accent-6)"}}>
@@ -20,10 +21,17 @@ export default function SchedulePage() {
             </Flex>
           </Container>
         </Box>
+        <Navbar justify="center" links={[
+            {href: "/schedules", label: "Schedules"},
+            {href: "/overrides", label: "overrides"}
+        ]}/>
 
-        <SettingsPanel>
-          <SchedulesList />
-        </SettingsPanel>
+        <Container size="4" p="6" style={{paddingTop: "0"}}>
+          <Flex direction="column" gap="3">
+            {children}
+          </Flex>
+        </Container>
+
       </Flex>
   );
 }

@@ -14,7 +14,7 @@ import {
 import {ArrowLeftIcon, ExclamationTriangleIcon} from "@radix-ui/react-icons";
 import Link from "next/link";
 import {ChangeEvent, useReducer} from "react";
-import {scheduleReducer, ScheduleState} from "@/app/scheduling/new/createScheduleReducer";
+import {scheduleReducer, ScheduleState} from "@/app/(scheduling)/schedules/new/createScheduleReducer";
 import {INSERT_SCHEDULE_ENDPOINT} from "@/lib/endpoints";
 import {useRouter} from "next/navigation";
 
@@ -62,7 +62,7 @@ export default function NewSchedulePage() {
 
       if (response.ok) {
         const res = await response.json();
-        router.push("/scheduling/edit/" + res.id);
+        router.push("/schedules/edit/" + res.id);
         dispatch({ type: "UPDATE_SUCCESS" });
       } else {
         throw new Error(`${response.status} - ${response.statusText}`);
@@ -92,7 +92,7 @@ export default function NewSchedulePage() {
           <Container size="4">
             <Flex align="center" gap="4">
               <IconButton variant="ghost" size="2" asChild>
-                <Link href={"/scheduling"}>
+                <Link href={"/schedules"}>
                   <ArrowLeftIcon height={24} width={24}/>
                 </Link>
               </IconButton>

@@ -35,17 +35,19 @@ export default function EditCommitteeDialog({
   const [images, setImages] = useState<string[]>([]);
 
   useEffect(() => {
+    if (!open) return;
+
     async function fetchImages() {
       try {
-        const res = await fetch(GET_PEOPLE_IMAGES_ENDPOINT,{
+        const res = await fetch(GET_PEOPLE_IMAGES_ENDPOINT, {
           method: "GET",
           headers: {
             "Accept": "application/json",
           },
-        }
-        );
-        const data = await res.json(); // assuming it returns JSON array
+          cache: "no-store", // 👈 important
+        });
 
+        const data = await res.json();
         setImages(data);
       } catch (err) {
         console.error("Failed to fetch images", err);
@@ -53,7 +55,7 @@ export default function EditCommitteeDialog({
     }
 
     fetchImages();
-  }, []);
+  }, [open]);
 
   const toast = useToast();
 
@@ -281,6 +283,20 @@ export default function EditCommitteeDialog({
                   </DropdownMenu.Root>
                 </Flex>
 
+                <Flex direction="column" align="center" style={{marginTop: "10px"}}>
+                  {form.photo ? (
+                    <Image
+                      src={"https://api.burnfm.com/uploads/committee_img/" + encodeURIComponent(form.photo)}
+                      alt=""
+                      width={100}
+                      height={100}
+                    />
+                  ) : (
+                    <div></div>
+                  )}
+                </Flex>
+
+
                 {/* IMPORTANT: this is what gets submitted */}
                 <input type="hidden" name="photo" value={form.photo} />
               </label>
@@ -295,27 +311,13 @@ export default function EditCommitteeDialog({
                     onChange={(x) =>
                         setForm({
                           ...form,
-                          year: x.target.value
+                          year: parseInt(x.target.value)
                         })}
                     placeholder="Enter the year of this role"
                     required
                 />
               </label>
 
-              {
-                <Flex direction="column" align="center">
-                  {form.photo ? (
-                    <Image
-                      src={"https://api.burnfm.com/uploads/committee_img/" + encodeURIComponent(form.photo)}
-                      alt=""
-                      width={100}
-                      height={100}
-                    />
-                  ) : (
-                    <div></div>
-                  )}
-                </Flex>
-              }
 
               {/*<label>*/}
               {/*  <Flex direction="column">*/}

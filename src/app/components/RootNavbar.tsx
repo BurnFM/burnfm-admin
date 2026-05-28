@@ -21,19 +21,18 @@ export default function RootNavbar() {
   const links = [
         {href: '/', label: 'Home'},
         {href: '/shows', label: 'Shows & Podcasts'},
-        {href: '/scheduling', label: 'Scheduling'},
         {href: '/committee', label: 'Committee'},
+        {href: '/schedules', label: 'Scheduling'},
   ]
 
   return (
       <>
         <TabNav.Root justify={"end"}>
           {links.map(({ href, label }) => (
-              <TabNav.Link key={href} asChild active={path === href || path == "/podcasts" && href == "/shows" || path == "/roles" && href == "/people"}>
+              <TabNav.Link key={href} asChild active={path === href || path == "/podcasts" && href == "/shows" || path == "/schedules/new" && href == "/schedules" || (path.substring(0, path.length - 2) == "/schedules/edit" || path.substring(0, path.length - 3) == "/schedules/edit") && href == "/schedules" || path == "/overrides" && href == "/schedules" || path == "/overrides/new" && href == "/schedules" || (path.substring(0, path.length - 2) == "/overrides/edit" || path.substring(0, path.length - 3) == "/overrides/edit") && href == "/schedules"}>
                 <Link href={href}>{label}</Link>
               </TabNav.Link>
           ))}
-
           <DropdownMenu.Root>
             <DropdownMenu.Trigger>
               <TabNav.Link key={""}>

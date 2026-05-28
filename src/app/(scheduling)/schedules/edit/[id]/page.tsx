@@ -16,13 +16,13 @@ import {
 import {ArrowLeftIcon, ExclamationTriangleIcon} from "@radix-ui/react-icons";
 import Link from "next/link";
 import {ChangeEvent, useEffect, useReducer} from "react";
-import {editScheduleReducer, EditScheduleState} from "@/app/scheduling/edit/editScheduleReducer";
+import {editScheduleReducer, EditScheduleState} from "@/app/(scheduling)/schedules/edit/editScheduleReducer";
 import {
   GET_RADIOSHOW_ENDPOINT,
   GET_SCHEDULES_ENDPOINT,
   UPDATE_SCHEDULE_ENDPOINT,
 } from "@/lib/endpoints";
-import ScheduleEditor from "@/app/scheduling/components/ScheduleEditor/ScheduleEditor";
+import ScheduleEditor from "@/app/(scheduling)/schedules/components/ScheduleEditor/ScheduleEditor";
 import {API, IEntry, IScheduleAPI, IScheduleExtended} from "@/interfaces/ISchedule";
 import {IShow} from "@/interfaces/IShow";
 import {getDate, toDateString, toTimeString} from "@/lib/dates";
@@ -205,12 +205,12 @@ export default function EditSchedulePage() {
   return (
       <Flex height="100%" direction="column" flexGrow="1">
         <form action={updateSchedule}>
-          <Box p="6" style={{backgroundColor: "var(--accent-3)", borderBottom: "1px solid var(--accent-6)"}}>
+          <Box p="6" style={{borderBottom: "1px solid var(--accent-6)"}}>
             <Container size="4">
 
               <Flex align="center" gap="4">
                 <IconButton variant="ghost" size="2" asChild>
-                  <Link href={"/scheduling"}>
+                  <Link href={"/schedules"}>
                     <ArrowLeftIcon height={24} width={24}/>
                   </Link>
                 </IconButton>
@@ -325,16 +325,7 @@ export default function EditSchedulePage() {
               </Flex>
 
               <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap" style={{marginLeft:"5px"}}>
-                <Text as="label">
-                  <Flex gap="4" align="center">
-                    <Box>
-                      <Text as="p" size="2" weight="medium">Priority schedule</Text>
-                      <Text as="p" size="1">Determine if this schedule should overide the other schedule</Text>
-                    </Box>
-                  </Flex>
-                </Text>
-
-                <Switch/>
+                {/* blank section for layout purposes */}
               </Flex>
 
               {error &&

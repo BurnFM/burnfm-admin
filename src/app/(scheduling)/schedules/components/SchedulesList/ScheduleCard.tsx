@@ -3,7 +3,7 @@ import {Card, ContextMenu, Flex, Text} from "@radix-ui/themes";
 import {ArrowRightIcon, Pencil1Icon, TrashIcon, CopyIcon} from "@radix-ui/react-icons";
 import React from "react";
 import {IScheduleExtended} from "@/interfaces/ISchedule";
-import DuplicateScheduleDialog from "@/app/scheduling/components/SchedulesList/DuplicateScheduleDialog";
+import DuplicateScheduleDialog from "@/app/(scheduling)/schedules/components/SchedulesList/DuplicateScheduleDialog";
 
 export default function ScheduleCard({schedule, openDeleteDialog}: {schedule: IScheduleExtended, openDeleteDialog: (schedule: IScheduleExtended) => void }) {
   return (
@@ -11,7 +11,7 @@ export default function ScheduleCard({schedule, openDeleteDialog}: {schedule: IS
 
         <ContextMenu.Trigger>
           <Card variant="classic" asChild>
-            <Link href={"/scheduling/edit/" + schedule.id}>
+            <Link href={"/schedules/edit/" + schedule.id}>
               <Flex direction="column" align="center" py="1" gap="2">
                 <Text size="4" weight="medium">
                   {schedule.name}
@@ -32,7 +32,7 @@ export default function ScheduleCard({schedule, openDeleteDialog}: {schedule: IS
 
         <ContextMenu.Content>
           <ContextMenu.Item asChild>
-            <Link href={"/scheduling/edit/" + schedule.id}>
+            <Link href={"/schedules/edit/" + schedule.id}>
               <Pencil1Icon /> Edit
             </Link>
           </ContextMenu.Item>
