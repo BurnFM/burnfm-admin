@@ -9,7 +9,6 @@ import {INSERT_COMMITTEE_ENDPOINT, UPDATE_COMMITTEE_ENDPOINT, GET_PEOPLE_IMAGES_
 import Image from "next/image";
 
 export default function EditCommitteeDialog({
-  key,
   person,
   onSuccess,
   children
@@ -124,7 +123,7 @@ export default function EditCommitteeDialog({
   // }
 
   return (
-      <Dialog.Root key={key} open={open} onOpenChange={setOpen}>
+      <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Trigger>
           { children }
         </Dialog.Trigger>
@@ -206,7 +205,7 @@ export default function EditCommitteeDialog({
                 <TextArea
                     name="description"
                     disabled={isPending}
-                    value={form.description}
+                    value={form.description ?? ""}
                     onChange={(x) =>
                         setForm({
                           ...form,
@@ -222,7 +221,7 @@ export default function EditCommitteeDialog({
                 <TextArea
                     name="fact"
                     disabled={isPending}
-                    value={form.fact}
+                    value={form.fact ?? ""}
                     onChange={(x) =>
                         setForm({
                           ...form,

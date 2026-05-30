@@ -24,7 +24,7 @@ export default function ShowPage() {
     const matchesSearch =
     person.name.toLowerCase().includes(search.toLowerCase()) ||
     person.description?.toLowerCase().includes(search.toLowerCase()) ||
-    person.fact?.toLowerCase().includes(search.toLowerCase())
+    person.fact?.toLowerCase().includes(search.toLowerCase()) ||
     person.year.toString().includes(search);
 
     const matchesYear = selectedYear === null || person.year.toString() === selectedYear;

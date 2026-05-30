@@ -18,7 +18,6 @@ export default function RootLayout({
             </Flex>
             <Flex direction="column" gap="1">
               <Text weight="medium" style={{color: "var(--accent-12)"}}>Create, edit, and delete Radio Shows and Podcasts</Text>
-              <Text weight="medium" style={{color: "var(--accent-12)"}}>Manage each Radio Show’s recordings</Text>
             </Flex>
           </Container>
         </Box>
