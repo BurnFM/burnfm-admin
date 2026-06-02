@@ -3,38 +3,69 @@
 import {useEffect, useReducer, useState} from "react";
 import {Button, Container, IconButton, Skeleton, Strong, Table, Text, TextField} from "@radix-ui/themes";
 import { MagnifyingGlassIcon, Pencil1Icon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
-import EditShowDialog from "@/app/(shows)/shows/EditShowDialog";
+import EditOverrideDialog from "@/app/(scheduling)/overrides/EditOverrideDialog";
 import { ToastProvider } from "@/app/components/Toast";
-import DeleteShowDialog from "@/app/(shows)/shows/DeleteShowDialog";
-import { GET_RADIOSHOW_ENDPOINT } from "@/lib/endpoints";
-import {initialState, showsReducer} from "@/app/(shows)/shows/showsReducer";
+import DeleteOverrideDialog from "@/app/(scheduling)/overrides/DeleteOverrideDialog";
+import { GET_OVERRIDES_ENDPOINT, GET_RADIOSHOW_ENDPOINT } from "@/lib/endpoints";
+import {initialState, overridesReducer} from "@/app/(scheduling)/overrides/overrideReducer";
 import {API} from "@/interfaces/ISchedule";
+import {IOverride} from "@/interfaces/IOverride";
 import {IShow} from "@/interfaces/IShow";
 import Image from "next/image";
 
 
-export default function ShowPage() {
-  const [{shows, loading, error}, dispatch] = useReducer(showsReducer, initialState);
+export default function OverridesPage() {
+  const [{overrides, loading, error}, dispatch] = useReducer(overridesReducer, initialState);
   const [search, setSearch] = useState("");
 
-  //searchbar
-  const filteredShows = shows.filter((show) =>
-    show.title.toLowerCase().includes(search.toLowerCase()) ||
-    show.description?.toLowerCase().includes(search.toLowerCase()) ||
-    show.hosts.join(", ").toLowerCase().includes(search.toLowerCase())
-  );
+  type RadioShowLookup = {
+    id: number;
+    title: string;
+  };
 
-  // Fetch shows on mount
+  const [radioShows, setRadioShows] = useState<RadioShowLookup[]>([]);
+
+  const getShowTitle = (id: number) => {
+    return radioShows.find((s) => s.id === id)?.title ?? "Unknown show";
+  };
+
+  //searchbar
+  const filteredOverrides = overrides.filter((override) => {
+    const showTitle = getShowTitle(override.radioShowID ?? 0).toLowerCase();
+
+    const date = new Date(override.date)
+      .toLocaleDateString("en-GB")
+      .toLowerCase();
+
+    const startTime = override.startTime?.slice(0, 5).toLowerCase();
+    const endTime = override.endTime?.slice(0, 5).toLowerCase();
+
+    const type = override.type?.toLowerCase() ?? "";
+    const radioShowID = override.radioShowID?.toString() ?? "";
+
+    const q = search.toLowerCase();
+
+    return (
+      type.includes(q) ||
+      radioShowID.includes(q) ||
+      showTitle.includes(q) ||
+      date.includes(q) ||
+      startTime.includes(q) ||
+      endTime.includes(q)
+    );
+  });
+
+  // Fetch overrides on mount
   useEffect(() => {
-    fetchShows().then();
+    fetchOverrides().then();
   }, []);
 
   // Fetch function
-  const fetchShows = async () => {
+  const fetchOverrides = async () => {
     dispatch({ type: "FETCH_REQUEST" });
 
     try {
-      const response = await fetch(GET_RADIOSHOW_ENDPOINT(), {
+      const response = await fetch(GET_OVERRIDES_ENDPOINT(), {
         method: "GET",
         headers: {
           "Accept": "application/json",
@@ -42,13 +73,15 @@ export default function ShowPage() {
       });
 
       if (response.ok) {
-        const res = await response.json() as API<IShow[]>;
-        dispatch({ type: "FETCH_SUCCESS", payload: res.data.map((show) => ({
-            id: show.id,
-            title: show.title,
-            description: show.description,
-            hosts: show.hosts,
-            photo: show.photo,
+        const res = await response.json() as API<IOverride[]>;
+        console.log(res);
+        dispatch({ type: "FETCH_SUCCESS", payload: res.data.map((override) => ({
+            id: override.id,
+            date: override.date,
+            startTime: override.startTime,
+            endTime: override.endTime,
+            type: override.type,
+            radioShowID: override.radioShowID,
           }))});
       } else {
         throw new Error(response.statusText);
@@ -59,16 +92,49 @@ export default function ShowPage() {
     }
   };
 
+  useEffect(() => {
+    const fetchSchedule = async () => {
+      try {
+        const response = await fetch(GET_RADIOSHOW_ENDPOINT(), {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+
+        const json = await response.json();
+        const res = json.data as IShow[];
+
+        setRadioShows(
+          res.map((show) => ({
+            id: show.id,
+            title: show.title,
+          }))
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchSchedule();
+  }, []);
+
+  const formatTime = (time: string) => time.slice(0, 5);
+
   // Handle creation or editing success
   const handleSuccess = async () => {
-    await fetchShows(); // Re-fetch shows to update the list
+    await fetchOverrides(); // Re-fetch overrides to update the list
   };
 
   if (error)
     return (
         <>
           <Text align="center" size="3">
-            <Strong>An error occurred while retrieving show data</Strong>
+            <Strong>An error occurred while retrieving override data</Strong>
           </Text>
           <Text align="center" size="1">{error}</Text>
         </>
@@ -76,8 +142,11 @@ export default function ShowPage() {
 
   return (
       <ToastProvider>
+
+      <Container p="3"></Container> {/* used for padding as the main schedule page I removed the padding*/}
+
       <Skeleton loading={loading}>
-          {shows.length === 0 && (
+          {overrides.length === 0 && (
               <>
                 <Text align="center" size="3">
                   <Strong>You have no overrides</Strong>
@@ -86,16 +155,13 @@ export default function ShowPage() {
               </>
           )}
 
-
-          <Container p="3"></Container> {/* used for padding as the main schedule page I removed the padding*/}
-
-          <EditShowDialog onSuccess={handleSuccess}>
+          <EditOverrideDialog onSuccess={handleSuccess}>
             <Button>
               <PlusIcon /> New override
             </Button>
-          </EditShowDialog>
+          </EditOverrideDialog>
 
-          {shows.length > 0 && (
+          {overrides.length > 0 && (
               <>
                 <TextField.Root
                   placeholder="Search overrides..."
@@ -122,26 +188,26 @@ export default function ShowPage() {
 
 
                   <Table.Body>
-                    {filteredShows.toSorted((a, b) => a.title.localeCompare(b.title)).map((show, i) => (
-                        <Table.Row key={show.id}>
-                          <Table.RowHeaderCell>1</Table.RowHeaderCell>
-                          <Table.Cell>20/05/2026</Table.Cell>
-                          <Table.Cell>12:00</Table.Cell>                          
-                          <Table.Cell>14:00</Table.Cell>
-                          <Table.Cell>Override</Table.Cell>
-                          <Table.Cell>Recession Indicator</Table.Cell>
+                    {filteredOverrides.toSorted((a, b) => a.date.localeCompare(b.date)).map((override, i) => (
+                        <Table.Row key={override.id}>
+                          <Table.Cell>{override.id}</Table.Cell>
+                          <Table.Cell>{new Date(override.date).toLocaleDateString("en-GB")}</Table.Cell>
+                          <Table.Cell>{formatTime(override.startTime)}</Table.Cell>
+                          <Table.Cell>{formatTime(override.endTime)}</Table.Cell>
+                          <Table.Cell>{override.type}</Table.Cell>
+                          <Table.Cell>{override.radioShowID?getShowTitle(override.radioShowID):"N/A"}</Table.Cell>
                           <Table.Cell>
-                            <EditShowDialog show={show} onSuccess={handleSuccess}>
+                            <EditOverrideDialog override={override} onSuccess={handleSuccess}>
                               <IconButton size="1" color="gray" variant="soft" type="button">
                                 <Pencil1Icon/>
                               </IconButton>
-                            </EditShowDialog>
+                            </EditOverrideDialog>
                             <div style={{marginBottom:"10px"}}></div>
-                            <DeleteShowDialog show_id={show.id} onSuccess={handleSuccess}>
+                            <DeleteOverrideDialog id={override.id} onSuccess={handleSuccess}>
                               <IconButton size="1" color="crimson" variant="soft" type="button">
                                 <TrashIcon/>
                               </IconButton>
-                            </DeleteShowDialog>
+                            </DeleteOverrideDialog>
                           </Table.Cell>
                         </Table.Row>
                     ))}

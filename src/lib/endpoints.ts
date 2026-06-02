@@ -4,6 +4,7 @@ const BASE_ENDPOINT_SETTINGS = BASE_ENDPOINT + "settings/"
 const BASE_ENDPOINT_SCHEDULES = BASE_ENDPOINT + "schedule/"
 const BASE_ENDPOINT_PODCAST = BASE_ENDPOINT + "podcast/"
 const BASE_ENDPOINT_COMMITTEE = BASE_ENDPOINT + "committee/"
+const BASE_ENDPOINT_OVERRIDES = BASE_ENDPOINT + "overrides/"
 const BASE_ENDPOINT_IMAGES  = "https://api.burnfm.com/uploads/"
 const GET_IMAGE_FILENAME = "/images.php"
 
@@ -62,3 +63,14 @@ export const UPDATE_COMMITTEE_ENDPOINT = (id: number) => BASE_ENDPOINT_COMMITTEE
 export const GET_PODCAST_IMAGES_ENDPOINT = BASE_ENDPOINT_IMAGES + "podcast_img" + GET_IMAGE_FILENAME;
 export const GET_PEOPLE_IMAGES_ENDPOINT = BASE_ENDPOINT_IMAGES + "committee_img" + GET_IMAGE_FILENAME;
 export const GET_SHOW_IMAGES_ENDPOINT = BASE_ENDPOINT_IMAGES + "schedule_img" + GET_IMAGE_FILENAME;
+
+//overrides
+export const GET_OVERRIDES_ENDPOINT = (id?: number) => {
+  if (id)
+    return BASE_ENDPOINT_OVERRIDES + "get?id=" + id;
+  else
+    return BASE_ENDPOINT_OVERRIDES + "get";
+}
+export const INSERT_OVERRIDE_ENDPOINT = BASE_ENDPOINT_OVERRIDES + "insert";
+export const DELETE_OVERRIDE_ENDPOINT = (id: number) => BASE_ENDPOINT_OVERRIDES + "delete?id=" + id;
+export const UPDATE_OVERRIDE_ENDPOINT = (id: number) => BASE_ENDPOINT_OVERRIDES + "update?id=" + id;

@@ -23,7 +23,8 @@ export default function RootLayout({
         </Box>
         <Navbar justify="center" links={[
             {href: "/schedules", label: "Schedules"},
-            {href: "/overrides", label: "overrides"}
+            {href: "/overrides", label: "Overrides"},
+            {href: "/calendar", label: "Calendar"}
         ]}/>
 
         <Container size="4" p="6" style={{paddingTop: "0"}}>

@@ -189,7 +189,7 @@ export default function EditCommitteeDialog({
                 <TextField.Root
                     name="course"
                     disabled={isPending}
-                    value={form.course}
+                    value={form.course ?? ""}
                     onChange={(x) =>
                         setForm({
                           ...form,
@@ -237,7 +237,7 @@ export default function EditCommitteeDialog({
                 <TextField.Root
                     name="song"
                     disabled={isPending}
-                    value={form.song}
+                    value={form.song ?? ""}
                     onChange={(x) =>
                         setForm({
                           ...form,
