@@ -23,12 +23,14 @@ const initialState: ScheduleState = {
   schedule: {
     name: "",
     start_date: null,
-    end_date: null
+    end_date: null,
+    active: false,
   },
   originalSchedule: {
     name: "",
     start_date: null,
-    end_date: null
+    end_date: null,
+    active: false,
   },
   error: null,
 };
@@ -38,6 +40,7 @@ export default function NewSchedulePage() {
   const router = useRouter();
 
   const hasChanges = JSON.stringify(schedule) !== JSON.stringify(originalSchedule);
+  const hasName = schedule.name.trim().length > 0;
 
   const insertSchedule = async () => {
     dispatch({ type: "START_REQUEST" });
@@ -84,6 +87,11 @@ export default function NewSchedulePage() {
   const handleEndDateChange = (event: ChangeEvent<HTMLInputElement>) => {
     const selectedDate = new Date(event.target.value);
     dispatch({ type: "SET_END_DATE", payload: selectedDate });
+  };
+
+  const handleActiveChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const checked = event.target.checked;
+    dispatch({ type: "SET_ACTIVE", payload: checked });
   };
 
   return (
@@ -192,6 +200,28 @@ export default function NewSchedulePage() {
                 }
               </Flex>
 
+              <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap">
+                <Text as="label">
+                  <Flex gap="4" align="center">
+                    <Switch
+                      checked={schedule.active}
+                      onCheckedChange={(checked: boolean) =>
+                        dispatch({
+                          type: "SET_ACTIVE",
+                          payload: checked
+                        })
+                      }
+                      disabled={error ? error.status == "FETCH_FAILURE" : loading}
+                    />
+
+                    <Box>
+                      <Text as="p" size="2" weight="medium">Active</Text>
+                      <Text as="p" size="1">Determine if this schedule is active</Text>
+                    </Box>
+                  </Flex>
+                </Text>
+              </Flex>
+
               <Flex gap="2" wrap="wrap">
                 <Button variant="soft"
                         color="gray"
@@ -199,7 +229,7 @@ export default function NewSchedulePage() {
                         disabled={!hasChanges}>
                   Revert changes
                 </Button>
-                <Button type="submit" disabled={!hasChanges}>Save schedule</Button>
+                <Button type="submit" disabled={!hasChanges || !hasName}>Save schedule</Button>
               </Flex>
 
               { error &&

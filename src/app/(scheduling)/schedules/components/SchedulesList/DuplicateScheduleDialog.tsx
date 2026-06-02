@@ -22,6 +22,7 @@ export default function DuplicateScheduleDialog({
     name: "",
     start_date: new Date(),
     end_date: new Date(),
+    active: false,
     entries: [],
   }
 

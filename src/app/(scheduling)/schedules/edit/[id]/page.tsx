@@ -36,6 +36,7 @@ const initialState: EditScheduleState = {
     name: "",
     start_date: null,
     end_date: null,
+    active: true,
     entries: []
   },
   originalSchedule: {
@@ -43,6 +44,7 @@ const initialState: EditScheduleState = {
     name: "",
     start_date: null,
     end_date: null,
+    active: true,
     entries: []
   },
   error: null,
@@ -90,6 +92,7 @@ export default function EditSchedulePage() {
             name: res.name,
             start_date: res.start_date ? new Date(res.start_date) : null,
             end_date: res.end_date ? new Date(res.end_date) : null,
+            active: res.active,
             entries: res.entries.map(entry => ({
               id: entry.entry_id,
               day: parseInt(entry.day),
@@ -283,14 +286,23 @@ export default function EditSchedulePage() {
               <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap" style={{marginLeft:"5px"}}>
                 <Text as="label">
                   <Flex gap="4" align="center">
+                    <Switch
+                      checked={schedule.active}
+                      onCheckedChange={(checked: boolean) =>
+                        dispatch({
+                          type: "SET_ACTIVE",
+                          payload: checked
+                        })
+                      }
+                      disabled={error ? error.status == "FETCH_FAILURE" : loading}
+                    />
+
                     <Box>
-                      <Text as="p" size="2" weight="medium">Schedule Active</Text>
-                      <Text as="p" size="1">Determine if ths schedule should be used</Text>
+                      <Text as="p" size="2" weight="medium">Active</Text>
+                      <Text as="p" size="1">Determine if this schedule is active</Text>
                     </Box>
                   </Flex>
                 </Text>
-
-                <Switch/>
               </Flex>
 
               <Flex direction="row" gap="3" align="center" justify="between" wrap="wrap" style={{marginRight:"5px"}}>

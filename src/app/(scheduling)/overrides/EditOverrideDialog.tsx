@@ -290,15 +290,21 @@ export default function EditOverrideDialog({
                       </DropdownMenu.Item>
                       <DropdownMenu.Item
                         key="Cancel"
-                        onSelect={() => setForm({ ...form, type: 'Cancel' })}
+                        onSelect={() => setForm({ ...form, type: 'Cancel', radioShowID: undefined })}
                       >
                         Cancel
                       </DropdownMenu.Item>
                       <DropdownMenu.Item
                         key="Replace"
-                        onSelect={() => setForm({ ...form, type: 'Replace', radioShowID: undefined })}
+                        onSelect={() => setForm({ ...form, type: 'Replace' })}
                       >
                         Replace
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item
+                        key="Additional"
+                        onSelect={() => setForm({ ...form, type: 'Additional' })}
+                      >
+                        Additional
                       </DropdownMenu.Item>
 
                     </DropdownMenu.Content>
@@ -309,7 +315,7 @@ export default function EditOverrideDialog({
                 <input type="hidden" name="type" value={form.type} />
               </label>
 
-              {form.type === "Replace" && (
+              {(form.type === "Replace" || form.type === "Additional") && (
               <label>
                 <Text as="div" size="2" mb="1" weight="bold">
                   Radio Show ID

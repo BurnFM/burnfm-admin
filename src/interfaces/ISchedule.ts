@@ -3,6 +3,7 @@ export type ISchedule = {
   name: string,
   start_date: Date | null,
   end_date: Date | null,
+  active: boolean,
 }
 
 export type API<T> = {
@@ -16,6 +17,7 @@ export type IScheduleAPI = {
   name: string,
   start_date: string,
   end_date: string,
+  active: boolean,
   entries: {
     entry_id: number;
     day: string;
@@ -46,4 +48,5 @@ export type ISchedulePartial = {
   name: string,
   start_date: Date | null,
   end_date: Date | null,
+  active: boolean,
 }

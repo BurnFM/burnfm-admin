@@ -23,6 +23,7 @@ export default function ShowPage() {
   //searchbar and dropwdown
   const filteredPeople = people.filter((person) => {
     const matchesSearch =
+    person.id.toString().includes(search) ||
     person.name.toLowerCase().includes(search.toLowerCase()) ||
     person.description?.toLowerCase().includes(search.toLowerCase()) ||
     person.fact?.toLowerCase().includes(search.toLowerCase()) ||
@@ -158,6 +159,7 @@ export default function ShowPage() {
 
                       </div>
 
+                      
                       <Table.Root variant="surface">
                         <Table.Header>
                           <Table.Row>

@@ -65,7 +65,8 @@ export default function SchedulesList() {
             radio_show_id: entry.show.id
           })),
           start_date: x.start_date ? new Date(x.start_date) : null,
-          end_date: x.end_date ? new Date(x.end_date) : null
+          end_date: x.end_date ? new Date(x.end_date) : null,
+          active: x.active,
         }));
 
         dispatch({

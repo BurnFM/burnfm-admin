@@ -19,6 +19,7 @@ export default function PodcastPage() {
 
   //searchbar
   const filteredPodcasts = podcasts.filter((podcast) =>
+    podcast.id.toString().includes(search) ||
     podcast.title.toLowerCase().includes(search.toLowerCase()) ||
     podcast.description?.toLowerCase().includes(search.toLowerCase()) ||
     podcast.hosts.join(", ").toLowerCase().includes(search.toLowerCase())

@@ -14,6 +14,7 @@ export type ScheduleAction =
     | { type: "SET_NAME"; payload: string }
     | { type: "SET_START_DATE"; payload: Date | null }
     | { type: "SET_END_DATE"; payload: Date | null }
+    | { type: "SET_ACTIVE"; payload: boolean }
     | { type: "RESET_SCHEDULE" };
 
 export function scheduleReducer(state: ScheduleState, action: ScheduleAction): ScheduleState {
@@ -30,6 +31,8 @@ export function scheduleReducer(state: ScheduleState, action: ScheduleAction): S
       return { ...state, schedule: { ...state.schedule, start_date: action.payload } };
     case "SET_END_DATE":
       return { ...state, schedule: { ...state.schedule, end_date: action.payload } };
+    case "SET_ACTIVE":
+      return { ...state, schedule: { ...state.schedule, active: action.payload } };
     case "RESET_SCHEDULE":
       return { ...state, schedule: state.originalSchedule };
     default:

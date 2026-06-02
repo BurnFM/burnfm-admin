@@ -13,8 +13,9 @@ export default function ScheduleCard({schedule, openDeleteDialog}: {schedule: IS
           <Card variant="classic" asChild>
             <Link href={"/schedules/edit/" + schedule.id}>
               <Flex direction="column" align="center" py="1" gap="2">
-                <Text size="4" weight="medium">
+                <Text size="4" weight="medium" align="center">
                   {schedule.name}
+                  {!schedule.active && <div style={{ color: 'red' }}>(Schedule Not Active)</div>}
                 </Text>
                 <Flex gap="2" align="center">
                   <Text size="2" weight="medium">

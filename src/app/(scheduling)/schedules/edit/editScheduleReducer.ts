@@ -17,6 +17,7 @@ export type EditScheduleAction =
     | { type: "SET_NAME"; payload: string }
     | { type: "SET_START_DATE"; payload: Date | null }
     | { type: "SET_END_DATE"; payload: Date | null }
+    | { type: "SET_ACTIVE"; payload: boolean }
     | { type: "SET_ENTRIES"; payload: Omit<IEntry, "schedule_id">[] }
     | { type: "RESET_SCHEDULE" };
 

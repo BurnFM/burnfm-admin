@@ -200,7 +200,7 @@ export default function OverridesPage() {
                             (<>
                               {getShowTitle(override.radioShowID)}
                               <br/>
-                              <Link href={`/shows?search=${override.radioShowID}`} target="_blank">
+                              <Link href={`/shows?search=${override.radioShowID}`}>
                                 Go to Show
                               </Link>
                             </>) : "N/A"}
