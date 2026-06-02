@@ -220,7 +220,7 @@ export default function EditShowDialog({
                 </Flex>
 
                 {/* IMPORTANT: this is what gets submitted */}
-                <input type="hidden" name="photo" value={form.photo} />
+                <input type="hidden" name="photo" value={form.photo ?? undefined} />
               </label>
 
               {

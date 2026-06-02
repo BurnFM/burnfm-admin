@@ -1,7 +1,7 @@
 "use client";
 
 import {useEffect, useReducer, useState} from "react";
-import {Button, Container, IconButton, Skeleton, Strong, Table, Text, TextField} from "@radix-ui/themes";
+import {Button, Container, IconButton, Link, Skeleton, Strong, Table, Text, TextField} from "@radix-ui/themes";
 import { MagnifyingGlassIcon, Pencil1Icon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import EditOverrideDialog from "@/app/(scheduling)/overrides/EditOverrideDialog";
 import { ToastProvider } from "@/app/components/Toast";
@@ -195,7 +195,16 @@ export default function OverridesPage() {
                           <Table.Cell>{formatTime(override.startTime)}</Table.Cell>
                           <Table.Cell>{formatTime(override.endTime)}</Table.Cell>
                           <Table.Cell>{override.type}</Table.Cell>
-                          <Table.Cell>{override.radioShowID?getShowTitle(override.radioShowID):"N/A"}</Table.Cell>
+                          <Table.Cell>
+                            {override.radioShowID ?
+                            (<>
+                              {getShowTitle(override.radioShowID)}
+                              <br/>
+                              <Link href={`/shows?search=${override.radioShowID}`} target="_blank">
+                                Go to Show
+                              </Link>
+                            </>) : "N/A"}
+                          </Table.Cell>
                           <Table.Cell>
                             <EditOverrideDialog override={override} onSuccess={handleSuccess}>
                               <IconButton size="1" color="gray" variant="soft" type="button">

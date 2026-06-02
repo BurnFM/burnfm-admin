@@ -11,6 +11,7 @@ import {initialState, peopleReducer} from "@/app/committee/peopleReducer";
 import {API} from "@/interfaces/ICommittee";
 import {IPerson} from "@/interfaces/ICommittee";
 import Image from "next/image";
+import { profile } from "console";
 
 
 export default function ShowPage() {
@@ -183,7 +184,25 @@ export default function ShowPage() {
                                 <Table.Cell>{person.course ?? "None"}</Table.Cell>
                                 <Table.Cell>{person.description ?? "None"}</Table.Cell>
                                 <Table.Cell>{person.fact ?? "None"}</Table.Cell>
-                                <Table.Cell>{person.song ?? "None"}</Table.Cell>
+                                <Table.Cell>
+                                  {person.song ? (
+                                    <>
+                                      {person.song}
+                                      <iframe
+                                        style={{ borderRadius: "16px", border: "none" }}
+                                        src={`https://open.spotify.com/embed/track/${person.song}?utm_source=generator`}
+                                        width="100%"
+                                        height="80"
+                                        allowFullScreen={false}
+                                        title="Spotify player"
+                                        loading="lazy"
+                                        scrolling="no"
+                                      />
+                                    </>
+                                  ) : (
+                                    "None"
+                                  )}
+                                </Table.Cell>
                                 <Table.Cell>
                                   <div style={{alignItems:"center", display:"flex", justifyContent:"center", flexDirection:"column"}}>
                                     {person.photo ? (

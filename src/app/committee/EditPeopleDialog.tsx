@@ -245,6 +245,22 @@ export default function EditCommitteeDialog({
                         })}
                     placeholder="Enter the song id from spotify"
                 />
+                {
+                  form.song && (
+                    <>
+                    <iframe
+                        style={{ borderRadius: "16px", border: "none", paddingTop: "10px" }}
+                        src={`https://open.spotify.com/embed/track/${form.song}?utm_source=generator`}
+                        width="100%"
+                        height="80"
+                        allowFullScreen={false}
+                        title="Spotify player"
+                        loading="lazy"
+                        scrolling="no"
+                      />
+                    </>
+                  )
+                }
               </label>
               <label>
                 <Text as="div" size="2" mb="1" weight="bold">

@@ -3,6 +3,7 @@
 import {useEffect, useReducer, useState} from "react";
 import {Button, IconButton, Skeleton, Strong, Table, Text, TextField} from "@radix-ui/themes";
 import { MagnifyingGlassIcon, Pencil1Icon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import EditShowDialog from "@/app/(shows)/shows/EditShowDialog";
 import { ToastProvider } from "@/app/components/Toast";
 import DeleteShowDialog from "@/app/(shows)/shows/DeleteShowDialog";
@@ -12,13 +13,15 @@ import {API} from "@/interfaces/ISchedule";
 import {IShow} from "@/interfaces/IShow";
 import Image from "next/image";
 
-
 export default function ShowPage() {
   const [{shows, loading, error}, dispatch] = useReducer(showsReducer, initialState);
-  const [search, setSearch] = useState("");
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams.get("search") ?? "";
+  const [search, setSearch] = useState(initialSearch);
 
   //searchbar
   const filteredShows = shows.filter((show) =>
+    show.id.toString().includes(search) ||
     show.title.toLowerCase().includes(search.toLowerCase()) ||
     show.description?.toLowerCase().includes(search.toLowerCase()) ||
     show.hosts.join(", ").toLowerCase().includes(search.toLowerCase())
