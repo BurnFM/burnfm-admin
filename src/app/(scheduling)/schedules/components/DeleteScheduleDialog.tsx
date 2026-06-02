@@ -72,10 +72,10 @@ export default function DeleteScheduleDialog({schedule, onSuccess, children, set
                   <InfoCircledIcon />
                 </Callout.Icon>
                 <Callout.Text>
-                  You can disable this schedule instead which preserves show timings by <Link asChild>
+                  You can disable this schedule instead which preserves show timings by deactivating it or <Link asChild>
                     <NextLink href={"/scheduling/edit/"+schedule.id}>
                       changing its End Date
-                    </NextLink>
+                    </NextLink> 
                   </Link>.
                 </Callout.Text>
               </Callout.Root>

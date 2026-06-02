@@ -5,7 +5,7 @@ import React from "react";
 import {IScheduleExtended} from "@/interfaces/ISchedule";
 import DuplicateScheduleDialog from "@/app/(scheduling)/schedules/components/SchedulesList/DuplicateScheduleDialog";
 
-export default function ScheduleCard({schedule, openDeleteDialog}: {schedule: IScheduleExtended, openDeleteDialog: (schedule: IScheduleExtended) => void }) {
+export default function ScheduleCard({schedule, openDeleteDialog, onDuplicateSuccess}: {schedule: IScheduleExtended, openDeleteDialog: (schedule: IScheduleExtended) => void, onDuplicateSuccess?: () => Promise<void> | void }) {
   return (
       <ContextMenu.Root>
 
@@ -13,7 +13,7 @@ export default function ScheduleCard({schedule, openDeleteDialog}: {schedule: IS
           <Card variant="classic" asChild>
             <Link href={"/schedules/edit/" + schedule.id}>
               <Flex direction="column" align="center" py="1" gap="2">
-                <Text size="4" weight="medium" align="center">
+                <Text size="4" weight="medium">
                   {schedule.name}
                   {!schedule.active && <div style={{ color: 'red' }}>(Schedule Not Active)</div>}
                 </Text>
@@ -37,7 +37,7 @@ export default function ScheduleCard({schedule, openDeleteDialog}: {schedule: IS
               <Pencil1Icon /> Edit
             </Link>
           </ContextMenu.Item>
-          <DuplicateScheduleDialog schedule={schedule}>
+          <DuplicateScheduleDialog schedule={schedule} onSuccess={onDuplicateSuccess}>
             <ContextMenu.Item
               onSelect={(e) => {
                 e.preventDefault();

@@ -1,11 +1,12 @@
 "use client"
 
 import {Button, Dialog, Flex, Kbd, Link, Text, TextArea, TextField, DropdownMenu} from "@radix-ui/themes";
-import {IScheduleExtended} from "@/interfaces/ISchedule";
+import {API, IEntry, IScheduleAPI, IScheduleExtended} from "@/interfaces/ISchedule";
 import {ReactNode, useActionState, useState, useEffect} from "react";
 import NextLink from "next/link";
 import {useToast} from "@/app/components/Toast";
-import {DUPLICATE_SCHEDULE_ENDPOINT} from "@/lib/endpoints";
+import {DUPLICATE_SCHEDULE_ENDPOINT, GET_SCHEDULES_ENDPOINT} from "@/lib/endpoints";
+import {getDate} from "@/lib/dates";
 
 export default function DuplicateScheduleDialog({
   key,
@@ -28,20 +29,35 @@ export default function DuplicateScheduleDialog({
 
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(initial_form_data)
+  const [existingNames, setExistingNames] = useState<string[]>([]);
+  const normalizeName = (name: string) => name.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const normalizedInput = normalizeName(form.name);
+  const nameExists = existingNames.includes(normalizedInput);
+  const isInvalid = nameExists || form.name.trim().length === 0;
 
   const toast = useToast();
 
   const [state, dispatch, isPending] = useActionState(
     async(previousState: null, payload: FormData) => {
+
+      if (existingNames.includes(normalizedInput)) {
+        toast.showToast("Error", "Schedule name already exists");
+        return null;
+      }
+
       try {
         let response;
         if (schedule) {
           response = await fetch(DUPLICATE_SCHEDULE_ENDPOINT(schedule.id), {
-            method: 'POST',
-            body: payload,
+            method: "POST",
             headers: {
-              'Authorization': `${process.env.NEXT_PUBLIC_AUTH_TOKEN}`
-            }
+              "Authorization": `${process.env.NEXT_PUBLIC_AUTH_TOKEN}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id: schedule.id,
+              name: form.name,
+            }),
           });
         } else {
           throw new Error("No schedule id provided for duplication");
@@ -65,6 +81,33 @@ export default function DuplicateScheduleDialog({
     },
     null
   );
+
+  const fetchSchedules = async () => {
+    try {
+      const response = await fetch(GET_SCHEDULES_ENDPOINT(), {
+        method: "GET",
+        headers: {
+          "Accept": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const res = await response.json() as IScheduleAPI[];
+
+        const payload = res.map((x) => normalizeName(x.name));
+        setExistingNames(payload);
+        
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (open) {
+      fetchSchedules();
+    }
+  }, [open]);
 
   return (
     <Dialog.Root key={key} open={open} onOpenChange={setOpen}>
@@ -95,6 +138,12 @@ export default function DuplicateScheduleDialog({
           </label>
         </Flex>
 
+        {nameExists && (
+          <Text size="1" color="red">
+            A schedule with this name already exists
+          </Text>
+        )}
+
         <Flex gap="3" mt="4" justify="end">
         <Dialog.Close>
           <Button variant="soft" color="gray" disabled={isPending}>
@@ -102,7 +151,7 @@ export default function DuplicateScheduleDialog({
             <Kbd style={{background: "rgba(255,255,255, 0.1)", boxShadow: "none"}}>Esc</Kbd>
           </Button>
         </Dialog.Close>
-        <Button type={"submit"} loading={isPending}>
+        <Button type="submit" loading={isPending} disabled={isPending || isInvalid}>
           Duplicate Schedule
           <Kbd style={{background: "rgba(255,255,255, 0.1)", boxShadow: "none"}}>Enter ⏎</Kbd>
         </Button>

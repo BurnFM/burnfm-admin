@@ -61,6 +61,8 @@ export function editScheduleReducer(state: EditScheduleState, action: EditSchedu
       return { ...state, schedule: { ...state.schedule, start_date: action.payload } };
     case "SET_END_DATE":
       return { ...state, schedule: { ...state.schedule, end_date: action.payload } };
+    case "SET_ACTIVE":
+      return { ...state, schedule: { ...state.schedule, active: action.payload } };
     case "SET_ENTRIES":
       return { ...state, schedule: { ...state.schedule, entries: action.payload } };
     case "RESET_SCHEDULE":
