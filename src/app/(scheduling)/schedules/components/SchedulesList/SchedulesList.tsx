@@ -177,10 +177,6 @@ export default function SchedulesList() {
             </Skeleton>
           }
 
-          <Flex gap="3" align="center" height="1em">
-            <Separator size="4"/>
-          </Flex>
-
           <Flex gap="3" mt="4" align="center" height="1em">
             <Separator size="1"/>
             <Text>Previous</Text>

@@ -313,24 +313,28 @@ export default function EditCommitteeDialog({
 
 
                 {/* IMPORTANT: this is what gets submitted */}
-                <input type="hidden" name="photo" value={form.photo} />
+                <input type="hidden" name="photo" value={form.photo || ""} />
               </label>
               <label>
                 <Text as="div" size="2" mb="1" weight="bold">
                   Year*
                 </Text>
                 <TextField.Root
-                    name="year"
-                    disabled={isPending}
-                    value={form.year}
-                    onChange={(x) =>
-                        setForm({
+                  name="year"
+                  disabled={isPending}
+                  value={Number.isFinite(form.year) ? form.year : ""}
+                  onChange={(x) =>
+                      setForm({
                           ...form,
-                          year: parseInt(x.target.value)
-                        })}
-                    placeholder="Enter the year of this role"
-                    required
-                />
+                          year:
+                              x.target.value === ""
+                                  ? 0
+                                  : Number(x.target.value)
+                      })
+                  }
+                  placeholder="Enter the year of this role"
+                  required
+              />
               </label>
 
 

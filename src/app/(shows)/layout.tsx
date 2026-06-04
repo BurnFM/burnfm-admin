@@ -1,5 +1,5 @@
 import {Text, Flex, Heading, Container, Box} from "@radix-ui/themes";
-import {DashboardIcon} from "@radix-ui/react-icons";
+import {ResumeIcon} from "@radix-ui/react-icons";
 import Navbar from "@/app/components/Navbar";
 
 export default function RootLayout({
@@ -13,7 +13,7 @@ export default function RootLayout({
         <Box>
           <Container size="4" height="100%" p="6" style={{backgroundColor: "var(--accent-3)", borderBottom: "1px solid var(--accent-6)"}}>
             <Flex align="center" gap="3" mb="4">
-              <DashboardIcon style={{color: "var(--accent-11)"}} height={30} width={30}/>
+              <ResumeIcon style={{color: "var(--accent-11)"}} height={30} width={30}/>
               <Heading id="heading" style={{color: "var(--accent-11)"}}>Shows & Podcasts</Heading>
             </Flex>
             <Flex direction="column" gap="1">

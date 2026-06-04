@@ -37,7 +37,7 @@ export default function LoginPage() {
   };
 
   return (
-        <Flex align="center" justify="center" flexGrow="1">
+        <Flex align="center" justify="center" flexGrow="1" style={{ background: "var(--accent-3)" }}>
           <Box width="100%" maxWidth="400px" asChild overflow="visible">
             <Card>
               <Flex direction="column" p="4" gap="4" asChild>
@@ -62,10 +62,6 @@ export default function LoginPage() {
                       <Text as="div" size="2" mb="1" weight="bold">
                         Password
                       </Text>
-
-                      <Link size="2" asChild>
-                        <NextLink href="">Forgot password?</NextLink>
-                      </Link>
                     </Flex>
                     <TextField.Root
                         name="password"
@@ -78,9 +74,6 @@ export default function LoginPage() {
                   </label>
 
                   <Flex justify="end" gap="4" mt="2" align="center">
-                    <Link size="2" asChild>
-                      <NextLink href="">Request an account</NextLink>
-                    </Link>
                     <Button type="submit">Log in</Button>
                   </Flex>
                 </form>

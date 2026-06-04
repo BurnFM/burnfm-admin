@@ -158,7 +158,7 @@ export default function EditShowDialog({
                 <TextArea
                     name="description"
                     disabled={isPending}
-                    value={form.description}
+                    value={form.description ?? ""}
                     onChange={(x) =>
                         setForm({
                           ...form,
@@ -220,7 +220,7 @@ export default function EditShowDialog({
                 </Flex>
 
                 {/* IMPORTANT: this is what gets submitted */}
-                <input type="hidden" name="photo" value={form.photo ?? undefined} />
+                <input type="hidden" name="photo" value={form.photo ?? ""} />
               </label>
 
               {

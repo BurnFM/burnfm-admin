@@ -2,7 +2,7 @@
 
 import {useEffect, useReducer, useState} from "react";
 import {Text, Box, Flex, Heading, Container, IconButton, Skeleton, Strong, Table, TextField, Button, DropdownMenu} from "@radix-ui/themes";
-import {DashboardIcon, MagnifyingGlassIcon, Pencil1Icon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
+import {PersonIcon, MagnifyingGlassIcon, Pencil1Icon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import EditCommitteeDialog from "@/app/committee/EditPeopleDialog";
 import DeleteCommitteeDialog from "@/app/committee/DeletePeopleDialog";
 import { ToastProvider } from "@/app/components/Toast";
@@ -93,7 +93,7 @@ export default function ShowPage() {
         <Box>
           <Container size="4" height="100%" p="6" style={{backgroundColor: "var(--accent-3)", borderBottom: "1px solid var(--accent-6)"}}>
             <Flex align="center" gap="3" mb="4">
-              <DashboardIcon style={{color: "var(--accent-11)"}} height={30} width={30}/>
+              <PersonIcon style={{color: "var(--accent-11)"}} height={30} width={30}/>
               <Heading id="heading" style={{color: "var(--accent-11)"}}>Committee</Heading>
             </Flex>
             <Flex direction="column" gap="1">
