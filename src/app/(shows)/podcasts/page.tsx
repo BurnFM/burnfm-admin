@@ -22,7 +22,9 @@ export default function PodcastPage() {
     podcast.id.toString().includes(search) ||
     podcast.title.toLowerCase().includes(search.toLowerCase()) ||
     podcast.description?.toLowerCase().includes(search.toLowerCase()) ||
-    podcast.hosts.join(", ").toLowerCase().includes(search.toLowerCase())
+    podcast.hosts.join(", ").toLowerCase().includes(search.toLowerCase()) ||
+    podcast.startDate?.includes(search) ||
+    podcast.endDate?.includes(search)
   );
 
   // Fetch podcasts on mount

@@ -25,6 +25,8 @@ export default function ShowPage() {
     const matchesSearch =
     person.id.toString().includes(search) ||
     person.name.toLowerCase().includes(search.toLowerCase()) ||
+    person.role?.toLowerCase().includes(search.toLowerCase()) ||
+    person.course?.toLowerCase().includes(search.toLowerCase()) ||
     person.description?.toLowerCase().includes(search.toLowerCase()) ||
     person.fact?.toLowerCase().includes(search.toLowerCase()) ||
     person.year.toString().includes(search);
