@@ -1,8 +1,8 @@
 "use client";
 
 import {useEffect, useReducer, useState} from "react";
-import {Button, Container, IconButton, Link, Skeleton, Strong, Table, Text, TextField} from "@radix-ui/themes";
-import { MagnifyingGlassIcon, Pencil1Icon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
+import {Button, Container, IconButton, Link, Skeleton, Strong, Table, Text, TextField, Popover} from "@radix-ui/themes";
+import { MagnifyingGlassIcon, Pencil1Icon, PlusIcon, TrashIcon, QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 import EditOverrideDialog from "@/app/(scheduling)/overrides/EditOverrideDialog";
 import { ToastProvider } from "@/app/components/Toast";
 import DeleteOverrideDialog from "@/app/(scheduling)/overrides/DeleteOverrideDialog";
@@ -180,7 +180,27 @@ export default function OverridesPage() {
                       <Table.ColumnHeaderCell>Date</Table.ColumnHeaderCell>
                       <Table.ColumnHeaderCell>Start Time</Table.ColumnHeaderCell>
                       <Table.ColumnHeaderCell>End Time</Table.ColumnHeaderCell>
-                      <Table.ColumnHeaderCell>Type</Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell>
+                        Type
+                        <Popover.Root>
+                          <Popover.Trigger>
+                            <IconButton size="1" variant="ghost" ml="1">
+                              <QuestionMarkCircledIcon width="18" height="18" />
+                            </IconButton>
+                          </Popover.Trigger>
+                          <Popover.Content size="1" maxWidth="300px">
+                            <Text as="p" trim="both" size="1" style={{paddingBottom:"10px"}}>
+                              Additional - Adds show in where empty on schedule only
+                            </Text>
+                            <Text as="p" trim="both" size="1" style={{paddingBottom:"10px"}}>
+                              Replace - Adds show in where another show exists only
+                            </Text>
+                            <Text as="p" trim="both" size="1">
+                              Cancel - Shows default show where another show exists
+                            </Text>
+                          </Popover.Content>
+                        </Popover.Root>
+                      </Table.ColumnHeaderCell>
                       <Table.ColumnHeaderCell>New Show</Table.ColumnHeaderCell>
                       <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
                     </Table.Row>

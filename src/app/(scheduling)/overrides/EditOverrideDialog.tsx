@@ -353,7 +353,7 @@ export default function EditOverrideDialog({
                 </Flex>
 
                 {/* IMPORTANT: this is what gets submitted */}
-                <input type="hidden" name="radio_show_id" value={form.radioShowID ?? undefined} />
+                <input type="hidden" name="radio_show_id" value={form.radioShowID ?? ""} />
 
               </label>)}
 
