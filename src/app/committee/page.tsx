@@ -191,7 +191,6 @@ export default function ShowPage() {
                                 <Table.Cell>
                                   {person.song ? (
                                     <>
-                                      {person.song}
                                       <iframe
                                         style={{ borderRadius: "16px", border: "none" }}
                                         src={`https://open.spotify.com/embed/track/${person.song}?utm_source=generator`}
@@ -202,6 +201,7 @@ export default function ShowPage() {
                                         loading="lazy"
                                         scrolling="no"
                                       />
+                                      {person.song}
                                     </>
                                   ) : (
                                     "None"

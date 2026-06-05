@@ -14,38 +14,11 @@ import {
 import { usePathname } from "next/navigation";
 import styles from "./RootNavBar.module.css";
 import { useSession, signOut } from "next-auth/react";
-import { useEffect, useRef } from "react";
-import { useToast } from "@/app/components/Toast";
 
 export default function RootNavbar() {
   const path = usePathname();
   const { data: session, status } = useSession();
-  const toast = useToast();
-  const prevStatus = useRef(status);
-  const hasShownLoginToast = useRef(false);
   const isLoggedIn = status === "authenticated";
-
-  useEffect(() => {
-    // LOGIN
-    if (
-      prevStatus.current !== "authenticated" &&
-      status === "authenticated"
-    ) {
-      toast.showToast("Logged in", "Welcome back 👋");
-    }
-
-    // LOGOUT
-    if (
-      prevStatus.current === "authenticated" &&
-      status === "unauthenticated"
-    ) {
-      toast.showToast("Logged out", "You have been signed out");
-    }
-
-    prevStatus.current = status;
-  }, [status, toast]);
-
-
 
   const links = [
     { href: "/", label: "Home", icon: <HomeIcon style={{ paddingRight: 8 }} /> },
@@ -94,7 +67,7 @@ export default function RootNavbar() {
             </TabNav.Link>
           ))}
           <TabNav.Link asChild>
-            <button onClick={() => signOut({ callbackUrl: "/login" })}
+            <button onClick={() => signOut({ callbackUrl: "/login?logout=success" })}
                 style={{
                 display: "flex",
                 alignItems: "center",
@@ -132,7 +105,7 @@ export default function RootNavbar() {
                   <DropdownMenu.Separator />
                 </React.Fragment>
               ))}
-              <DropdownMenu.Item onClick={() => signOut({ callbackUrl: "/login" })}>
+              <DropdownMenu.Item onClick={() => signOut({ callbackUrl: "/login?logout=success" })}>
                 <ExitIcon style={{ paddingRight: 8 }} />
                 Logout
               </DropdownMenu.Item>

@@ -12,12 +12,15 @@ import {initialState, showsReducer} from "@/app/(shows)/shows/showsReducer";
 import {API} from "@/interfaces/ISchedule";
 import {IShow} from "@/interfaces/IShow";
 import Image from "next/image";
+import { useToast } from "@/app/components/Toast";
 
 export default function ShowPage() {
   const [{shows, loading, error}, dispatch] = useReducer(showsReducer, initialState);
   const searchParams = useSearchParams();
   const initialSearch = searchParams.get("search") ?? "";
   const [search, setSearch] = useState(initialSearch);
+  const toast = useToast();
+  const router = useRouter();
 
   //searchbar
   const filteredShows = shows.filter((show) =>
@@ -66,6 +69,16 @@ export default function ShowPage() {
   const handleSuccess = async () => {
     await fetchShows(); // Re-fetch shows to update the list
   };
+
+  // Loggin toast
+  useEffect(() => {
+    if (searchParams.get("login") === "success") {
+      toast.showToast("Success", "Logged in successfully");
+
+      // Remove query param so it doesn't show again on refresh
+      router.replace("/shows");
+    }
+  }, [searchParams, router, toast]);
 
   if (error)
     return (

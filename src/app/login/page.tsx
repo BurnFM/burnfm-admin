@@ -6,11 +6,13 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useToast } from "@/app/components/Toast";
+import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
   const { data: session } = useSession();
   const router = useRouter();
   const toast = useToast();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (session) {
@@ -20,8 +22,30 @@ export default function LoginPage() {
 
   const handleGoogleLogin = () => {
     toast.showToast("Signing in", "Redirecting to Google...");
-    signIn("google", { callbackUrl: "/shows" });
+    signIn("google", { callbackUrl: "/shows?login=success" });
   };
+
+  useEffect(() => {
+    if (session) {
+      router.push("/shows");
+    }
+
+    if (searchParams.get("logout") === "success") {
+      toast.showToast(
+        "Logged out",
+        "You have been signed out successfully"
+      );
+      router.replace("/login")
+    }
+
+    if (searchParams.get("error") === "AccessDenied") {
+      toast.showToast(
+        "Access denied",
+        "Your Google account is not authorized"
+      );
+      router.replace("/login")
+    }
+  }, [session, router, searchParams, toast]);
 
   return (
     <Flex
