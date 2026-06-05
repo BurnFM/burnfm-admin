@@ -47,11 +47,13 @@ const initialState: EditScheduleState = {
     active: true,
     entries: []
   },
+  start_date_enabled: false,
+  end_date_enabled: false,
   error: null,
 };
 
 export default function EditSchedulePage() {
-  const [{schedule, shows, loading, error, originalSchedule}, dispatch] = useReducer(editScheduleReducer, initialState);
+  const [{schedule, shows, loading, error, originalSchedule, start_date_enabled, end_date_enabled}, dispatch] = useReducer(editScheduleReducer, initialState);
 
   // Get id parameter
   const params = useParams();
@@ -164,8 +166,8 @@ export default function EditSchedulePage() {
         id: entry.id,
         radio_show_id: entry.radio_show_id,
         day: entry.day,
-        start_time: toTimeString(entry.start_time),
-        end_time: toTimeString(entry.end_time)
+        start_time: toTimeString(entry.start_time) ?? null,
+        end_time: toTimeString(entry.end_time) ?? null
       }))
     }
 
@@ -235,7 +237,7 @@ export default function EditSchedulePage() {
           </Box>
 
           <Container size="4" p="6">
-            <div style={{display:"grid", gridTemplateColumns:"50% 50%", marginBottom:"10px"}}>
+            <div style={{display:"grid", gridTemplateColumns:"65% 35%", marginBottom:"10px"}}>
 
               <label style={{gridColumn: "span 2", paddingBottom:"10px"}}>
                 <Text as="div" size="2" mb="1" weight="bold">
@@ -266,6 +268,12 @@ export default function EditSchedulePage() {
                               disabled={error ? error.status == "FETCH_FAILURE" : loading}
                       >
                       */}
+                    <Switch
+                      checked={start_date_enabled}
+                      onCheckedChange={(checked) =>
+                        dispatch({ type: "TOGGLE_START_DATE", payload: checked })
+                      }
+                    />
                     <Box>
                       <Text as="p" size="2" weight="medium">Start Date</Text>
                       <Text as="p" size="1">Determine a date when this schedule starts</Text>
@@ -273,11 +281,11 @@ export default function EditSchedulePage() {
                   </Flex>
                 </Text>
 
-                {schedule.start_date &&
+                {start_date_enabled &&
 
                   <TextField.Root type="date"
                                   disabled={loading}
-                                  value={schedule.start_date.toISOString().split("T")[0]}
+                                  value={schedule.start_date ? schedule.start_date.toISOString().split("T")[0]:undefined}
                                   onChange={handleStartDateChange}
                   />
                 }
@@ -319,6 +327,12 @@ export default function EditSchedulePage() {
                             disabled={error ? error.status == "FETCH_FAILURE" : loading}
                     />
                     */}
+                    <Switch
+                      checked={end_date_enabled}
+                      onCheckedChange={(checked) =>
+                        dispatch({ type: "TOGGLE_END_DATE", payload: checked })
+                      }
+                    />
                     <Box>
                       <Text as="p" size="2" weight="medium">End Date</Text>
                       <Text as="p" size="1">Determine a date when this schedule stops</Text>
@@ -326,11 +340,11 @@ export default function EditSchedulePage() {
                   </Flex>
                 </Text>
 
-                {schedule.end_date &&
+                {end_date_enabled &&
 
                   <TextField.Root type="date"
                                   disabled={loading}
-                                  value={schedule.end_date.toISOString().split("T")[0]}
+                                  value={schedule.end_date ? schedule.end_date.toISOString().split("T")[0]:undefined}
                                   onChange={handleEndDateChange}
                   />
                 }

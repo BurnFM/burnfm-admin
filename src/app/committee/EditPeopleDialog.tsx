@@ -397,7 +397,7 @@ export default function EditCommitteeDialog({
                 </Button>
               </Dialog.Close>
               <Button type={"submit"} loading={isPending}>
-                Save committee member
+                Save Person
                 <Kbd style={{background: "rgba(255,255,255, 0.1)", boxShadow: "none"}}>Enter ⏎</Kbd>
               </Button>
             </Flex>

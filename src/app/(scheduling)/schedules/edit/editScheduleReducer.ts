@@ -6,6 +6,8 @@ export interface EditScheduleState {
   originalSchedule: IScheduleExtended;
   shows: { id: number, title: string }[];
   error: { status: "FETCH_FAILURE" | "SAVE_FAILURE", message: string } | null;
+  start_date_enabled: boolean;
+  end_date_enabled: boolean;
 }
 
 export type EditScheduleAction =
@@ -19,7 +21,9 @@ export type EditScheduleAction =
     | { type: "SET_END_DATE"; payload: Date | null }
     | { type: "SET_ACTIVE"; payload: boolean }
     | { type: "SET_ENTRIES"; payload: Omit<IEntry, "schedule_id">[] }
-    | { type: "RESET_SCHEDULE" };
+    | { type: "RESET_SCHEDULE" }
+    | { type: "TOGGLE_START_DATE"; payload: boolean }
+    | { type: "TOGGLE_END_DATE"; payload: boolean };
 
 export function editScheduleReducer(state: EditScheduleState, action: EditScheduleAction): EditScheduleState {
   switch (action.type) {
@@ -35,7 +39,9 @@ export function editScheduleReducer(state: EditScheduleState, action: EditSchedu
         loading: false,
         schedule: action.payload.schedule,
         originalSchedule: action.payload.schedule,
-        shows: action.payload.shows
+        shows: action.payload.shows,
+        start_date_enabled: action.payload.schedule.start_date !== null,
+        end_date_enabled: action.payload.schedule.end_date !== null,
       };
     case "FETCH_FAILURE":
       return {
@@ -54,6 +60,28 @@ export function editScheduleReducer(state: EditScheduleState, action: EditSchedu
         ...state,
         loading: false,
         error: { status: "SAVE_FAILURE", message: action.payload }
+      };
+    case "TOGGLE_START_DATE":
+      return {
+        ...state,
+        start_date_enabled: action.payload,
+        schedule: {
+          ...state.schedule,
+          start_date: action.payload
+            ? state.schedule.start_date ?? new Date()
+            : null
+        }
+      };
+    case "TOGGLE_END_DATE":
+      return {
+        ...state,
+        end_date_enabled: action.payload,
+        schedule: {
+          ...state.schedule,
+          end_date: action.payload
+            ? state.schedule.end_date ?? new Date()
+            : null
+        }
       };
     case "SET_NAME":
       return { ...state, schedule: { ...state.schedule, name: action.payload } };
