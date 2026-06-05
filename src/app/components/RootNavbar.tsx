@@ -2,7 +2,6 @@
 
 import Navbar from "@/app/components/Navbar";
 import React from "react";
-import { useAuth } from "@/auth/AuthContext";
 import { DropdownMenu, TabNav } from "@radix-ui/themes";
 import Link from "next/link";
 import {
@@ -14,20 +13,48 @@ import {
 } from "@radix-ui/react-icons";
 import { usePathname } from "next/navigation";
 import styles from "./RootNavBar.module.css";
+import { useSession, signOut } from "next-auth/react";
+import { useEffect, useRef } from "react";
+import { useToast } from "@/app/components/Toast";
 
 export default function RootNavbar() {
   const path = usePathname();
-  const auth = useAuth();
+  const { data: session, status } = useSession();
+  const toast = useToast();
+  const prevStatus = useRef(status);
+  const hasShownLoginToast = useRef(false);
+  const isLoggedIn = status === "authenticated";
+
+  useEffect(() => {
+    // LOGIN
+    if (
+      prevStatus.current !== "authenticated" &&
+      status === "authenticated"
+    ) {
+      toast.showToast("Logged in", "Welcome back 👋");
+    }
+
+    // LOGOUT
+    if (
+      prevStatus.current === "authenticated" &&
+      status === "unauthenticated"
+    ) {
+      toast.showToast("Logged out", "You have been signed out");
+    }
+
+    prevStatus.current = status;
+  }, [status, toast]);
+
+
 
   const links = [
     { href: "/", label: "Home", icon: <HomeIcon style={{ paddingRight: 8 }} /> },
     { href: "/shows", label: "Shows & Podcasts", icon: <ResumeIcon style={{ paddingRight: 8 }} /> },
     { href: "/committee", label: "Committee", icon: <PersonIcon style={{ paddingRight: 8 }} /> },
     { href: "/schedules", label: "Scheduling", icon: <CalendarIcon style={{ paddingRight: 8 }} /> },
-    { href: "/logout", label: "Logout", icon: <ExitIcon style={{ paddingRight: 8 }} /> },
   ];
 
-  if (!auth.user) {
+  if (!isLoggedIn) {
     return (
       <Navbar
         justify={"end"}
@@ -66,6 +93,20 @@ export default function RootNavbar() {
               </Link>
             </TabNav.Link>
           ))}
+          <TabNav.Link asChild>
+            <button onClick={() => signOut({ callbackUrl: "/login" })}
+                style={{
+                display: "flex",
+                alignItems: "center",
+                cursor: "pointer",
+                background: "transparent",
+                border: "none",
+                padding: 0,
+              }}>
+              <ExitIcon style={{ paddingRight: 8 }} />
+              Logout
+            </button>
+          </TabNav.Link>
         </TabNav.Root>
       </div>
 
@@ -88,12 +129,13 @@ export default function RootNavbar() {
                       {label}
                     </Link>
                   </DropdownMenu.Item>
-
-                  {index !== links.length - 1 && (
-                    <DropdownMenu.Separator />
-                  )}
+                  <DropdownMenu.Separator />
                 </React.Fragment>
               ))}
+              <DropdownMenu.Item onClick={() => signOut({ callbackUrl: "/login" })}>
+                <ExitIcon style={{ paddingRight: 8 }} />
+                Logout
+              </DropdownMenu.Item>
             </DropdownMenu.Content>
           </DropdownMenu.Root>
         </TabNav.Root>

@@ -1,28 +1,14 @@
-"use client";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Box, Card, Container, Flex, Heading, Text } from "@radix-ui/themes";
-import Link from "next/link";
-import {
-  ActivityLogIcon,
-  DashboardIcon,
-} from "@radix-ui/react-icons";
-import "./home.css";
-import { useAuth } from "@/auth/AuthContext";
+export default async function Home() {
+  const session = await auth();
 
-export default function Home() {
-  const auth = useAuth();
-  const router = useRouter();
+  // Not logged in → go to login
+  if (!session) {
+    redirect("/api/auth/signin");
+  }
 
-  useEffect(() => {
-    if (auth.user === null || auth.user === undefined) {
-      router.replace("/login");
-    } else {
-      router.replace("/shows");
-    }
-  }, [auth.user, router]);
-
-  // Prevent flicker while redirecting
-  if (!auth.user) return null;
+  // Logged in → go to shows
+  redirect("/shows");
 }

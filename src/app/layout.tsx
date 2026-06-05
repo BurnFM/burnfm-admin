@@ -4,7 +4,7 @@ import {Box, Flex, Theme} from "@radix-ui/themes";
 import {ThemeProvider} from "next-themes";
 import Navbar from "@/app/components/Navbar";
 import React from "react";
-import {AuthProvider} from "@/auth/AuthContext";
+import { SessionProvider } from "next-auth/react";
 import {ToastProvider} from "@/app/components/Toast";
 import RootNavbar from "@/app/components/RootNavbar";
 export const metadata: Metadata = {
@@ -20,21 +20,20 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body style={{margin: 0, height: "100%"}}>
-      <AuthProvider>
+      <SessionProvider>
         <ThemeProvider attribute="class">
           <Theme accentColor="purple" grayColor="auto" panelBackground="solid" scaling="105%">
-            <Flex direction="column" minHeight="100vh" height="100%">
-              <Box position="sticky">
-                <RootNavbar />
-              </Box>
-
-              <ToastProvider>
+            <ToastProvider>
+              <Flex direction="column" minHeight="100vh" height="100%">
+                <Box position="sticky">
+                  <RootNavbar />
+                </Box>
                 {children}
-              </ToastProvider>
-            </Flex>
+              </Flex>
+            </ToastProvider>
           </Theme>
         </ThemeProvider>
-      </AuthProvider>
+      </SessionProvider>
       </body>
     </html>
   );
