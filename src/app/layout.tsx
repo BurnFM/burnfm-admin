@@ -25,7 +25,7 @@ export default function RootLayout({
           <Theme accentColor="purple" grayColor="auto" panelBackground="solid" scaling="105%">
             <ToastProvider>
               <Flex direction="column" minHeight="100vh" height="100%">
-                <Box position="sticky" top="0" style={{ zIndex: 1000, background:"rgba(255, 255, 255, 0.9)"}}>
+                <Box position="sticky" top="0" style={{ zIndex: 1000, background:"var(--color-background)", opacity:"0.9"}}>
                   <RootNavbar />
                 </Box>
                 {children}

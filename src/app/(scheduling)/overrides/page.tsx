@@ -17,6 +17,8 @@ import Image from "next/image";
 export default function OverridesPage() {
   const [{overrides, loading, error}, dispatch] = useReducer(overridesReducer, initialState);
   const [search, setSearch] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
   type RadioShowLookup = {
     id: number;
@@ -45,14 +47,23 @@ export default function OverridesPage() {
 
     const q = search.toLowerCase();
 
-    return (
+    const matchesSearch =
       type.includes(q) ||
       radioShowID.includes(q) ||
       showTitle.includes(q) ||
       date.includes(q) ||
       startTime.includes(q) ||
-      endTime.includes(q)
-    );
+      endTime.includes(q);
+
+    const overrideDate = new Date(override.date);
+
+    const matchesFrom =
+      !fromDate || overrideDate >= new Date(fromDate);
+
+    const matchesTo =
+      !toDate || overrideDate <= new Date(toDate);
+
+  return matchesSearch && matchesFrom && matchesTo;
   });
 
   // Fetch overrides on mount
@@ -163,15 +174,58 @@ export default function OverridesPage() {
 
           {overrides.length > 0 && (
               <>
-                <TextField.Root
-                  placeholder="Search overrides..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    gap: "10px",
+                    flexWrap: "wrap",
+                  }}
                 >
-                  <TextField.Slot>
-                    <MagnifyingGlassIcon height="15" width="15" />
-                  </TextField.Slot>
-                </TextField.Root>
+                  <div style={{ flex: 1, minWidth: "150px" }}>
+                    <TextField.Root
+                      placeholder="Search overrides..."
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                    >
+                      <TextField.Slot>
+                        <MagnifyingGlassIcon height="15" width="15" />
+                      </TextField.Slot>
+                    </TextField.Root>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                      flexWrap: "wrap",
+                      alignItems: "center",
+                    }}
+                  >
+                    <TextField.Root
+                      type="date"
+                      value={fromDate}
+                      onChange={(e) => setFromDate(e.target.value)}
+                    />
+
+                    <TextField.Root
+                      type="date"
+                      value={toDate}
+                      onChange={(e) => setToDate(e.target.value)}
+                    />
+
+                    <Button
+                      variant="soft"
+                      onClick={() => {
+                        setFromDate("");
+                        setToDate("");
+                      }}
+                    >
+                      Clear
+                    </Button>
+                  </div>
+                </div>
 
                 <Table.Root variant="surface">
                   <Table.Header>

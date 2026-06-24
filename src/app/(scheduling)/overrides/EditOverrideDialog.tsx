@@ -110,7 +110,7 @@ export default function EditOverrideDialog({
           res.map((show) => ({
             id: show.id,
             title: show.title,
-          }))
+          })).sort((a, b) => a.title.localeCompare(b.title))
         );
       } catch (error) {
         console.error(error);
@@ -289,6 +289,12 @@ export default function EditOverrideDialog({
                         None
                       </DropdownMenu.Item>
                       <DropdownMenu.Item
+                        key="Additional"
+                        onSelect={() => setForm({ ...form, type: 'Additional' })}
+                      >
+                        Additional
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item
                         key="Cancel"
                         onSelect={() => setForm({ ...form, type: 'Cancel', radioShowID: undefined })}
                       >
@@ -299,12 +305,6 @@ export default function EditOverrideDialog({
                         onSelect={() => setForm({ ...form, type: 'Replace' })}
                       >
                         Replace
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item
-                        key="Additional"
-                        onSelect={() => setForm({ ...form, type: 'Additional' })}
-                      >
-                        Additional
                       </DropdownMenu.Item>
 
                     </DropdownMenu.Content>

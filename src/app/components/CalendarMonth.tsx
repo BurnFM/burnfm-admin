@@ -1,104 +1,115 @@
-import {Calendar as Cal, luxonLocalizer} from "react-big-calendar";
-import {DateTime} from "luxon";
+"use client";
+
+import { Calendar as Cal, luxonLocalizer } from "react-big-calendar";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
+import { DateTime } from "luxon";
+import React, { useEffect, useState } from "react";
 
-import "./calendarStyles.css"
-import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
-import React, {useEffect} from "react";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
+import "./calendarStyles.css";
 
-export type SelectSlotHandler = (slotInfo: {
-  start: Date,
-  end: Date,
-  slots: Array<Date>,
-  action: 'select' | 'click' | 'doubleClick',
-  resourceId?: number, // only if the calendar is resource view
-  bounds?: {
-    // For "select" action
-    x: number,
-    y: number,
-    top: number,
-    right: number,
-    left: number,
-    bottom: number,
-  },
-  box?: {
-    // For "click" or "doubleClick" actions
-    clientX: number,
-    clientY: number,
-    x: number,
-    y: number,
-  },
+const localizer = luxonLocalizer(DateTime, { firstDayOfWeek: 1 });
+const DnDCalendar = withDragAndDrop(Cal);
+
+export type ICalendarEvent = {
+  calendar_id: number;
+  db_id: number | null;
+  title: string;
+  start: Date;
+  end: Date;
+  day: number;
+  radio_show_id: number;
+
+  isOverride?: boolean;
+};
+
+export type DropEventHandler = (args: {
+  event: ICalendarEvent;
+  start: Date;
+  end: Date;
+  allDay: boolean;
+}) => void;
+
+export type ResizeEventHandler = (args: {
+  event: ICalendarEvent;
+  start: Date;
+  end: Date;
 }) => void;
 
 export type SelectEventHandler = (event: ICalendarEvent) => void;
 
-export type ResizeEventHandler = (resize: {
-  event: ICalendarEvent,
-  start: Date,
-  end: Date
+export type SelectSlotHandler = (slotInfo: {
+  start: Date;
+  end: Date;
+  slots: Date[];
+  action: "select" | "click" | "doubleClick";
 }) => void;
 
-export type DropEventHandler = (event: {
-  event: ICalendarEvent,
-  start: Date,
-  end: Date,
-  allDay: boolean
-}) => void;
-
-export type ICalendarEvent = {
-  calendar_id: number,
-  db_id: number | null,
-  title: string,
-  start: Date,
-  end: Date,
-  day: number,
-  radio_show_id: number,
-}
-
-const localizer = luxonLocalizer(DateTime, { firstDayOfWeek: 1 });
-
-const DnDCalendar = withDragAndDrop(Cal);
-
-export const DATE = new Date(1995, 0, 1); // Common year starts on Sunday, note: this impacts logic when using dialog to update time
-
-export default function CalendarMonth({onEventDrop, onEventResize, onSelectEvent, events, onSelectSlot, min, max, timeSlotHeight}: {
-  onEventDrop: DropEventHandler,
-  onEventResize: ResizeEventHandler,
-  onSelectEvent: SelectEventHandler,
-  onSelectSlot: SelectSlotHandler,
-  events: ICalendarEvent[],
-  min: Date,
-  max: Date,
-  timeSlotHeight: number
+export default function CalendarMonth({
+  events,
+  onEventDrop,
+  onEventResize,
+  onSelectEvent,
+  onSelectSlot,
+  timeSlotHeight,
+}: {
+  events: ICalendarEvent[];
+  onEventDrop: DropEventHandler;
+  onEventResize: ResizeEventHandler;
+  onSelectEvent: SelectEventHandler;
+  onSelectSlot: SelectSlotHandler;
+  timeSlotHeight: number;
 }) {
+  const [currentDate] = useState(new Date());
 
   useEffect(() => {
-    document.documentElement.style.setProperty('--time-slot-min-height', `${timeSlotHeight}px`);
+    document.documentElement.style.setProperty(
+      "--time-slot-min-height",
+      `${timeSlotHeight}px`
+    );
   }, [timeSlotHeight]);
 
+  const eventStyleGetter = (event: ICalendarEvent) => {
+    if (event.isOverride) {
+      return {
+        style: {
+          backgroundColor: "#ff6b6b",
+          border: "1px solid #c92a2a",
+          color: "white",
+        },
+      };
+    }
+
+    return {
+      style: {
+        backgroundColor: "#4dabf7",
+        border: "1px solid #1c7ed6",
+        color: "white",
+      },
+    };
+  };
 
   return (
-      <DnDCalendar
-          date={new Date()}
-          step={30}
-          timeslots={2}
-          view={"month"}
-          localizer={localizer}
-          toolbar={false}
-          // @ts-expect-error the events defined don't match react-big-calendar
-          onEventDrop={onEventDrop}
-          // @ts-expect-error the events defined don't match react-big-calendar
-          onEventResize={onEventResize}
-          // @ts-expect-error the events defined don't match react-big-calendar
-          onSelectSlot={onSelectSlot}
-          // @ts-expect-error the events defined don't match react-big-calendar
-          onSelectEvent={onSelectEvent}
-          events={events}
-          resizable
-          selectable
-          formats={{
-            dayFormat: (date, _, localizer) => localizer.format(date, 'EEE')
-          }}
-      />
+    <DnDCalendar
+      localizer={localizer}
+      date={currentDate}
+      view="month"
+      events={events}
+      toolbar={false}
+      selectable
+      resizable
+      draggableAccessor={() => true}
+      resizableAccessor={() => true}
+      eventPropGetter={eventStyleGetter}
+      onEventDrop={onEventDrop}
+      onEventResize={onEventResize}
+      onSelectEvent={onSelectEvent}
+      onSelectSlot={onSelectSlot}
+      formats={{
+        dayFormat: (date, _, localizer) =>
+          localizer.format(date, "EEE"),
+      }}
+    />
   );
 }
