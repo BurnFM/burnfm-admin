@@ -21,7 +21,7 @@ export default function RootNavbar() {
   const isLoggedIn = status === "authenticated";
 
   const links = [
-    { href: "/", label: "Home", icon: <HomeIcon style={{ paddingRight: 8 }} /> },
+    { href: "https://www.burnfm.com", label: "burnfm.com", icon: <HomeIcon style={{ paddingRight: 8 }} /> },
     { href: "/shows", label: "Shows & Podcasts", icon: <ResumeIcon style={{ paddingRight: 8 }} /> },
     { href: "/committee", label: "Committee", icon: <PersonIcon style={{ paddingRight: 8 }} /> },
     { href: "/schedules", label: "Scheduling", icon: <CalendarIcon style={{ paddingRight: 8 }} /> },
@@ -29,13 +29,7 @@ export default function RootNavbar() {
 
   if (!isLoggedIn) {
     return (
-      <Navbar
-        justify={"end"}
-        links={[
-          { href: "/", label: "Home" },
-          { href: "/login", label: "Login" },
-        ]}
-      />
+      <div></div>
     );
   }
 
