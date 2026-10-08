@@ -57,11 +57,17 @@ function LoginPageContent() {
       <Box width="100%" maxWidth="400px">
         <Card>
           <Flex direction="column" p="4" gap="4">
-            <Heading>Log in</Heading>
-
+            
+            <Heading>Log in:</Heading>
             <Button onClick={handleGoogleLogin}>
               Sign in with Google
             </Button>
+
+            <Heading size="2">Go to burnfm.com:</Heading>
+            <Button onClick={() => window.location.href = "https://www.burnfm.com"}>
+              Visit burnfm.com    
+            </Button>
+
           </Flex>
         </Card>
       </Box>
