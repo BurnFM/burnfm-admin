@@ -4,11 +4,11 @@ import { Box, Button, Card, Flex, Heading } from "@radix-ui/themes";
 import { signIn } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useToast } from "@/app/components/Toast";
 import { useSearchParams } from "next/navigation";
 
-export default function LoginPage() {
+function LoginPageContent() {
   const { data: session } = useSession();
   const router = useRouter();
   const toast = useToast();
@@ -66,5 +66,13 @@ export default function LoginPage() {
         </Card>
       </Box>
     </Flex>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginPageContent />
+    </Suspense>
   );
 }

@@ -67,6 +67,8 @@ export default function SchedulesList() {
           start_date: x.start_date ? new Date(x.start_date) : null,
           end_date: x.end_date ? new Date(x.end_date) : null,
           active: x.active,
+          start_date_enabled: !!x.start_date,
+          end_date_enabled: !!x.end_date,
         }));
 
         dispatch({

@@ -10,7 +10,7 @@ export type IPerson = {
   year: number
 }
 
-export function isPerson(obj): obj is IPerson {
+export function isPerson(obj: Record<string, unknown>): obj is IPerson {
   return (
       typeof obj === "object" &&
       obj !== null &&

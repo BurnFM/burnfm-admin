@@ -1,6 +1,7 @@
 import {Text, Flex, Heading, Container, Box} from "@radix-ui/themes";
 import {ResumeIcon} from "@radix-ui/react-icons";
 import Navbar from "@/app/components/Navbar";
+import {Suspense} from "react";
 
 export default function RootLayout({
   children,
@@ -28,7 +29,9 @@ export default function RootLayout({
 
         <Container size="4" p="6">
           <Flex direction="column" gap="3">
-            {children}
+            <Suspense fallback={<Text>Loading...</Text>}>
+              {children}
+            </Suspense>
           </Flex>
         </Container>
 

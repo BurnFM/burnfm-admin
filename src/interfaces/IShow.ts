@@ -6,7 +6,7 @@ export type IShow = {
   photo?: string
 }
 
-export function isShow(obj): obj is IShow {
+export function isShow(obj: Record<string, unknown>): obj is IShow {
   return (
       typeof obj === "object" &&
       obj !== null &&
