@@ -4,6 +4,8 @@ export type ISchedule = {
   start_date: Date | null,
   end_date: Date | null,
   active: boolean,
+  start_date_enabled: boolean,
+  end_date_enabled: boolean,
 }
 
 export type API<T> = {

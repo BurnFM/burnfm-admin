@@ -8,6 +8,7 @@ export interface EditScheduleState {
   error: { status: "FETCH_FAILURE" | "SAVE_FAILURE", message: string } | null;
   start_date_enabled: boolean;
   end_date_enabled: boolean;
+  active: boolean;
 }
 
 export type EditScheduleAction =
@@ -23,7 +24,8 @@ export type EditScheduleAction =
     | { type: "SET_ENTRIES"; payload: Omit<IEntry, "schedule_id">[] }
     | { type: "RESET_SCHEDULE" }
     | { type: "TOGGLE_START_DATE"; payload: boolean }
-    | { type: "TOGGLE_END_DATE"; payload: boolean };
+    | { type: "TOGGLE_END_DATE"; payload: boolean }
+    | { type: "TOGGLE_ACTIVE"; payload: boolean };
 
 export function editScheduleReducer(state: EditScheduleState, action: EditScheduleAction): EditScheduleState {
   switch (action.type) {
@@ -81,6 +83,15 @@ export function editScheduleReducer(state: EditScheduleState, action: EditSchedu
           end_date: action.payload
             ? state.schedule.end_date ?? new Date()
             : null
+        }
+      };
+    case "TOGGLE_ACTIVE":
+      return {
+        ...state,
+        active: action.payload,
+        schedule: {
+          ...state.schedule,
+          active: action.payload
         }
       };
     case "SET_NAME":

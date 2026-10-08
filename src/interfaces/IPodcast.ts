@@ -9,7 +9,7 @@ export type Ipodcast = {
   latestShow?: string
 }
 
-export function isPodcast(obj): obj is Ipodcast {
+export function isPodcast(obj: Record<string, unknown>): obj is Ipodcast {
   return (
       typeof obj === "object" &&
       obj !== null &&

@@ -57,7 +57,7 @@ export type ICalendarEvent = {
 
 const localizer = luxonLocalizer(DateTime, { firstDayOfWeek: 1 });
 
-const DnDCalendar = withDragAndDrop(Cal);
+const DnDCalendar: any = withDragAndDrop(Cal);
 
 export const DATE = new Date(1995, 0, 1); // Common year starts on Sunday, note: this impacts logic when using dialog to update time
 
@@ -84,13 +84,9 @@ export default function Calendar({onEventDrop, onEventResize, onSelectEvent, eve
           view={"week"}
           localizer={localizer}
           toolbar={false}
-          // @ts-expect-error the events defined don't match react-big-calendar
           onEventDrop={onEventDrop}
-          // @ts-expect-error the events defined don't match react-big-calendar
           onEventResize={onEventResize}
-          // @ts-expect-error the events defined don't match react-big-calendar
           onSelectSlot={onSelectSlot}
-          // @ts-expect-error the events defined don't match react-big-calendar
           onSelectEvent={onSelectEvent}
           events={events}
           resizable
@@ -98,7 +94,8 @@ export default function Calendar({onEventDrop, onEventResize, onSelectEvent, eve
           min={min}
           max={max}
           formats={{
-            dayFormat: (date, _, localizer) => localizer.format(date, 'EEE')
+            dayFormat: (date: Date) =>
+              localizer.format(date, "EEE"),
           }}
       />
   );

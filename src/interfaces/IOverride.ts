@@ -7,7 +7,7 @@ export type IOverride = {
   radioShowID?: number,
 }
 
-export function isOverride(obj): obj is IOverride {
+export function isOverride(obj: Record<string, unknown>): obj is IOverride {
   return (
       typeof obj === "object" &&
       obj !== null &&

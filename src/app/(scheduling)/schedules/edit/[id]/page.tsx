@@ -37,7 +37,9 @@ const initialState: EditScheduleState = {
     start_date: null,
     end_date: null,
     active: true,
-    entries: []
+    entries: [],
+    start_date_enabled: false,
+    end_date_enabled: false,
   },
   originalSchedule: {
     id: 0,
@@ -45,10 +47,13 @@ const initialState: EditScheduleState = {
     start_date: null,
     end_date: null,
     active: true,
-    entries: []
+    entries: [],
+    start_date_enabled: false,
+    end_date_enabled: false,
   },
   start_date_enabled: false,
   end_date_enabled: false,
+  active: false,
   error: null,
 };
 
@@ -101,7 +106,9 @@ export default function EditSchedulePage() {
               start_time: getDate(parseInt(entry.day), entry.start_time),
               end_time: getDate(parseInt(entry.day), entry.end_time),
               radio_show_id: entry.show.id,
-            }))
+            })),
+            start_date_enabled: res.start_date !== null,
+            end_date_enabled: res.end_date !== null,
           };
         } else {
           throw new Error(response.statusText);
