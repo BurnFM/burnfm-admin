@@ -49,6 +49,7 @@ const initialState: EditScheduleState = {
   },
   start_date_enabled: false,
   end_date_enabled: false,
+  active: false,
   error: null,
 };
 
