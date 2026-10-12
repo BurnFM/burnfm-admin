@@ -1,4 +1,4 @@
-const BASE_ENDPOINT = "https://api.burnfm.com/new/"
+const BASE_ENDPOINT = "/api/backend/";
 const BASE_ENDPOINT_RADIO = BASE_ENDPOINT + "radio_show/"
 const BASE_ENDPOINT_SETTINGS = BASE_ENDPOINT + "settings/"
 const BASE_ENDPOINT_SCHEDULES = BASE_ENDPOINT + "schedule/"
