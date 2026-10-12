@@ -1,0 +1,7 @@
+.CalanderContainer {
+  height: 800px;
+}
+
+.rbc-today {
+  background-color: var(--accent-3);
+}
