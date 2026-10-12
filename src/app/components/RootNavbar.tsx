@@ -40,7 +40,7 @@ export default function RootNavbar() {
     ((path.substring(0, path.length - 2) === "/schedules/edit" ||
       path.substring(0, path.length - 3) === "/schedules/edit") &&
       href === "/schedules") ||
-    (path === "/calendar" && href === "/schedules") ||
+    (path === "/overview" && href === "/schedules") ||
     (path === "/overrides" && href === "/schedules") ||
     (path === "/overrides/new" && href === "/schedules") ||
     ((path.substring(0, path.length - 2) === "/overrides/edit" ||
