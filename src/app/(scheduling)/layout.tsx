@@ -24,7 +24,7 @@ export default function RootLayout({
         <Navbar justify="center" links={[
             {href: "/schedules", label: "Schedules"},
             {href: "/overrides", label: "Overrides"},
-            {href: "/calendar", label: "Calendar"}
+            {href: "/overview", label: "Overview"}
         ]}/>
 
         <Container size="4" p="6" style={{paddingTop: "0"}}>

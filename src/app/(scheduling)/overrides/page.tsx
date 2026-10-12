@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useReducer, useState} from "react";
+import {useEffect, useReducer, useState, Suspense} from "react";
 import {Button, Container, IconButton, Link, Skeleton, Strong, Table, Text, TextField, Popover} from "@radix-ui/themes";
 import { MagnifyingGlassIcon, Pencil1Icon, PlusIcon, TrashIcon, QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 import EditOverrideDialog from "@/app/(scheduling)/overrides/EditOverrideDialog";
@@ -12,13 +12,16 @@ import {API} from "@/interfaces/ISchedule";
 import {IOverride} from "@/interfaces/IOverride";
 import {IShow} from "@/interfaces/IShow";
 import Image from "next/image";
+import {useSearchParams} from "next/navigation";
 
 
-export default function OverridesPage() {
+function OverridesContent() {
   const [{overrides, loading, error}, dispatch] = useReducer(overridesReducer, initialState);
-  const [search, setSearch] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams.get("search") ?? "";
+  const [search, setSearch] = useState(initialSearch);
 
   type RadioShowLookup = {
     id: number;
@@ -48,6 +51,7 @@ export default function OverridesPage() {
     const q = search.toLowerCase();
 
     const matchesSearch =
+      override.id.toString().includes(q) ||
       type.includes(q) ||
       radioShowID.includes(q) ||
       showTitle.includes(q) ||
@@ -300,5 +304,14 @@ export default function OverridesPage() {
           )}
       </Skeleton>
       </ToastProvider>
+  );
+}
+
+
+export default function OverridesPage() {
+  return (
+    <Suspense fallback={<Text>Loading overrides...</Text>}>
+      <OverridesContent />
+    </Suspense>
   );
 }
