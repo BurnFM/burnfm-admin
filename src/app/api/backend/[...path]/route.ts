@@ -76,15 +76,6 @@ async function proxyRequest(
   const method = request.method;
   const body = method === "GET" || method === "HEAD" ? undefined: await request.arrayBuffer();
 
-  console.log("========== BURNFM API PROXY ==========");
-  console.log("Incoming method:", request.method);
-  console.log("Incoming URL:", request.url);
-  console.log("Incoming path:", new URL(request.url).pathname);
-  console.log("Incoming query:", new URL(request.url).search);
-
-  // Log the destination, but NEVER log the token itself.
-  console.log("Forwarding to:", targetUrl);
-
   //make request to API
   try {
     const upstream = await fetch(targetUrl, {

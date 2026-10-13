@@ -6,20 +6,26 @@ import {isShow, IShow} from "@/interfaces/IShow";
 import {ReactNode, useActionState, useState, useEffect} from "react";
 import NextLink from "next/link";
 import {useToast} from "@/app/components/Toast";
-import {INSERT_OVERRIDE_ENDPOINT, UPDATE_OVERRIDE_ENDPOINT, GET_RADIOSHOW_ENDPOINT} from "@/lib/endpoints";
+import {INSERT_OVERRIDE_ENDPOINT, UPDATE_OVERRIDE_ENDPOINT} from "@/lib/endpoints";
 import Image from "next/image";
 
+type RadioShowOption = {
+  id: number,
+  title: string,
+}
 
 export default function EditOverrideDialog({
   key,
   override,
   onSuccess,
-  children
+  children,
+  radioShows,
 } : {
   key?: number,
   override?: IOverride,
   onSuccess?: () => void,
-  children?: ReactNode
+  children?: ReactNode,
+  radioShows: RadioShowOption[],
 }) {
 
   const formatTime = (time: string) => time.slice(0, 5);
@@ -37,7 +43,6 @@ export default function EditOverrideDialog({
 
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(initial_form_data)
-  const [radioShows, setRadioShows] = useState<{ id: number; title: string }[]>([]);
   const toast = useToast();
   const selectedShow = radioShows.find(
     (s) => s.id === form.radioShowID
@@ -88,43 +93,7 @@ export default function EditOverrideDialog({
       null
   );
 
-  useEffect(() => {
-    const fetchSchedule = async () => {
-      try {
-        const response = await fetch(GET_RADIOSHOW_ENDPOINT(), {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        }
-
-        const json = await response.json();
-
-        const res = json.data as IShow[];
-
-        setRadioShows(
-          res.map((show) => ({
-            id: show.id,
-            title: show.title,
-          })).sort((a, b) => a.title.localeCompare(b.title))
-        );
-      } catch (error) {
-        console.error(error);
-        toast.showToast(
-          "Error",
-          "An error occurred while fetching radio shows."
-        );
-      }
-    };
-
-    fetchSchedule();
-      }, []);
-
-      const timeOptions = Array.from({ length: 49 }, (_, i) => {
+    const timeOptions = Array.from({ length: 49 }, (_, i) => {
       const hours = Math.floor(i / 2);
       const minutes = (i % 2) * 30;
 

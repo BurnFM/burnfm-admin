@@ -89,7 +89,6 @@ function OverridesContent() {
 
       if (response.ok) {
         const res = await response.json() as API<IOverride[]>;
-        console.log(res);
         dispatch({ type: "FETCH_SUCCESS", payload: res.data.map((override) => ({
             id: override.id,
             date: override.date,
@@ -170,7 +169,7 @@ function OverridesContent() {
               </>
           )}
 
-          <EditOverrideDialog onSuccess={handleSuccess}>
+          <EditOverrideDialog onSuccess={handleSuccess} radioShows={radioShows}>
             <Button>
               <PlusIcon /> New override
             </Button>
@@ -284,7 +283,7 @@ function OverridesContent() {
                             </>) : "N/A"}
                           </Table.Cell>
                           <Table.Cell>
-                            <EditOverrideDialog override={override} onSuccess={handleSuccess}>
+                            <EditOverrideDialog override={override} onSuccess={handleSuccess} radioShows={radioShows}>
                               <IconButton size="1" color="gray" variant="soft" type="button">
                                 <Pencil1Icon/>
                               </IconButton>
