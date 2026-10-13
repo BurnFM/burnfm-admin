@@ -1,13 +1,13 @@
 export interface iPerson {
-  id: number,
-  name: string,
-  role: string,
-  course?: string,
-  description?: string,
-  fact?: string,
-  song?: string,
-  photo?: string,
-  year: number
+  id: number;
+  name: string;
+  role: string;
+  course?: string;
+  description?: string;
+  fact?: string;
+  song?: string;
+  photo?: string;
+  year: number;
 }
 
 export interface PeopleState {
@@ -23,17 +23,20 @@ export const initialState: PeopleState = {
 };
 
 export type SchedulesAction =
-    | { type: 'FETCH_REQUEST' }
-    | { type: 'FETCH_SUCCESS', payload: iPerson[] }
-    | { type: 'FETCH_FAILURE', payload: string };
+  | { type: "FETCH_REQUEST" }
+  | { type: "FETCH_SUCCESS"; payload: iPerson[] }
+  | { type: "FETCH_FAILURE"; payload: string };
 
-export function peopleReducer(state: PeopleState, action: SchedulesAction): PeopleState {
+export function peopleReducer(
+  state: PeopleState,
+  action: SchedulesAction,
+): PeopleState {
   switch (action.type) {
     case "FETCH_REQUEST":
       return { ...state, loading: true, error: null };
-    case 'FETCH_SUCCESS':
+    case "FETCH_SUCCESS":
       return { ...state, loading: false, people: action.payload };
-    case 'FETCH_FAILURE':
+    case "FETCH_FAILURE":
       return { ...state, loading: false, error: action.payload };
   }
 }
