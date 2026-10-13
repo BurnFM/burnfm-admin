@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { NextRequest, NextResponse } from "next/server";
 
-const API_BASE_URL = "https://api.burnfm.com/new/";
+const API_BASE_URL = "https://api.burnfm.com/";
 
 const ALLOWED_AREAS = new Set([
   "radio_show",
@@ -14,7 +14,7 @@ const ALLOWED_AREAS = new Set([
 
 async function proxyRequest(
   request: NextRequest,
-  context: { params: Promise<{ path: string[] }> }
+  context: { params: Promise<{ path: string[] }> },
 ) {
   //authentication
   const session = await auth();
@@ -22,7 +22,7 @@ async function proxyRequest(
   if (!session?.user?.email) {
     return NextResponse.json(
       { success: false, message: "Unauthorised" },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -32,7 +32,7 @@ async function proxyRequest(
   if (!allowedEmail || email !== allowedEmail) {
     return NextResponse.json(
       { success: false, message: "Forbidden" },
-      { status: 403 }
+      { status: 403 },
     );
   }
 
@@ -42,7 +42,7 @@ async function proxyRequest(
   if (!token) {
     return NextResponse.json(
       { success: false, message: "Server configuration error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -56,25 +56,30 @@ async function proxyRequest(
   ) {
     return NextResponse.json(
       { success: false, message: "Invalid API path" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   const targetUrl = new URL(
     path.map(encodeURIComponent).join("/"),
-    API_BASE_URL
+    API_BASE_URL,
   );
 
   targetUrl.search = request.nextUrl.search;
 
   //content of request
-  const headers = new Headers({Authorization: `Bearer ${token}`,});
+  const headers = new Headers({ Authorization: `Bearer ${token}` });
   const contentType = request.headers.get("content-type");
-  if (contentType) {headers.set("Content-Type", contentType);}
+  if (contentType) {
+    headers.set("Content-Type", contentType);
+  }
 
   // method and body
   const method = request.method;
-  const body = method === "GET" || method === "HEAD" ? undefined: await request.arrayBuffer();
+  const body =
+    method === "GET" || method === "HEAD"
+      ? undefined
+      : await request.arrayBuffer();
 
   //make request to API
   try {
@@ -92,15 +97,14 @@ async function proxyRequest(
       status: upstream.status,
       headers: {
         "Content-Type":
-          upstream.headers.get("content-type") ??
-          "application/json",
+          upstream.headers.get("content-type") ?? "application/json",
         "Cache-Control": "no-store",
       },
     });
   } catch {
     return NextResponse.json(
       { success: false, message: "PHP API request failed" },
-      { status: 502 }
+      { status: 502 },
     );
   }
 }
