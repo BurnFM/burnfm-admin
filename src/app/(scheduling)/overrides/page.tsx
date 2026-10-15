@@ -247,13 +247,10 @@ function OverridesContent() {
                           </Popover.Trigger>
                           <Popover.Content size="1" maxWidth="300px">
                             <Text as="p" trim="both" size="1" style={{paddingBottom:"10px"}}>
-                              Additional - Adds show in where empty on schedule only
-                            </Text>
-                            <Text as="p" trim="both" size="1" style={{paddingBottom:"10px"}}>
-                              Replace - Adds show in where another show exists only
+                              Replace - Adds show in
                             </Text>
                             <Text as="p" trim="both" size="1">
-                              Cancel - Shows default show where another show exists
+                              Cancel - Shows default show
                             </Text>
                           </Popover.Content>
                         </Popover.Root>
