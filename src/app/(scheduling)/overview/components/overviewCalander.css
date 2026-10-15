@@ -1,7 +1,54 @@
 .CalanderContainer {
   height: 800px;
+  gap: 16px;
 }
 
 .rbc-today {
   background-color: var(--accent-3);
+}
+
+.CalanderControl {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.CalanderControlDisplay {
+  text-align: center;
+}
+
+.CalanderControlButtons {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  width: 100%;
+  gap: 8px;
+}
+
+.CalanderControlButtons > button:first-child {
+  justify-self: start;
+}
+
+.CalanderControlButtons > button:last-child {
+  justify-self: end;
+}
+
+.CalanderMonthSelect {
+  width: 115px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.CalanderYearSelect{
+  width: 115px;
+  box-sizing: border-box;
+}
+
+.CalanderMonthSelect > span,
+.CalanderYearSelect > span {
+  text-align: center;
+  flex: 1;
 }

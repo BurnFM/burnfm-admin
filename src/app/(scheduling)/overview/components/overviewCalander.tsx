@@ -11,6 +11,7 @@ import { GET_OVERRIDES_ENDPOINT, GET_SCHEDULES_ENDPOINT } from "@/lib/endpoints"
 import { useToast } from "@/app/components/Toast";
 import { IOverride } from "@/interfaces/IOverride";
 import { useRouter } from "next/navigation";
+import { Flex, Container, Button, Select } from "@radix-ui/themes";
 
 const localizer = luxonLocalizer(DateTime, {
   firstDayOfWeek: 1,
@@ -53,6 +54,10 @@ export default function OverviewCalendar() {
 
     return new Date();
   });
+
+  const months = Array.from({ length: 12 }, (_, index) => DateTime.fromObject({ month: index + 1 }).toFormat("MMMM"));
+  const currentYear = DateTime.fromJSDate(currentDate).year;
+  const years = Array.from({ length: 21 },(_, index) => currentYear - 10 + index);
 
   const router = useRouter();
   const handleSelectEvent = (
@@ -158,10 +163,112 @@ export default function OverviewCalendar() {
 
   return (
     <div className="CalanderContainer">
+
+      <div className="CalanderControl">
+        {/* Today button centred on the page */}
+        <Flex
+          align="center"
+          justify="center"
+          width="100%"
+        >
+          <Button
+            variant="solid"
+            onClick={() => setCurrentDate(new Date())}
+          >
+            Today
+          </Button>
+        </Flex>
+
+        {/* Navigation with month/year selectors in the centre */}
+        <div className="CalanderControlButtons">
+          <Button
+            variant="solid"
+            onClick={() => {
+              setCurrentDate(
+                DateTime.fromJSDate(currentDate)
+                  .minus({ months: 1 })
+                  .toJSDate()
+              );
+            }}
+          >
+            Previous Month
+          </Button>
+
+          <Flex align="center" justify="center" gap="2">
+            {/* Month selector */}
+            <Select.Root
+              value={String(DateTime.fromJSDate(currentDate).month)}
+              onValueChange={(value) => {
+                setCurrentDate(
+                  DateTime.fromJSDate(currentDate)
+                    .set({ month: Number(value) })
+                    .toJSDate()
+                );
+              }}
+            >
+              <Select.Trigger
+                variant="surface"
+                aria-label="Select month"
+                className="CalanderMonthSelect"
+              />
+              <Select.Content position="popper">
+                {months.map((month, index) => (
+                  <Select.Item key={month} value={String(index + 1)}>
+                    {month}
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select.Root>
+
+            {/* Year selector */}
+            <Select.Root
+              value={String(DateTime.fromJSDate(currentDate).year)}
+              onValueChange={(value) => {
+                setCurrentDate(
+                  DateTime.fromJSDate(currentDate)
+                    .set({ year: Number(value) })
+                    .toJSDate()
+                );
+              }}
+            >
+              <Select.Trigger
+                variant="surface"
+                aria-label="Select year"
+                className="CalanderYearSelect"
+              />
+              <Select.Content position="popper">
+                {years.map((year) => (
+                  <Select.Item key={year} value={String(year)}>
+                    {String(year)}
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select.Root>
+          </Flex>
+
+          <Button
+            variant="solid"
+            onClick={() => {
+              setCurrentDate(
+                DateTime.fromJSDate(currentDate)
+                  .plus({ months: 1 })
+                  .toJSDate()
+              );
+            }}
+          >
+            Next Month
+          </Button>
+        </div>
+      </div>
+
+      <Container p="3"></Container>
+
       <Calendar
+        className="OverviewCalander"
         onNavigate={(newDate) => {setCurrentDate(newDate);}}
         date={currentDate}
         localizer={localizer}
+        toolbar={false}
         events={events}
         views={["month"]}
         eventPropGetter={getEventStyle}
