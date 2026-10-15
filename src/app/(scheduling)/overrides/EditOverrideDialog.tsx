@@ -258,12 +258,6 @@ export default function EditOverrideDialog({
                         None
                       </DropdownMenu.Item>
                       <DropdownMenu.Item
-                        key="Additional"
-                        onSelect={() => setForm({ ...form, type: 'Additional' })}
-                      >
-                        Additional
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item
                         key="Cancel"
                         onSelect={() => setForm({ ...form, type: 'Cancel', radioShowID: undefined })}
                       >
