@@ -272,7 +272,7 @@ export default function EditShowDialog({
                 {form.photo ? (
                   <Image
                     src={
-                      "https://api.burnfm.com/uploads/schedule_img/" +
+                      "https://api.burnfm.com/uploads/show_img/" +
                       encodeURIComponent(form.photo)
                     }
                     alt=""

@@ -184,7 +184,7 @@ export default function ShowPage() {
                           {show.photo ? (
                             <Image
                               src={
-                                "https://api.burnfm.com/uploads/schedule_img/" +
+                                "https://api.burnfm.com/uploads/show_img/" +
                                 encodeURIComponent(show.photo)
                               }
                               alt=""
