@@ -66,7 +66,7 @@ export const GET_PODCAST_IMAGES_ENDPOINT =
 export const GET_PEOPLE_IMAGES_ENDPOINT =
   BASE_ENDPOINT_IMAGES + "committee_img" + GET_IMAGE_FILENAME;
 export const GET_SHOW_IMAGES_ENDPOINT =
-  BASE_ENDPOINT_IMAGES + "schedule_img" + GET_IMAGE_FILENAME;
+  BASE_ENDPOINT_IMAGES + "show_img" + GET_IMAGE_FILENAME;
 
 //overrides
 export const GET_OVERRIDES_ENDPOINT = (id?: number) => {
