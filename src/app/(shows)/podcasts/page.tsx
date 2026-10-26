@@ -143,7 +143,25 @@ export default function PodcastPage() {
                             </div>  
                           </Table.Cell>                       
                           <Table.Cell>{podcast.hosts.join(", ")}</Table.Cell>
-                          <Table.Cell>{podcast.latestShow}</Table.Cell>
+                          <Table.Cell>
+                            {podcast.latestShow ? (
+                              <>
+                                <iframe
+                                  style={{ borderRadius: "16px", border: "none" }}
+                                  src={`https://open.spotify.com/embed/episode/${podcast.latestShow}?utm_source=generator`}
+                                  width="100%"
+                                  height="80"
+                                  allowFullScreen={false}
+                                  title="Spotify player"
+                                  loading="lazy"
+                                  scrolling="no"
+                                />
+                                {podcast.latestShow}
+                              </>
+                            ) : (
+                              "None"
+                            )}
+                          </Table.Cell>
                           <Table.Cell>
                             <EditPodcastDialog podcast={podcast} onSuccess={handleSuccess}>
                               <IconButton size="1" color="gray" variant="soft" type="button">
