@@ -10,6 +10,7 @@ import {
   PersonIcon,
   CalendarIcon,
   ResumeIcon,
+  ImageIcon,
 } from "@radix-ui/react-icons";
 import { usePathname } from "next/navigation";
 import styles from "./RootNavBar.module.css";
@@ -25,6 +26,7 @@ export default function RootNavbar() {
     { href: "/shows", label: "Shows & Podcasts", icon: <ResumeIcon style={{ paddingRight: 8 }} /> },
     { href: "/committee", label: "Committee", icon: <PersonIcon style={{ paddingRight: 8 }} /> },
     { href: "/schedules", label: "Scheduling", icon: <CalendarIcon style={{ paddingRight: 8 }} /> },
+    { href: "/images", label: "Images", icon: <ImageIcon style={{ paddingRight: 8 }} /> },
   ];
 
   if (!isLoggedIn) {

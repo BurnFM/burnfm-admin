@@ -10,6 +10,7 @@ const ALLOWED_AREAS = new Set([
   "podcast",
   "committee",
   "overrides",
+  "uploads",
 ]);
 
 async function proxyRequest(
@@ -52,7 +53,7 @@ async function proxyRequest(
   if (
     !path.length ||
     !ALLOWED_AREAS.has(path[0]) ||
-    path.some((part) => !/^[a-zA-Z0-9_-]+$/.test(part))
+    path.some((part) => !/^[a-zA-Z0-9_-]+(?:\.php)?$/.test(part))
   ) {
     return NextResponse.json(
       { success: false, message: "Invalid API path" },

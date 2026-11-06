@@ -1,10 +1,10 @@
 "use client"
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, useSyncExternalStore, ReactNode } from "react";
+import { createPortal } from "react-dom";
 import * as Toast from "@radix-ui/react-toast";
 import "./Toast.css";
-import {Button, Flex} from "@radix-ui/themes";
-
+import {Button, Flex, Theme} from "@radix-ui/themes";
 type ToastContextType = {
   showToast: (title: string, message: string, duration?: number) => void;
 };
@@ -24,6 +24,11 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const [toastTitle, setToastTitle] = useState("");
   const [toastMessage, setToastMessage] = useState("");
   const [toastDuration, setToastDuration] = useState(3000);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   const showToast = (title: string, message: string, duration: number = 3000) => {
     setToastTitle(title);
@@ -32,31 +37,36 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     setOpen(true);
   };
 
-  return (
-      <ToastContext.Provider value={{ showToast }}>
-        {children}
-        <Toast.Provider swipeDirection="right">
-          <Flex justify='between' align="center" p="3" pr="5" asChild>
-            <Toast.Root
-                open={open}
-                onOpenChange={setOpen}
-                duration={toastDuration}
-                id="ToastRoot"
-            >
-              <Flex direction="column">
-                <Toast.Title id={"ToastTitle"}>{toastTitle}</Toast.Title>
-                <Toast.Description id={"ToastDescription"}>{toastMessage}</Toast.Description>
-              </Flex>
-              <Button variant="ghost" asChild>
-                <Toast.Close>
-                  Close
-                </Toast.Close>
-              </Button>
+  const toastLayer = (
+    <Theme>
+      <Toast.Provider swipeDirection="right">
+        <Flex justify="between" align="center" p="3" pr="5" asChild>
+          <Toast.Root
+            open={open}
+            onOpenChange={setOpen}
+            duration={toastDuration}
+            id="ToastRoot"
+          >
+            <Flex direction="column">
+              <Toast.Title id="ToastTitle">{toastTitle}</Toast.Title>
+              <Toast.Description id="ToastDescription">{toastMessage}</Toast.Description>
+            </Flex>
+            <Button variant="ghost" asChild>
+              <Toast.Close>
+                Close
+              </Toast.Close>
+            </Button>
+          </Toast.Root>
+        </Flex>
+        <Toast.Viewport id="ToastViewport" />
+      </Toast.Provider>
+    </Theme>
+  );
 
-            </Toast.Root>
-          </Flex>
-          <Toast.Viewport id="ToastViewport" />
-        </Toast.Provider>
-      </ToastContext.Provider>
+  return (
+    <ToastContext.Provider value={{ showToast }}>
+      {children}
+      {mounted && createPortal(toastLayer, document.body)}
+    </ToastContext.Provider>
   );
 };

@@ -67,6 +67,9 @@ export const GET_PEOPLE_IMAGES_ENDPOINT =
   BASE_ENDPOINT_IMAGES + "committee_img" + GET_IMAGE_FILENAME;
 export const GET_SHOW_IMAGES_ENDPOINT =
   BASE_ENDPOINT_IMAGES + "show_img" + GET_IMAGE_FILENAME;
+export const UPLOAD_IMAGE_ENDPOINT = BASE_ENDPOINT + "uploads/upload_img.php";
+export const DELETE_IMAGE_ENDPOINT = (name: string, use: string) =>
+  BASE_ENDPOINT + "uploads/delete_img.php?name=" + encodeURIComponent(name) + "&use=" + encodeURIComponent(use);
 
 //overrides
 export const GET_OVERRIDES_ENDPOINT = (id?: number) => {
