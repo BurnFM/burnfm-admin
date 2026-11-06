@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useReducer, useState} from "react";
+import {useEffect, useReducer, useState, Suspense} from "react";
 import {Text, Box, Flex, Heading, Container, IconButton, Skeleton, Strong, Table, TextField, Button, DropdownMenu} from "@radix-ui/themes";
 import {ImageIcon, MagnifyingGlassIcon, Pencil1Icon, UploadIcon, TrashIcon } from "@radix-ui/react-icons";
 import UploadImageDialog from "@/app/images/UploadImageDialog";
@@ -14,7 +14,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 
-export default function ImagesPage() {
+function ImagesContent() {
   const [{images, loading, error}, dispatch] = useReducer(imageReducer, initialState);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -229,4 +229,12 @@ export default function ImagesPage() {
         </Container>
       </Flex>
   );
+}
+
+export default function ImagesPage() {
+    return (
+        <Suspense fallback={<div />}>
+            <ImagesContent />
+        </Suspense>
+    );
 }

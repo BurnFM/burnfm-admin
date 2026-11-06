@@ -1,11 +1,12 @@
 "use client"
 
+import { Suspense } from "react";
 import {usePathname, useSearchParams} from "next/navigation";
 import {DropdownMenu, TabNav} from "@radix-ui/themes";
 import Link from "next/link";
 import {ExitIcon, HomeIcon} from "@radix-ui/react-icons";
 
-export default function Navbar({justify, links }: {
+function NavbarContent({justify, links }: {
   justify: "start" | "center" | "end",
   links: {href: string, label: string}[]
 }) {
@@ -42,4 +43,23 @@ export default function Navbar({justify, links }: {
           ))}
       </TabNav.Root>
   );
+}
+
+export default function Navbar(props: {
+    justify: "start" | "center" | "end",
+    links: { href: string, label: string }[]
+}) {
+    return (
+        <Suspense fallback={
+            <TabNav.Root justify={props.justify}>
+                {props.links.map(({ href, label }) => (
+                    <TabNav.Link key={href} asChild>
+                        <Link href={href}>{label}</Link>
+                    </TabNav.Link>
+                ))}
+            </TabNav.Root>
+        }>
+            <NavbarContent {...props} />
+        </Suspense>
+    );
 }
